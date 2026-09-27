@@ -1,0 +1,219 @@
+{
+  "review_kind": "pass_recovery",
+  "summary": "Passed after repeated ineffective panel clicks; keyboard shortcut and naming completed the layer creation.",
+  "result": "issues_observed",
+  "coverage_notes": [
+    "Screenshots are attached only for steps 1, 5, and 9; intermediate effects remain partly unverified.",
+    "Final frame visibly shows a second layer named Square. Every episode is noncontributing to the passed outcome."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "inferred",
+        "text": "Create a new layer."
+      },
+      "action": "Clicked a Layers-panel control.",
+      "observed_ui": "Visible frame remains a blank canvas with one layer.",
+      "effect": "No visible new layer; click target may be incorrect.",
+      "assessment": "Supported intermediate targeting mistake.",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "2",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "inferred",
+        "text": "Open the New Layer dialog."
+      },
+      "action": "Clicked another Layers-panel coordinate.",
+      "observed_ui": "No screenshot supplied.",
+      "effect": "Unknown.",
+      "assessment": "Repeated targeting attempt; effect unverified.",
+      "evidence_refs": [
+        "event_2"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "3",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "inferred",
+        "text": "Open the New Layer dialog."
+      },
+      "action": "Clicked a blank-page coordinate.",
+      "observed_ui": "No screenshot supplied.",
+      "effect": "Unknown.",
+      "assessment": "Repeated targeting attempt; effect unverified.",
+      "evidence_refs": [
+        "event_3"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "4",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "inferred",
+        "text": "Open the New Layer dialog."
+      },
+      "action": "Clicked a leftmost sheet icon.",
+      "observed_ui": "No screenshot supplied.",
+      "effect": "Unknown.",
+      "assessment": "Repeated targeting attempt; effect unverified.",
+      "evidence_refs": [
+        "event_4"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "5",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "inferred",
+        "text": "Open the New Layer dialog."
+      },
+      "action": "Clicked a bottom Layers-panel icon.",
+      "observed_ui": "Visible frame remains blank with one layer.",
+      "effect": "No visible dialog or new layer.",
+      "assessment": "Supported continued ineffective targeting.",
+      "evidence_refs": [
+        "event_5",
+        "frame_5"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "6",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "inferred",
+        "text": "Open the New Layer dialog."
+      },
+      "action": "Clicked another sheet-icon coordinate.",
+      "observed_ui": "No screenshot supplied.",
+      "effect": "Unknown.",
+      "assessment": "Final panel attempt before shortcut; effect unverified.",
+      "evidence_refs": [
+        "event_6"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "7",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the New Layer dialog via shortcut."
+      },
+      "action": "Pressed Ctrl+Shift+N.",
+      "observed_ui": "No screenshot supplied.",
+      "effect": "Dialog opening is unverified.",
+      "assessment": "Likely recovery action, but not directly visible.",
+      "evidence_refs": [
+        "event_7"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "8",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Name the layer Square and confirm."
+      },
+      "action": "Selected the name, typed Square, and pressed Enter.",
+      "observed_ui": "No screenshot supplied.",
+      "effect": "Naming and confirmation are not directly visible here.",
+      "assessment": "Later final frame supports completion.",
+      "evidence_refs": [
+        "event_8"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "9",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Finish the task."
+      },
+      "action": "Marked the task done.",
+      "observed_ui": "GIMP visibly shows two layers; top layer is named Square.",
+      "effect": "Layer creation and naming are visibly complete.",
+      "assessment": "Passed outcome confirmed.",
+      "evidence_refs": [
+        "event_9",
+        "frame_9"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "ep1",
+      "mechanism": "Repeated ineffective Layers-panel targeting before switching to the keyboard shortcut.",
+      "onset_step_ids": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "recovery": {
+        "status": "recovered",
+        "step_ids": [
+          "7",
+          "8",
+          "9"
+        ],
+        "evidence_refs": [
+          "event_7",
+          "event_8",
+          "frame_9"
+        ],
+        "rationale": "The shortcut and subsequent naming were followed by a final frame showing the Square layer."
+      },
+      "outcome_contribution": "not_applicable",
+      "label_id": "",
+      "label_name": "Repeated ineffective UI targeting before shortcut recovery",
+      "evidence_refs": [
+        "frame_1",
+        "event_2",
+        "event_3",
+        "event_4",
+        "frame_5",
+        "event_6",
+        "event_7",
+        "event_8",
+        "frame_9"
+      ],
+      "uncertainty": "Effects of steps 2-4, 6-8 are not directly shown; recovery is inferred from the final frame."
+    }
+  ]
+}

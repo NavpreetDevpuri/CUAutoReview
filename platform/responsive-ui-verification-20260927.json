@@ -1,0 +1,67 @@
+{
+  "date": "2026-09-27",
+  "scope": "Frontend responsive layout and interaction checks",
+  "providerCalls": 0,
+  "backendTestsRerun": false,
+  "build": {
+    "passed": true,
+    "bundleWarning": "Initial JavaScript bundle exceeds 500 kB"
+  },
+  "measurements": [
+    {
+      "bodyFont": "14px",
+      "clientWidth": 305,
+      "page": "#/jobs/1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+      "scrollWidth": 305,
+      "width": 320
+    },
+    {
+      "bodyFont": "14px",
+      "clientWidth": 305,
+      "page": "#/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/tasks/2f25728e-1b94-4323-911c-d95c89be90ca",
+      "scrollWidth": 305,
+      "width": 320
+    },
+    {
+      "clientWidth": 753,
+      "page": "#/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/tasks/2f25728e-1b94-4323-911c-d95c89be90ca",
+      "scrollWidth": 753,
+      "width": 768
+    },
+    {
+      "width": 390,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "bodyFont": "14px",
+      "page": "dataset task, verified before final focus-only fix"
+    },
+    {
+      "width": 1280,
+      "clientWidth": 1265,
+      "scrollWidth": 1265,
+      "navClientWidth": 71,
+      "navScrollWidth": 71,
+      "bodyFont": "14px",
+      "page": "http://127.0.0.1:8000/#/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/tasks/2f25728e-1b94-4323-911c-d95c89be90ca"
+    }
+  ],
+  "interactions": {
+    "mobileStepPicker": "Passed: selected step 7, picker closed, screenshot toolbar aligned; Next reached step 8",
+    "cardBodies": "Passed: dataset task and run card metadata opened correct details",
+    "independentControls": "Passed: review checkbox, dataset breakdown and job link did not navigate card",
+    "scopeSelection": "Passed: body toggles once; task-only selection reports 1 task across 1 dataset",
+    "mobileNavigation": "Passed: bounded drawer closes on navigation",
+    "runForm": "Passed: full-screen phone layout; Gemini 3.8 Flash and up to 32 images; cancelled without submission",
+    "theme": "Light and dark checked; original dark mode restored",
+    "consoleErrors": 0
+  },
+  "limits": [
+    "Responsive browser emulation, not physical-device certification",
+    "New-tab link independence verified; native link destination opening not separately confirmed"
+  ],
+  "screenshots": [
+    "screenshots/desktop-aligned-flags-20260927.png",
+    "screenshots/mobile-step-picker-final-20260927.png",
+    "screenshots/mobile-evidence-20260927.png"
+  ]
+}

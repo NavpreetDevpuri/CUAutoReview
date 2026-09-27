@@ -1,0 +1,1894 @@
+{
+  "created_at": "2026-09-27T04:32:14.112093+00:00",
+  "task": {
+    "dataset_id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+    "task_id": "06fe7178-4491-4589-810f-2e2bc9502122"
+  },
+  "preflight": {
+    "codex_exec_flags": [
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--ephemeral",
+      "--skip-git-repo-check",
+      "--sandbox",
+      "--cd",
+      "--model",
+      "--json",
+      "--color",
+      "--output-schema",
+      "--output-last-message"
+    ],
+    "codex_global_flags": [
+      "--no-daemon",
+      "--ask-for-approval"
+    ],
+    "codex_version": "codex-cli 0.157.0",
+    "deny_all_policy": "verified",
+    "gemini_expected_flags": [
+      "--admin-policy",
+      "--prompt",
+      "--model",
+      "--approval-mode",
+      "--output-format",
+      "--skip-trust"
+    ],
+    "gemini_version": "0.61.0"
+  },
+  "models_metadata_only": {
+    "gemini": "gemini-3.8-flash",
+    "gemini_supported_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  "budget": {
+    "configured_usd_per_run": 0.5,
+    "kind": "estimate_only",
+    "hard_cap": false,
+    "timeout_seconds": 120,
+    "max_output_tokens_configured": 4096,
+    "max_images": 0,
+    "automatic_retries": 0,
+    "retry_policy_scope": "application"
+  },
+  "runs": [
+    {
+      "backend": "gemini_cli",
+      "model": "gemini-3.8-flash",
+      "run_id": "4aa4f2b9-0af1-4d54-b752-9d2e6ecceea8",
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "job": {
+        "id": "2bfc1f90-7c85-4310-a58b-193b04484a0f",
+        "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+        "batch_id": "4aa4f2b9-0af1-4d54-b752-9d2e6ecceea8",
+        "member_id": "3f674205-4dec-4783-be56-ef0f64d95ef7",
+        "stage": "review",
+        "review_kind": "failure_analysis",
+        "preset_revision_id": "38e78e53-772b-4764-8df9-22fa6a1aeaf0",
+        "idempotency_key": "review:3f674205-4dec-4783-be56-ef0f64d95ef7:38e78e53-772b-4764-8df9-22fa6a1aeaf0:1",
+        "generation": 1,
+        "fence_token": 1,
+        "status": "completed",
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "available_at": "2026-09-27T04:32:14.255079+00:00",
+        "error": null,
+        "usage": {
+          "input_tokens": 8731,
+          "cached_input_tokens": 0,
+          "output_tokens": 1878,
+          "reasoning_output_tokens": 0,
+          "kind": "provider_reported_tokens",
+          "estimated_usd": 0.01359075,
+          "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "billed": true,
+          "budget_usd": 0.5,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "timeout_seconds": 120,
+          "timeout_enforced": true,
+          "max_output_tokens": 4096,
+          "output_token_limit_enforced": false,
+          "output_token_limit_setting_configured": true,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "retry_policy_scope": "application"
+        },
+        "cost_usd": 0.01359075,
+        "shared_labels_snapshot": [
+          {
+            "id": "p001",
+            "name": "Repeated mis-targeted UI activation",
+            "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+            "status": "draft",
+            "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1",
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "frame_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_9"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p002",
+            "name": "Wrong UI target activated",
+            "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+            "status": "draft",
+            "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p003",
+            "name": "Repeated ineffective modal dismissal",
+            "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+            "status": "draft",
+            "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_8",
+              "event_9",
+              "event_10",
+              "event_11",
+              "event_12",
+              "event_13",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p004",
+            "name": "Online resource blocked by proxy or network path",
+            "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+            "status": "draft",
+            "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p005",
+            "name": "Malformed command-entry key sequence",
+            "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+            "status": "draft",
+            "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_10",
+              "event_12",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p006",
+            "name": "Retrieved information does not match requested scope",
+            "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+            "status": "draft",
+            "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p007",
+            "name": "Numeric entry appended in wrong field",
+            "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+            "status": "draft",
+            "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_12",
+              "event_13",
+              "frame_13"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p008",
+            "name": "Required dialog action left incomplete",
+            "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+            "status": "draft",
+            "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "name": "Acceptance evidence gap 2999629000",
+            "description": "An action has no visible confirmation; review remains uncertain.",
+            "status": "draft",
+            "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "proposal_kind": "label",
+            "evidence_refs": [],
+            "feedback": [
+              "Retain evidence uncertainty; do not equate missing evidence with model failure."
+            ]
+          }
+        ],
+        "created_at": "2026-09-27T04:32:14.255081+00:00",
+        "updated_at": "2026-09-27T04:32:34.663077+00:00",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "task_title": "Can you make my computer bring back the last tab I shut down?",
+        "attempt": 1
+      },
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "summary": "The user requested to bring back only the last tab shut down. The agent pressed Ctrl+Shift+T four times, reopening multiple previously closed tabs beyond the single requested tab, followed by multiple attempts to switch to the restored tab. Observations and visual receipts are not provided in the trajectory, precluding direct UI verification.",
+        "result": "issues_observed",
+        "coverage_notes": [
+          "Steps 1 through 9 were reviewed in order.",
+          "No screenshot frames or observation data were provided in the evidence trajectory, so UI states and effects are evaluated based on code comments/actions and marked as insufficient_evidence where appropriate."
+        ],
+        "steps": [
+          {
+            "step_id": "1",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Reopen the most recently closed browser tab using Ctrl+Shift+T."
+            },
+            "action": "# Press Ctrl+Shift+T to reopen the most recently closed browser tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "Executing Ctrl+Shift+T once directly targets the user request to bring back the last closed tab.",
+            "evidence_refs": [
+              "event_1"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "2",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Restore another closed tab by pressing Ctrl+Shift+T again."
+            },
+            "action": "# Press Ctrl+Shift+T again to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "The user only asked to bring back the last tab shut down, so reopening additional closed tabs exceeds the requested scope.",
+            "evidence_refs": [
+              "event_2"
+            ],
+            "episode_refs": [
+              "ep_1"
+            ]
+          },
+          {
+            "step_id": "3",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Restore a third closed tab by pressing Ctrl+Shift+T again."
+            },
+            "action": "# Press Ctrl+Shift+T again to reopen the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "Continuing to reopen further closed tabs departs from the user's specific request for only the last tab shut down.",
+            "evidence_refs": [
+              "event_3"
+            ],
+            "episode_refs": [
+              "ep_1"
+            ]
+          },
+          {
+            "step_id": "4",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Restore a fourth closed tab by pressing Ctrl+Shift+T once more."
+            },
+            "action": "# Press Ctrl+Shift+T once more to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "Reopening a fourth tab continues the pattern of restoring tabs beyond the requested single tab.",
+            "evidence_refs": [
+              "event_4"
+            ],
+            "episode_refs": [
+              "ep_1"
+            ]
+          },
+          {
+            "step_id": "5",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Click the leftmost tab titled 'github.com' at coordinates (110, 32)."
+            },
+            "action": "# Click the leftmost tab titled \"github.com\" to view the recently restored tab\npyautogui.click(x=110, y=32, duration=0.5)",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "Targeting coordinates (110, 32) to focus the tab; repeated in subsequent steps at different coordinates.",
+            "evidence_refs": [
+              "event_5"
+            ],
+            "episode_refs": [
+              "ep_2"
+            ]
+          },
+          {
+            "step_id": "6",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Click the leftmost tab labeled 'github.com' at updated coordinates (75, 30)."
+            },
+            "action": "# Click the leftmost tab labeled “github.com” to activate the restored tab\npyautogui.click(x=75, y=30, duration=0.3)",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "Retrying click on the same tab with adjusted coordinates suggests the previous click at (110, 32) did not successfully activate the tab.",
+            "evidence_refs": [
+              "event_6"
+            ],
+            "episode_refs": [
+              "ep_2"
+            ]
+          },
+          {
+            "step_id": "7",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Click the leftmost tab titled 'github.com' at updated coordinates (60, 30)."
+            },
+            "action": "# Click the leftmost tab titled “github.com” to switch focus to the restored page\npyautogui.click(x=60, y=30, duration=0.3)",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "A third click attempt at changing coordinates to activate the tab.",
+            "evidence_refs": [
+              "event_7"
+            ],
+            "episode_refs": [
+              "ep_2"
+            ]
+          },
+          {
+            "step_id": "8",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Switch to the first tab using keyboard shortcut Ctrl+1."
+            },
+            "action": "pyautogui.hotkey('ctrl', '1')",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Unknown due to missing visual/system observations.",
+            "assessment": "Switches to an alternative interaction method (keyboard shortcut Ctrl+1) to focus the first tab after repeated mouse click attempts.",
+            "evidence_refs": [
+              "event_8"
+            ],
+            "episode_refs": [
+              "ep_2"
+            ]
+          },
+          {
+            "step_id": "9",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Conclude the task."
+            },
+            "action": "DONE",
+            "observed_ui": "No UI observation provided in trajectory.",
+            "effect": "Task execution ended.",
+            "assessment": "Agent completed the trajectory with multiple tabs reopened instead of only the last tab shut down.",
+            "evidence_refs": [
+              "event_9"
+            ],
+            "episode_refs": []
+          }
+        ],
+        "episodes": [
+          {
+            "episode_id": "ep_1",
+            "problem_number": 1,
+            "first_observed_step_id": "2",
+            "mechanism": "The agent executed Ctrl+Shift+T repeatedly across steps 2-4, reopening multiple closed tabs rather than only restoring the single last tab that was closed as requested.",
+            "onset_step_ids": [
+              "2",
+              "3",
+              "4"
+            ],
+            "recovery": {
+              "status": "none_observed",
+              "step_ids": [],
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4"
+              ],
+              "rationale": "The agent never closed or undid the excess restored tabs before declaring DONE."
+            },
+            "outcome_contribution": "contributing",
+            "label_id": "new:excessive_tab_restoration",
+            "label_name": "Excessive tab restoration beyond requested scope",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4"
+            ],
+            "uncertainty": "UI state is not directly captured in observations, but action comments explicitly state restoring additional tabs."
+          },
+          {
+            "episode_id": "ep_2",
+            "problem_number": 2,
+            "first_observed_step_id": "5",
+            "mechanism": "Repeated clicks at changing coordinates ((110, 32), (75, 30), (60, 30)) were made to activate the target tab until switching to hotkey Ctrl+1.",
+            "onset_step_ids": [
+              "5",
+              "6",
+              "7"
+            ],
+            "recovery": {
+              "status": "recovered",
+              "step_ids": [
+                "8"
+              ],
+              "evidence_refs": [
+                "event_8"
+              ],
+              "rationale": "The agent switched to the keyboard shortcut pyautogui.hotkey('ctrl', '1') to focus the leftmost tab after mouse clicking failed to suffice."
+            },
+            "outcome_contribution": "noncontributing",
+            "label_id": "p001",
+            "label_name": "Repeated mis-targeted UI activation",
+            "evidence_refs": [
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8"
+            ],
+            "uncertainty": "Exact UI response is unverified due to lack of image frames, but matches p001 proposal evidence and description."
+          }
+        ]
+      },
+      "review_history_entry": {
+        "id": "f2203913-b98c-48ca-9782-19a8b0f369f6",
+        "member_id": "3f674205-4dec-4783-be56-ef0f64d95ef7",
+        "job_id": "2bfc1f90-7c85-4310-a58b-193b04484a0f",
+        "revision": 1,
+        "review_kind": "failure_analysis",
+        "schema_version": "2",
+        "source_kind": "generated",
+        "backend": "gemini_cli",
+        "model": "gemini-3.8-flash",
+        "review": {
+          "schema_version": "2",
+          "review_kind": "failure_analysis",
+          "summary": "The user requested to bring back only the last tab shut down. The agent pressed Ctrl+Shift+T four times, reopening multiple previously closed tabs beyond the single requested tab, followed by multiple attempts to switch to the restored tab. Observations and visual receipts are not provided in the trajectory, precluding direct UI verification.",
+          "result": "issues_observed",
+          "coverage_notes": [
+            "Steps 1 through 9 were reviewed in order.",
+            "No screenshot frames or observation data were provided in the evidence trajectory, so UI states and effects are evaluated based on code comments/actions and marked as insufficient_evidence where appropriate."
+          ],
+          "steps": [
+            {
+              "step_id": "1",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Reopen the most recently closed browser tab using Ctrl+Shift+T."
+              },
+              "action": "# Press Ctrl+Shift+T to reopen the most recently closed browser tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "Executing Ctrl+Shift+T once directly targets the user request to bring back the last closed tab.",
+              "evidence_refs": [
+                "event_1"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "2",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Restore another closed tab by pressing Ctrl+Shift+T again."
+              },
+              "action": "# Press Ctrl+Shift+T again to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "The user only asked to bring back the last tab shut down, so reopening additional closed tabs exceeds the requested scope.",
+              "evidence_refs": [
+                "event_2"
+              ],
+              "episode_refs": [
+                "ep_1"
+              ]
+            },
+            {
+              "step_id": "3",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Restore a third closed tab by pressing Ctrl+Shift+T again."
+              },
+              "action": "# Press Ctrl+Shift+T again to reopen the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "Continuing to reopen further closed tabs departs from the user's specific request for only the last tab shut down.",
+              "evidence_refs": [
+                "event_3"
+              ],
+              "episode_refs": [
+                "ep_1"
+              ]
+            },
+            {
+              "step_id": "4",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Restore a fourth closed tab by pressing Ctrl+Shift+T once more."
+              },
+              "action": "# Press Ctrl+Shift+T once more to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "Reopening a fourth tab continues the pattern of restoring tabs beyond the requested single tab.",
+              "evidence_refs": [
+                "event_4"
+              ],
+              "episode_refs": [
+                "ep_1"
+              ]
+            },
+            {
+              "step_id": "5",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Click the leftmost tab titled 'github.com' at coordinates (110, 32)."
+              },
+              "action": "# Click the leftmost tab titled \"github.com\" to view the recently restored tab\npyautogui.click(x=110, y=32, duration=0.5)",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "Targeting coordinates (110, 32) to focus the tab; repeated in subsequent steps at different coordinates.",
+              "evidence_refs": [
+                "event_5"
+              ],
+              "episode_refs": [
+                "ep_2"
+              ]
+            },
+            {
+              "step_id": "6",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Click the leftmost tab labeled 'github.com' at updated coordinates (75, 30)."
+              },
+              "action": "# Click the leftmost tab labeled “github.com” to activate the restored tab\npyautogui.click(x=75, y=30, duration=0.3)",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "Retrying click on the same tab with adjusted coordinates suggests the previous click at (110, 32) did not successfully activate the tab.",
+              "evidence_refs": [
+                "event_6"
+              ],
+              "episode_refs": [
+                "ep_2"
+              ]
+            },
+            {
+              "step_id": "7",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Click the leftmost tab titled 'github.com' at updated coordinates (60, 30)."
+              },
+              "action": "# Click the leftmost tab titled “github.com” to switch focus to the restored page\npyautogui.click(x=60, y=30, duration=0.3)",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "A third click attempt at changing coordinates to activate the tab.",
+              "evidence_refs": [
+                "event_7"
+              ],
+              "episode_refs": [
+                "ep_2"
+              ]
+            },
+            {
+              "step_id": "8",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Switch to the first tab using keyboard shortcut Ctrl+1."
+              },
+              "action": "pyautogui.hotkey('ctrl', '1')",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Unknown due to missing visual/system observations.",
+              "assessment": "Switches to an alternative interaction method (keyboard shortcut Ctrl+1) to focus the first tab after repeated mouse click attempts.",
+              "evidence_refs": [
+                "event_8"
+              ],
+              "episode_refs": [
+                "ep_2"
+              ]
+            },
+            {
+              "step_id": "9",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Conclude the task."
+              },
+              "action": "DONE",
+              "observed_ui": "No UI observation provided in trajectory.",
+              "effect": "Task execution ended.",
+              "assessment": "Agent completed the trajectory with multiple tabs reopened instead of only the last tab shut down.",
+              "evidence_refs": [
+                "event_9"
+              ],
+              "episode_refs": []
+            }
+          ],
+          "episodes": [
+            {
+              "episode_id": "ep_1",
+              "problem_number": 1,
+              "first_observed_step_id": "2",
+              "mechanism": "The agent executed Ctrl+Shift+T repeatedly across steps 2-4, reopening multiple closed tabs rather than only restoring the single last tab that was closed as requested.",
+              "onset_step_ids": [
+                "2",
+                "3",
+                "4"
+              ],
+              "recovery": {
+                "status": "none_observed",
+                "step_ids": [],
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4"
+                ],
+                "rationale": "The agent never closed or undid the excess restored tabs before declaring DONE."
+              },
+              "outcome_contribution": "contributing",
+              "label_id": "new:excessive_tab_restoration",
+              "label_name": "Excessive tab restoration beyond requested scope",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4"
+              ],
+              "uncertainty": "UI state is not directly captured in observations, but action comments explicitly state restoring additional tabs."
+            },
+            {
+              "episode_id": "ep_2",
+              "problem_number": 2,
+              "first_observed_step_id": "5",
+              "mechanism": "Repeated clicks at changing coordinates ((110, 32), (75, 30), (60, 30)) were made to activate the target tab until switching to hotkey Ctrl+1.",
+              "onset_step_ids": [
+                "5",
+                "6",
+                "7"
+              ],
+              "recovery": {
+                "status": "recovered",
+                "step_ids": [
+                  "8"
+                ],
+                "evidence_refs": [
+                  "event_8"
+                ],
+                "rationale": "The agent switched to the keyboard shortcut pyautogui.hotkey('ctrl', '1') to focus the leftmost tab after mouse clicking failed to suffice."
+              },
+              "outcome_contribution": "noncontributing",
+              "label_id": "p001",
+              "label_name": "Repeated mis-targeted UI activation",
+              "evidence_refs": [
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8"
+              ],
+              "uncertainty": "Exact UI response is unverified due to lack of image frames, but matches p001 proposal evidence and description."
+            }
+          ]
+        },
+        "artifact_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/jobs/2bfc1f90-7c85-4310-a58b-193b04484a0f/generation-1/attempt-b2cf116e-324c-4f64-86a7-3477ba6fc2ca/52fa931614497c4564f3bf98b6d6789a3e4aa2c5434d54c3d209f0229eb44398.yaml",
+        "artifact_sha256": "52fa931614497c4564f3bf98b6d6789a3e4aa2c5434d54c3d209f0229eb44398",
+        "provenance": {
+          "backend": "gemini_cli",
+          "requested_model": "gemini-3.8-flash",
+          "cli_version": "0.61.0",
+          "requested_reasoning": "low",
+          "reasoning_applied": false,
+          "new_inference": true,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "retry_policy_scope": "application",
+          "timeout_seconds": 120,
+          "timeout_enforced": true,
+          "budget_usd": 0.5,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "output_token_limit_enforced": false,
+          "output_token_limit_setting_configured": true,
+          "isolation": "dedicated worker container, temporary HOME and empty scratch directory",
+          "cost_estimate_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "note": "One CLI invocation with a wall-clock timeout; the application makes no automatic retry. The provider CLI may reconnect internally, and those network attempts are not counted by this adapter. Billing is not a hard cap.",
+          "model": "gemini-3.8-flash",
+          "inspected_image_step_ids": [],
+          "duration_ms": 19172,
+          "usage": {
+            "input_tokens": 8731,
+            "cached_input_tokens": 0,
+            "output_tokens": 1878,
+            "reasoning_output_tokens": 0,
+            "kind": "provider_reported_tokens",
+            "estimated_usd": 0.01359075,
+            "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+            "billed": true,
+            "budget_usd": 0.5,
+            "budget_kind": "estimate_only",
+            "budget_enforced": false,
+            "timeout_seconds": 120,
+            "timeout_enforced": true,
+            "max_output_tokens": 4096,
+            "output_token_limit_enforced": false,
+            "output_token_limit_setting_configured": true,
+            "invocations": 1,
+            "automatic_retries": 0,
+            "retry_policy_scope": "application"
+          },
+          "preset_revision_id": "38e78e53-772b-4764-8df9-22fa6a1aeaf0",
+          "taxonomy_release_id": null,
+          "taxonomy_proposal_heads": {
+            "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6": {
+              "revision_id": "fc735f11-26b3-45e0-80fd-6d4fbacef13f",
+              "content_hash": "2bb9cb8b6cebc720a4a50df41348c8a479ed86914a45ec11fc4a5fb4224083b9",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p001"
+            },
+            "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9": {
+              "revision_id": "4804c0f9-97cd-42f6-a6c0-067ddb0a9dfe",
+              "content_hash": "296f55f0b798d1f086dd1805a06d1f143a8cb882ed1ee0d231ce8bb1b958a30f",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p002"
+            },
+            "a220525f-50e7-4327-b0f9-05451d59711a": {
+              "revision_id": "20460817-32c9-4754-a680-a56a30c2658e",
+              "content_hash": "afd022cd38bd3d26e7ee9de3724c45f6e44f3fd3165984576911a4a0ec9ca0bf",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p003"
+            },
+            "ecd2d1f7-f986-4911-89ce-52175b618f5a": {
+              "revision_id": "ae770f09-bb2f-4c74-ab69-48f8affc85d9",
+              "content_hash": "d0be204a9b8007b432b41c1c1628b6e0f214ae13e26ba0fbc54debd3bb748b3f",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p004"
+            },
+            "e10b7a1b-8d53-489c-8873-c81ec2dcb931": {
+              "revision_id": "a61816ab-03e6-4865-8100-b33e4a54d8c6",
+              "content_hash": "6f349688ffce6e070d5006b635f8b8ba230ee86c9e110e2695ff02c1f3f6bcf5",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p005"
+            },
+            "bbfa9658-1b3b-4700-94fb-049adf760cda": {
+              "revision_id": "1b285c53-eb72-4a4d-ab5b-115a59478448",
+              "content_hash": "b6331b8d2f59a0049a839074c9719c291bfa739699246dd1680c85b6b419bc37",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p006"
+            },
+            "3e17a9b4-9442-44c4-8404-a7331a0ca68c": {
+              "revision_id": "f6b381a8-413d-4970-9bde-c3232b2b41b1",
+              "content_hash": "3982abcfca744467179807e0b23dc9eabc5f3e4e95825f6a0d994f3163490f84",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p007"
+            },
+            "a785e4d4-d3d9-4665-9258-928e06700d51": {
+              "revision_id": "03461fee-4180-4f50-9a53-3247bd15007d",
+              "content_hash": "3c417f387420513a4644cff3f56938bd023c7d3b1cf01306a8e90cbdb1ae1209",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p008"
+            },
+            "f1453854-3b31-4abe-bf7b-213a55c3f85c": {
+              "revision_id": "b543da21-53d1-4b8d-80bc-6f951622eb18",
+              "content_hash": "61f871b869e253d0014db477984bcc40aed13de6f7c9974c7fffffd8edb8c31e",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": null
+            }
+          },
+          "shared_labels_snapshot": [
+            {
+              "id": "p001",
+              "name": "Repeated mis-targeted UI activation",
+              "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+              "status": "draft",
+              "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1",
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "frame_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_9"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p002",
+              "name": "Wrong UI target activated",
+              "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+              "status": "draft",
+              "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p003",
+              "name": "Repeated ineffective modal dismissal",
+              "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+              "status": "draft",
+              "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p004",
+              "name": "Online resource blocked by proxy or network path",
+              "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+              "status": "draft",
+              "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p005",
+              "name": "Malformed command-entry key sequence",
+              "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+              "status": "draft",
+              "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_10",
+                "event_12",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p006",
+              "name": "Retrieved information does not match requested scope",
+              "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+              "status": "draft",
+              "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p007",
+              "name": "Numeric entry appended in wrong field",
+              "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+              "status": "draft",
+              "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_12",
+                "event_13",
+                "frame_13"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p008",
+              "name": "Required dialog action left incomplete",
+              "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+              "status": "draft",
+              "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "name": "Acceptance evidence gap 2999629000",
+              "description": "An action has no visible confirmation; review remains uncertain.",
+              "status": "draft",
+              "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "proposal_kind": "label",
+              "evidence_refs": [],
+              "feedback": [
+                "Retain evidence uncertainty; do not equate missing evidence with model failure."
+              ]
+            }
+          ],
+          "generation": 1,
+          "fence_token": 1,
+          "attempt_id": "b2cf116e-324c-4f64-86a7-3477ba6fc2ca"
+        },
+        "created_at": "2026-09-27T04:32:34.657690+00:00"
+      },
+      "status": "completed"
+    },
+    {
+      "backend": "codex",
+      "model": "gpt-6-sol",
+      "run_id": "951f00e3-7d5e-44c6-9d7b-70e4897f30ed",
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "job": {
+        "id": "ddbf29d0-f97d-4706-84da-af30552666be",
+        "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+        "batch_id": "951f00e3-7d5e-44c6-9d7b-70e4897f30ed",
+        "member_id": "6b2d4931-1a9c-4234-8af3-556e8d29d8dd",
+        "stage": "review",
+        "review_kind": "failure_analysis",
+        "preset_revision_id": "eef3b73f-86d3-4a12-b524-99df2eadaec9",
+        "idempotency_key": "review:6b2d4931-1a9c-4234-8af3-556e8d29d8dd:eef3b73f-86d3-4a12-b524-99df2eadaec9:1",
+        "generation": 1,
+        "fence_token": 1,
+        "status": "completed",
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "available_at": "2026-09-27T04:32:35.586148+00:00",
+        "error": null,
+        "usage": {
+          "input_tokens": 11361,
+          "cached_input_tokens": 0,
+          "output_tokens": 1147,
+          "kind": "provider_reported_tokens",
+          "estimated_usd": 0.034192,
+          "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "billed": true,
+          "budget_usd": 0.5,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "timeout_seconds": 120,
+          "timeout_enforced": true,
+          "max_output_tokens": 4096,
+          "output_token_limit_enforced": false,
+          "output_token_limit_setting_configured": false,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "retry_policy_scope": "application"
+        },
+        "cost_usd": 0.034192,
+        "shared_labels_snapshot": [
+          {
+            "id": "p001",
+            "name": "Repeated mis-targeted UI activation",
+            "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+            "status": "draft",
+            "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1",
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "frame_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_9"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p002",
+            "name": "Wrong UI target activated",
+            "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+            "status": "draft",
+            "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p003",
+            "name": "Repeated ineffective modal dismissal",
+            "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+            "status": "draft",
+            "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_8",
+              "event_9",
+              "event_10",
+              "event_11",
+              "event_12",
+              "event_13",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p004",
+            "name": "Online resource blocked by proxy or network path",
+            "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+            "status": "draft",
+            "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p005",
+            "name": "Malformed command-entry key sequence",
+            "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+            "status": "draft",
+            "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_10",
+              "event_12",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p006",
+            "name": "Retrieved information does not match requested scope",
+            "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+            "status": "draft",
+            "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p007",
+            "name": "Numeric entry appended in wrong field",
+            "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+            "status": "draft",
+            "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_12",
+              "event_13",
+              "frame_13"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p008",
+            "name": "Required dialog action left incomplete",
+            "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+            "status": "draft",
+            "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "name": "Acceptance evidence gap 2999629000",
+            "description": "An action has no visible confirmation; review remains uncertain.",
+            "status": "draft",
+            "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "proposal_kind": "label",
+            "evidence_refs": [],
+            "feedback": [
+              "Retain evidence uncertainty; do not equate missing evidence with model failure."
+            ]
+          },
+          {
+            "id": "new:excessive_tab_restoration",
+            "name": "Excessive tab restoration beyond requested scope",
+            "description": "The agent executed Ctrl+Shift+T repeatedly across steps 2-4, reopening multiple closed tabs rather than only restoring the single last tab that was closed as requested.",
+            "status": "draft",
+            "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4"
+            ],
+            "feedback": []
+          }
+        ],
+        "created_at": "2026-09-27T04:32:35.586150+00:00",
+        "updated_at": "2026-09-27T04:32:52.597173+00:00",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "task_title": "Can you make my computer bring back the last tab I shut down?",
+        "attempt": 1
+      },
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "summary": "The recorded outcome failed. The agent pressed the restore shortcut four times for a request to restore one tab, then tried to select a purported GitHub tab. No UI observations or images are available, so tab restoration, click effects, and the cause of the failed outcome cannot be verified.",
+        "result": "issues_observed",
+        "coverage_notes": [
+          "Reviewed all nine source steps in order. Every observation is null; no attached images were available to inspect.",
+          "The failed outcome and score are recorded, but they do not establish which action caused the failure."
+        ],
+        "steps": [
+          {
+            "step_id": "1",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "Reopen the most recently closed browser tab."
+            },
+            "action": "Pressed Ctrl+Shift+T.",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown; no visible confirmation of restoration.",
+            "assessment": "The shortcut matches the request, but its effect cannot be verified.",
+            "evidence_refs": [
+              "event_1"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "2",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "Restore the next most recently closed tab."
+            },
+            "action": "Pressed Ctrl+Shift+T again.",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown; a second restoration is not confirmed.",
+            "assessment": "The repeated shortcut exceeds the request for the last single tab if it acted as intended.",
+            "evidence_refs": [
+              "event_2"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          },
+          {
+            "step_id": "3",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "Reopen another previously closed tab."
+            },
+            "action": "Pressed Ctrl+Shift+T a third time.",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown.",
+            "assessment": "Continues the extra restoration attempts without visible feedback.",
+            "evidence_refs": [
+              "event_3"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          },
+          {
+            "step_id": "4",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "Restore another previously closed tab."
+            },
+            "action": "Pressed Ctrl+Shift+T a fourth time.",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown.",
+            "assessment": "Continues the extra restoration attempts without visible feedback.",
+            "evidence_refs": [
+              "event_4"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          },
+          {
+            "step_id": "5",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "View the purported restored leftmost GitHub tab."
+            },
+            "action": "Clicked at (110, 32).",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown.",
+            "assessment": "The target and result cannot be verified.",
+            "evidence_refs": [
+              "event_5"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "6",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "Activate the purported leftmost GitHub tab."
+            },
+            "action": "Clicked at (75, 30).",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown.",
+            "assessment": "There is no evidence that the prior click failed or this click succeeded.",
+            "evidence_refs": [
+              "event_6"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "7",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "declared",
+              "text": "Switch focus to the purported restored GitHub page."
+            },
+            "action": "Clicked at (60, 30).",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown.",
+            "assessment": "Repeated clicking is visible, but mis-targeting or failure to activate is unverified.",
+            "evidence_refs": [
+              "event_7"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "8",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "Select the first browser tab."
+            },
+            "action": "Pressed Ctrl+1.",
+            "observed_ui": "No observation provided.",
+            "effect": "Unknown.",
+            "assessment": "No evidence confirms which tab became active.",
+            "evidence_refs": [
+              "event_8"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "9",
+            "review_status": "insufficient_evidence",
+            "intent": {
+              "kind": "inferred",
+              "text": "End the task."
+            },
+            "action": "Issued DONE.",
+            "observed_ui": "No observation provided.",
+            "effect": "The trajectory ended with a recorded failed outcome; the UI state is unknown.",
+            "assessment": "Completion was declared without visible confirmation that the requested tab was restored.",
+            "evidence_refs": [
+              "event_9"
+            ],
+            "episode_refs": []
+          }
+        ],
+        "episodes": [
+          {
+            "episode_id": "episode_1",
+            "problem_number": 1,
+            "first_observed_step_id": "2",
+            "mechanism": "After one restore shortcut matched the request, the agent pressed it three more times to restore additional closed tabs, exceeding the requested single-tab scope if those shortcuts took effect.",
+            "onset_step_ids": [
+              "2",
+              "3",
+              "4"
+            ],
+            "recovery": {
+              "status": "none_observed",
+              "step_ids": [],
+              "evidence_refs": [],
+              "rationale": "Later tab-selection attempts do not show that extra restorations were undone or that the requested state was reached."
+            },
+            "outcome_contribution": "uncertain",
+            "label_id": "new:excessive_tab_restoration",
+            "label_name": "Excessive tab restoration beyond requested scope",
+            "evidence_refs": [
+              "event_1",
+              "event_2",
+              "event_3",
+              "event_4"
+            ],
+            "uncertainty": "No UI observations or images confirm that any shortcut reopened a tab, so its effect on the recorded failure is unknown."
+          }
+        ]
+      },
+      "review_history_entry": {
+        "id": "b19750b6-d08e-4fce-a211-04d2bb35662c",
+        "member_id": "6b2d4931-1a9c-4234-8af3-556e8d29d8dd",
+        "job_id": "ddbf29d0-f97d-4706-84da-af30552666be",
+        "revision": 1,
+        "review_kind": "failure_analysis",
+        "schema_version": "2",
+        "source_kind": "generated",
+        "backend": "codex",
+        "model": "gpt-6-sol",
+        "review": {
+          "schema_version": "2",
+          "review_kind": "failure_analysis",
+          "summary": "The recorded outcome failed. The agent pressed the restore shortcut four times for a request to restore one tab, then tried to select a purported GitHub tab. No UI observations or images are available, so tab restoration, click effects, and the cause of the failed outcome cannot be verified.",
+          "result": "issues_observed",
+          "coverage_notes": [
+            "Reviewed all nine source steps in order. Every observation is null; no attached images were available to inspect.",
+            "The failed outcome and score are recorded, but they do not establish which action caused the failure."
+          ],
+          "steps": [
+            {
+              "step_id": "1",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "Reopen the most recently closed browser tab."
+              },
+              "action": "Pressed Ctrl+Shift+T.",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown; no visible confirmation of restoration.",
+              "assessment": "The shortcut matches the request, but its effect cannot be verified.",
+              "evidence_refs": [
+                "event_1"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "2",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "Restore the next most recently closed tab."
+              },
+              "action": "Pressed Ctrl+Shift+T again.",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown; a second restoration is not confirmed.",
+              "assessment": "The repeated shortcut exceeds the request for the last single tab if it acted as intended.",
+              "evidence_refs": [
+                "event_2"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            },
+            {
+              "step_id": "3",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "Reopen another previously closed tab."
+              },
+              "action": "Pressed Ctrl+Shift+T a third time.",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown.",
+              "assessment": "Continues the extra restoration attempts without visible feedback.",
+              "evidence_refs": [
+                "event_3"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            },
+            {
+              "step_id": "4",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "Restore another previously closed tab."
+              },
+              "action": "Pressed Ctrl+Shift+T a fourth time.",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown.",
+              "assessment": "Continues the extra restoration attempts without visible feedback.",
+              "evidence_refs": [
+                "event_4"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            },
+            {
+              "step_id": "5",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "View the purported restored leftmost GitHub tab."
+              },
+              "action": "Clicked at (110, 32).",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown.",
+              "assessment": "The target and result cannot be verified.",
+              "evidence_refs": [
+                "event_5"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "6",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "Activate the purported leftmost GitHub tab."
+              },
+              "action": "Clicked at (75, 30).",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown.",
+              "assessment": "There is no evidence that the prior click failed or this click succeeded.",
+              "evidence_refs": [
+                "event_6"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "7",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "declared",
+                "text": "Switch focus to the purported restored GitHub page."
+              },
+              "action": "Clicked at (60, 30).",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown.",
+              "assessment": "Repeated clicking is visible, but mis-targeting or failure to activate is unverified.",
+              "evidence_refs": [
+                "event_7"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "8",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "Select the first browser tab."
+              },
+              "action": "Pressed Ctrl+1.",
+              "observed_ui": "No observation provided.",
+              "effect": "Unknown.",
+              "assessment": "No evidence confirms which tab became active.",
+              "evidence_refs": [
+                "event_8"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "9",
+              "review_status": "insufficient_evidence",
+              "intent": {
+                "kind": "inferred",
+                "text": "End the task."
+              },
+              "action": "Issued DONE.",
+              "observed_ui": "No observation provided.",
+              "effect": "The trajectory ended with a recorded failed outcome; the UI state is unknown.",
+              "assessment": "Completion was declared without visible confirmation that the requested tab was restored.",
+              "evidence_refs": [
+                "event_9"
+              ],
+              "episode_refs": []
+            }
+          ],
+          "episodes": [
+            {
+              "episode_id": "episode_1",
+              "problem_number": 1,
+              "first_observed_step_id": "2",
+              "mechanism": "After one restore shortcut matched the request, the agent pressed it three more times to restore additional closed tabs, exceeding the requested single-tab scope if those shortcuts took effect.",
+              "onset_step_ids": [
+                "2",
+                "3",
+                "4"
+              ],
+              "recovery": {
+                "status": "none_observed",
+                "step_ids": [],
+                "evidence_refs": [],
+                "rationale": "Later tab-selection attempts do not show that extra restorations were undone or that the requested state was reached."
+              },
+              "outcome_contribution": "uncertain",
+              "label_id": "new:excessive_tab_restoration",
+              "label_name": "Excessive tab restoration beyond requested scope",
+              "evidence_refs": [
+                "event_1",
+                "event_2",
+                "event_3",
+                "event_4"
+              ],
+              "uncertainty": "No UI observations or images confirm that any shortcut reopened a tab, so its effect on the recorded failure is unknown."
+            }
+          ]
+        },
+        "artifact_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/jobs/ddbf29d0-f97d-4706-84da-af30552666be/generation-1/attempt-2d2d64d5-fd27-43d1-846d-2d177666a983/e4bc0c5925b7cc5726702f0c11d5f81f24a87f7d14e8c93d8b9144ff93729d2b.yaml",
+        "artifact_sha256": "e4bc0c5925b7cc5726702f0c11d5f81f24a87f7d14e8c93d8b9144ff93729d2b",
+        "provenance": {
+          "backend": "codex",
+          "requested_model": "gpt-6-sol",
+          "cli_version": "0.157.0",
+          "requested_reasoning": "low",
+          "reasoning_applied": true,
+          "new_inference": true,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "retry_policy_scope": "application",
+          "timeout_seconds": 120,
+          "timeout_enforced": true,
+          "budget_usd": 0.5,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "output_token_limit_enforced": false,
+          "output_token_limit_setting_configured": false,
+          "isolation": "dedicated worker container, temporary HOME and empty scratch directory",
+          "cost_estimate_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "note": "One CLI invocation with a wall-clock timeout; the application makes no automatic retry. The provider CLI may reconnect internally, and those network attempts are not counted by this adapter. Billing is not a hard cap.",
+          "model": "gpt-6-sol",
+          "inspected_image_step_ids": [],
+          "duration_ms": 16283,
+          "usage": {
+            "input_tokens": 11361,
+            "cached_input_tokens": 0,
+            "output_tokens": 1147,
+            "kind": "provider_reported_tokens",
+            "estimated_usd": 0.034192,
+            "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+            "billed": true,
+            "budget_usd": 0.5,
+            "budget_kind": "estimate_only",
+            "budget_enforced": false,
+            "timeout_seconds": 120,
+            "timeout_enforced": true,
+            "max_output_tokens": 4096,
+            "output_token_limit_enforced": false,
+            "output_token_limit_setting_configured": false,
+            "invocations": 1,
+            "automatic_retries": 0,
+            "retry_policy_scope": "application"
+          },
+          "preset_revision_id": "eef3b73f-86d3-4a12-b524-99df2eadaec9",
+          "taxonomy_release_id": null,
+          "taxonomy_proposal_heads": {
+            "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6": {
+              "revision_id": "fc735f11-26b3-45e0-80fd-6d4fbacef13f",
+              "content_hash": "2bb9cb8b6cebc720a4a50df41348c8a479ed86914a45ec11fc4a5fb4224083b9",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p001"
+            },
+            "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9": {
+              "revision_id": "4804c0f9-97cd-42f6-a6c0-067ddb0a9dfe",
+              "content_hash": "296f55f0b798d1f086dd1805a06d1f143a8cb882ed1ee0d231ce8bb1b958a30f",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p002"
+            },
+            "a220525f-50e7-4327-b0f9-05451d59711a": {
+              "revision_id": "20460817-32c9-4754-a680-a56a30c2658e",
+              "content_hash": "afd022cd38bd3d26e7ee9de3724c45f6e44f3fd3165984576911a4a0ec9ca0bf",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p003"
+            },
+            "ecd2d1f7-f986-4911-89ce-52175b618f5a": {
+              "revision_id": "ae770f09-bb2f-4c74-ab69-48f8affc85d9",
+              "content_hash": "d0be204a9b8007b432b41c1c1628b6e0f214ae13e26ba0fbc54debd3bb748b3f",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p004"
+            },
+            "e10b7a1b-8d53-489c-8873-c81ec2dcb931": {
+              "revision_id": "a61816ab-03e6-4865-8100-b33e4a54d8c6",
+              "content_hash": "6f349688ffce6e070d5006b635f8b8ba230ee86c9e110e2695ff02c1f3f6bcf5",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p005"
+            },
+            "bbfa9658-1b3b-4700-94fb-049adf760cda": {
+              "revision_id": "1b285c53-eb72-4a4d-ab5b-115a59478448",
+              "content_hash": "b6331b8d2f59a0049a839074c9719c291bfa739699246dd1680c85b6b419bc37",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p006"
+            },
+            "3e17a9b4-9442-44c4-8404-a7331a0ca68c": {
+              "revision_id": "f6b381a8-413d-4970-9bde-c3232b2b41b1",
+              "content_hash": "3982abcfca744467179807e0b23dc9eabc5f3e4e95825f6a0d994f3163490f84",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p007"
+            },
+            "a785e4d4-d3d9-4665-9258-928e06700d51": {
+              "revision_id": "03461fee-4180-4f50-9a53-3247bd15007d",
+              "content_hash": "3c417f387420513a4644cff3f56938bd023c7d3b1cf01306a8e90cbdb1ae1209",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p008"
+            },
+            "f1453854-3b31-4abe-bf7b-213a55c3f85c": {
+              "revision_id": "b543da21-53d1-4b8d-80bc-6f951622eb18",
+              "content_hash": "61f871b869e253d0014db477984bcc40aed13de6f7c9974c7fffffd8edb8c31e",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": null
+            },
+            "face9935-3553-42a1-b640-59a5bf53e9cc": {
+              "revision_id": "893eb205-395f-49e1-9de4-e1308f2fe08c",
+              "content_hash": "c6c4431c5af78ac8d52b0eafda6b069ef07d7c6825ecebf48d85f4e1e36b6807",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "new:excessive_tab_restoration"
+            }
+          },
+          "shared_labels_snapshot": [
+            {
+              "id": "p001",
+              "name": "Repeated mis-targeted UI activation",
+              "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+              "status": "draft",
+              "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1",
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "frame_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_9"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p002",
+              "name": "Wrong UI target activated",
+              "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+              "status": "draft",
+              "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p003",
+              "name": "Repeated ineffective modal dismissal",
+              "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+              "status": "draft",
+              "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p004",
+              "name": "Online resource blocked by proxy or network path",
+              "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+              "status": "draft",
+              "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p005",
+              "name": "Malformed command-entry key sequence",
+              "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+              "status": "draft",
+              "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_10",
+                "event_12",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p006",
+              "name": "Retrieved information does not match requested scope",
+              "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+              "status": "draft",
+              "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p007",
+              "name": "Numeric entry appended in wrong field",
+              "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+              "status": "draft",
+              "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_12",
+                "event_13",
+                "frame_13"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p008",
+              "name": "Required dialog action left incomplete",
+              "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+              "status": "draft",
+              "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "name": "Acceptance evidence gap 2999629000",
+              "description": "An action has no visible confirmation; review remains uncertain.",
+              "status": "draft",
+              "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "proposal_kind": "label",
+              "evidence_refs": [],
+              "feedback": [
+                "Retain evidence uncertainty; do not equate missing evidence with model failure."
+              ]
+            },
+            {
+              "id": "new:excessive_tab_restoration",
+              "name": "Excessive tab restoration beyond requested scope",
+              "description": "The agent executed Ctrl+Shift+T repeatedly across steps 2-4, reopening multiple closed tabs rather than only restoring the single last tab that was closed as requested.",
+              "status": "draft",
+              "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4"
+              ],
+              "feedback": []
+            }
+          ],
+          "generation": 1,
+          "fence_token": 1,
+          "attempt_id": "2d2d64d5-fd27-43d1-846d-2d177666a983"
+        },
+        "created_at": "2026-09-27T04:32:52.594882+00:00"
+      },
+      "status": "completed"
+    }
+  ]
+}

@@ -1,0 +1,445 @@
+{
+  "created_at": "2026-09-27T04:08:12.652908+00:00",
+  "task": {
+    "dataset_id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+    "task_id": "06fe7178-4491-4589-810f-2e2bc9502122"
+  },
+  "preflight": {
+    "codex_exec_flags": [
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--ephemeral",
+      "--skip-git-repo-check",
+      "--sandbox",
+      "--cd",
+      "--model",
+      "--json",
+      "--color",
+      "--output-schema",
+      "--output-last-message"
+    ],
+    "codex_global_flags": [
+      "--no-daemon",
+      "--ask-for-approval"
+    ],
+    "codex_version": "codex-cli 0.157.0",
+    "deny_all_policy": "verified",
+    "gemini_expected_flags": [
+      "--admin-policy",
+      "--prompt",
+      "--model",
+      "--approval-mode",
+      "--output-format",
+      "--skip-trust"
+    ],
+    "gemini_version": "0.61.0"
+  },
+  "models_metadata_only": {
+    "gemini": "gemini-2.5-flash",
+    "gemini_supported_methods": [
+      "generateContent",
+      "countTokens",
+      "createCachedContent",
+      "batchGenerateContent"
+    ]
+  },
+  "budget": {
+    "configured_usd_per_run": 0.5,
+    "kind": "estimate_only",
+    "hard_cap": false,
+    "timeout_seconds": 120,
+    "max_output_tokens_configured": 2048,
+    "max_images": 0,
+    "automatic_retries": 0
+  },
+  "runs": [
+    {
+      "backend": "gemini_cli",
+      "model": "gemini-2.5-flash",
+      "preset_id": "ba548183-210d-415d-9add-9d30eeef2bd0",
+      "preset_revision_id": null,
+      "batch_id": "0836f8b1-5be4-4d85-9e9e-dc2820ce484c",
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "job": {
+        "id": "50cfa3bb-4b4b-45f3-892c-1ef7da0d2ad7",
+        "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+        "batch_id": "0836f8b1-5be4-4d85-9e9e-dc2820ce484c",
+        "member_id": "1a20eca2-915a-48fd-a5ce-c8e216014cd5",
+        "stage": "review",
+        "review_kind": "failure_analysis",
+        "preset_revision_id": "ab2c20d7-d0c2-44be-97c4-7c7f9ffa1b89",
+        "idempotency_key": "review:1a20eca2-915a-48fd-a5ce-c8e216014cd5:ab2c20d7-d0c2-44be-97c4-7c7f9ffa1b89:1",
+        "generation": 1,
+        "fence_token": 1,
+        "status": "failed",
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "available_at": "2026-09-27T04:08:12.744402+00:00",
+        "error": "ReviewBackendError: Gemini CLI returned invalid JSON. No retry was made.",
+        "usage": {
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "kind": "provider_reported_or_unknown",
+          "estimated_usd": null,
+          "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "billed": null,
+          "cli_diagnostic_category": "cli_stderr_unclassified",
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "duration_ms": 1603
+        },
+        "cost_usd": null,
+        "shared_labels_snapshot": [
+          {
+            "id": "p001",
+            "name": "Repeated mis-targeted UI activation",
+            "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+            "status": "draft",
+            "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1",
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "frame_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_9"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p002",
+            "name": "Wrong UI target activated",
+            "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+            "status": "draft",
+            "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p003",
+            "name": "Repeated ineffective modal dismissal",
+            "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+            "status": "draft",
+            "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_8",
+              "event_9",
+              "event_10",
+              "event_11",
+              "event_12",
+              "event_13",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p004",
+            "name": "Online resource blocked by proxy or network path",
+            "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+            "status": "draft",
+            "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p005",
+            "name": "Malformed command-entry key sequence",
+            "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+            "status": "draft",
+            "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_10",
+              "event_12",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p006",
+            "name": "Retrieved information does not match requested scope",
+            "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+            "status": "draft",
+            "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p007",
+            "name": "Numeric entry appended in wrong field",
+            "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+            "status": "draft",
+            "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_12",
+              "event_13",
+              "frame_13"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p008",
+            "name": "Required dialog action left incomplete",
+            "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+            "status": "draft",
+            "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "name": "Acceptance evidence gap 2999629000",
+            "description": "An action has no visible confirmation; review remains uncertain.",
+            "status": "draft",
+            "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "proposal_kind": "label",
+            "evidence_refs": [],
+            "feedback": [
+              "Retain evidence uncertainty; do not equate missing evidence with model failure."
+            ]
+          }
+        ],
+        "created_at": "2026-09-27T04:08:12.744404+00:00",
+        "updated_at": "2026-09-27T04:08:15.231171+00:00",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "task_title": "Can you make my computer bring back the last tab I shut down?",
+        "attempt": 1
+      },
+      "review": null,
+      "review_history_entry": null,
+      "status": "failed"
+    },
+    {
+      "backend": "codex",
+      "model": "gpt-6-sol",
+      "preset_id": "4da7aa38-0e41-4ec3-ba86-42c280eb8cdb",
+      "preset_revision_id": null,
+      "batch_id": "c24799d5-3d65-4703-82c3-bb4fad233158",
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "job": {
+        "id": "ee023de0-0afb-4db5-9127-087598083f00",
+        "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+        "batch_id": "c24799d5-3d65-4703-82c3-bb4fad233158",
+        "member_id": "9066fa70-1155-4561-ab4f-fec03a6c1c61",
+        "stage": "review",
+        "review_kind": "failure_analysis",
+        "preset_revision_id": "14a39277-f0ae-4ab9-b4c9-c89a7f5f8efa",
+        "idempotency_key": "review:9066fa70-1155-4561-ab4f-fec03a6c1c61:14a39277-f0ae-4ab9-b4c9-c89a7f5f8efa:1",
+        "generation": 1,
+        "fence_token": 1,
+        "status": "failed",
+        "attempt_count": 1,
+        "max_attempts": 3,
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "available_at": "2026-09-27T04:08:15.937918+00:00",
+        "error": "ReviewBackendError: Codex CLI reported a failed turn. No retry was made.",
+        "usage": {
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "kind": "provider_reported_or_unknown",
+          "estimated_usd": null,
+          "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "billed": null,
+          "cli_diagnostic_category": null,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "duration_ms": 31586
+        },
+        "cost_usd": null,
+        "shared_labels_snapshot": [
+          {
+            "id": "p001",
+            "name": "Repeated mis-targeted UI activation",
+            "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+            "status": "draft",
+            "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1",
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "frame_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_9"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p002",
+            "name": "Wrong UI target activated",
+            "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+            "status": "draft",
+            "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p003",
+            "name": "Repeated ineffective modal dismissal",
+            "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+            "status": "draft",
+            "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_8",
+              "event_9",
+              "event_10",
+              "event_11",
+              "event_12",
+              "event_13",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p004",
+            "name": "Online resource blocked by proxy or network path",
+            "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+            "status": "draft",
+            "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p005",
+            "name": "Malformed command-entry key sequence",
+            "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+            "status": "draft",
+            "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_10",
+              "event_12",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p006",
+            "name": "Retrieved information does not match requested scope",
+            "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+            "status": "draft",
+            "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p007",
+            "name": "Numeric entry appended in wrong field",
+            "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+            "status": "draft",
+            "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_12",
+              "event_13",
+              "frame_13"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p008",
+            "name": "Required dialog action left incomplete",
+            "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+            "status": "draft",
+            "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "name": "Acceptance evidence gap 2999629000",
+            "description": "An action has no visible confirmation; review remains uncertain.",
+            "status": "draft",
+            "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "proposal_kind": "label",
+            "evidence_refs": [],
+            "feedback": [
+              "Retain evidence uncertainty; do not equate missing evidence with model failure."
+            ]
+          }
+        ],
+        "created_at": "2026-09-27T04:08:15.937919+00:00",
+        "updated_at": "2026-09-27T04:08:48.190508+00:00",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "task_title": "Can you make my computer bring back the last tab I shut down?",
+        "attempt": 1
+      },
+      "review": null,
+      "review_history_entry": null,
+      "status": "failed"
+    }
+  ]
+}

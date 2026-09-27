@@ -1,0 +1,130 @@
+{
+  "datasets": [
+    {
+      "slug": "office",
+      "name": "Office documents",
+      "task_ids": [
+        "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+        "66399b0d-8fda-4618-95c4-bfc6191617e9",
+        "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5"
+      ],
+      "task_count": 3,
+      "zip": "platform/demo-data/office.zip",
+      "id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "tasks": [
+        {
+          "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+          "task_definition_id": "d79c4076-d6fa-4e15-b244-738381bf3b78",
+          "title": "Add page number for every page at the bottom left"
+        },
+        {
+          "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+          "task_definition_id": "dafff7db-3c12-4ae1-9685-da5be339af0b",
+          "title": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?"
+        },
+        {
+          "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+          "task_definition_id": "4ff4f092-4aec-4e38-b307-ac5ae106d92d",
+          "title": "Help me format column \"spent\" by keeping two decimal points. "
+        }
+      ],
+      "import": {
+        "created": 0,
+        "revised": 0,
+        "unchanged": 3
+      }
+    },
+    {
+      "slug": "web",
+      "name": "Web browsing",
+      "task_ids": [
+        "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+        "030eeff7-b492-4218-b312-701ec99ee0cc",
+        "06fe7178-4491-4589-810f-2e2bc9502122"
+      ],
+      "task_count": 3,
+      "zip": "platform/demo-data/web.zip",
+      "id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+      "tasks": [
+        {
+          "task_id": "030eeff7-b492-4218-b312-701ec99ee0cc",
+          "task_definition_id": "4827e3f3-57ac-4e32-aa39-f2372bdf68d1",
+          "title": "Can you enable the 'Do Not Track' feature in Chrome to enhance my online privacy?"
+        },
+        {
+          "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+          "task_definition_id": "2f25728e-1b94-4323-911c-d95c89be90ca",
+          "title": "Can you make my computer bring back the last tab I shut down?"
+        },
+        {
+          "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+          "task_definition_id": "c8059bc1-4920-4e84-b9de-37c655d7c5cc",
+          "title": "Find the Monthly forecast for Manchester, GB for this month"
+        }
+      ],
+      "import": {
+        "created": 3,
+        "revised": 0,
+        "unchanged": 0
+      }
+    },
+    {
+      "slug": "graphics",
+      "name": "Image editing",
+      "task_ids": [
+        "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+        "045bf3ff-9077-4b86-b483-a1040a949cff"
+      ],
+      "task_count": 2,
+      "zip": "platform/demo-data/graphics.zip",
+      "id": "23af58f4-6d77-4e2f-9835-1fe3fe008915",
+      "tasks": [
+        {
+          "task_id": "045bf3ff-9077-4b86-b483-a1040a949cff",
+          "task_definition_id": "579157f6-53bc-4b2e-b58a-3fb6851c3f43",
+          "title": "Could you turn my image into CYMK mode within GIMP ?"
+        },
+        {
+          "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+          "task_definition_id": "ecfda09f-ceaf-4491-9e0d-92a0053d672f",
+          "title": "Could you assist me in adding a new layer and naming it 'Square'?"
+        }
+      ],
+      "import": {
+        "created": 2,
+        "revised": 0,
+        "unchanged": 0
+      }
+    }
+  ],
+  "archived_dataset_ids": [
+    "f41f80e1-6609-4337-b78d-8555e209a1fb",
+    "45bb3329-4168-4821-8867-a9b4bdf7acfa",
+    "31a4f9a6-bdc8-4b67-a981-32581232959a",
+    "a18dee36-809e-42e9-9c77-0beddf5c5dd1",
+    "d3ccfeb8-7462-468e-a5dd-1cc07b630f25",
+    "2f8c4e56-2e51-428f-90c9-d1bdef14bcc9",
+    "e4c736ae-ab76-499f-9292-6ffb32f578e2",
+    "e089658f-8ed5-4605-8b3e-741134d2d38b",
+    "55b8203e-b3ed-40dd-924d-cfa4e23d8e2e",
+    "9dc2d3de-3ece-4626-be2f-f56165e787d1"
+  ],
+  "archived_run_ids": [
+    "56e4288f-adff-4189-8328-037727fc5519",
+    "de284bd9-7aef-4987-95ec-9223d1ca6f83",
+    "c28261a5-19c7-4fef-b630-fdcc6c08b048",
+    "c53fe73c-a0cb-4c2e-a290-f94fd7cff46b",
+    "b234c5cb-bbe7-4b73-b0e9-945a1b20426f",
+    "0654bc78-c579-40a0-9ba5-e7543eb02989",
+    "9f9da14b-0d59-4f1a-9364-5297e1addc39",
+    "45107bf0-5ac9-4af9-8916-60ab7e6d96df",
+    "6243f847-3179-4495-8c01-9f8e841c007e"
+  ],
+  "new_inference_calls": 0,
+  "verified_unique_task_count": 8,
+  "stale_fixture_repair": {
+    "run_id": "6243f847-3179-4495-8c01-9f8e841c007e",
+    "before": "running with five failed jobs and no active work",
+    "after": "reconciled completed; soft-archived; reviews retained"
+  }
+}

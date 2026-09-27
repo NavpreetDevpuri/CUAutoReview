@@ -1,0 +1,4287 @@
+{
+  "created_at": "2026-09-27T05:13:46.784174+00:00",
+  "run_id": "e8fc70a1-7647-4ed6-8075-ecfadac50106",
+  "scope": "codex",
+  "execution": {
+    "backend": "codex",
+    "model": "gpt-6-sol",
+    "reasoning": "low",
+    "budget_usd": 0.1,
+    "configuration": {
+      "timeout_seconds": 120,
+      "max_output_tokens": 4096,
+      "max_images": 32,
+      "codex_base_url": "https://us.api.openai.com/v1"
+    }
+  },
+  "planned_allowance": {
+    "per_task_attempt_usd": 0.1,
+    "max_attempts": 4,
+    "total_usd": 0.4,
+    "hard_billing_cap": false
+  },
+  "tasks": [
+    {
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "task_definition_id": "2f25728e-1b94-4323-911c-d95c89be90ca",
+      "source_steps": 9,
+      "source_images": 9
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+      "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+      "batch_id": "e8fc70a1-7647-4ed6-8075-ecfadac50106",
+      "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+      "stage": "review",
+      "review_kind": "failure_analysis",
+      "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+      "idempotency_key": "review:01077bdc-e5d4-4caa-9f5e-299229148c90:b5a39a69-d306-4730-92ae-b78b334fa369:1",
+      "generation": 1,
+      "fence_token": 1,
+      "status": "completed",
+      "attempt_count": 1,
+      "max_attempts": 4,
+      "lease_owner": null,
+      "lease_expires_at": null,
+      "available_at": "2026-09-27T05:13:46.795006+00:00",
+      "error": null,
+      "usage": {
+        "input_tokens": 34387,
+        "cached_input_tokens": 0,
+        "output_tokens": 1782,
+        "kind": "provider_reported_tokens",
+        "estimated_usd": 0.086594,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "max_output_tokens": 4096,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": false,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "adapter_attempt"
+      },
+      "cost_usd": 0.086594,
+      "shared_labels_snapshot": [
+        {
+          "id": "p001",
+          "name": "Repeated mis-targeted UI activation",
+          "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+          "status": "draft",
+          "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_1",
+            "frame_1",
+            "event_2",
+            "event_3",
+            "event_4",
+            "event_5",
+            "frame_5",
+            "event_6",
+            "event_7",
+            "event_8",
+            "frame_9"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p002",
+          "name": "Wrong UI target activated",
+          "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+          "status": "draft",
+          "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p003",
+          "name": "Repeated ineffective modal dismissal",
+          "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+          "status": "draft",
+          "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_2",
+            "event_3",
+            "event_4",
+            "event_5",
+            "event_6",
+            "event_7",
+            "event_8",
+            "frame_8",
+            "event_9",
+            "event_10",
+            "event_11",
+            "event_12",
+            "event_13",
+            "event_14",
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p004",
+          "name": "Online resource blocked by proxy or network path",
+          "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+          "status": "draft",
+          "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "frame_1"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p005",
+          "name": "Malformed command-entry key sequence",
+          "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+          "status": "draft",
+          "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_10",
+            "event_12",
+            "event_14",
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p006",
+          "name": "Retrieved information does not match requested scope",
+          "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+          "status": "draft",
+          "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p007",
+          "name": "Numeric entry appended in wrong field",
+          "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+          "status": "draft",
+          "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_12",
+            "event_13",
+            "frame_13"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p008",
+          "name": "Required dialog action left incomplete",
+          "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+          "status": "draft",
+          "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+          "name": "Acceptance evidence gap 2999629000",
+          "description": "An action has no visible confirmation; review remains uncertain.",
+          "status": "draft",
+          "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+          "proposal_kind": "label",
+          "evidence_refs": [],
+          "feedback": [
+            "Retain evidence uncertainty; do not equate missing evidence with model failure."
+          ]
+        },
+        {
+          "id": "new:excessive_tab_restoration",
+          "name": "Excessive tab restoration beyond requested scope",
+          "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+          "status": "draft",
+          "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_2",
+            "event_3",
+            "event_4",
+            "frame_2",
+            "frame_3",
+            "frame_4",
+            "frame_5"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "new:repeated_menu_item_misselection",
+          "name": "Repeated menu item misselection",
+          "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+          "status": "draft",
+          "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_7",
+            "frame_7",
+            "event_8",
+            "event_9",
+            "event_10",
+            "event_11",
+            "event_12",
+            "event_13",
+            "event_14",
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        }
+      ],
+      "created_at": "2026-09-27T05:13:46.795009+00:00",
+      "updated_at": "2026-09-27T05:18:05.094437+00:00",
+      "budget_usd": 0.1,
+      "max_total_budget_usd": 0.4,
+      "attempts": [
+        {
+          "id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab",
+          "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+          "attempt_number": 1,
+          "generation": 1,
+          "fence_token": 1,
+          "status": "completed",
+          "error": null,
+          "usage": {
+            "input_tokens": 34387,
+            "cached_input_tokens": 0,
+            "output_tokens": 1782,
+            "kind": "provider_reported_tokens",
+            "estimated_usd": 0.086594,
+            "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+            "billed": true,
+            "budget_usd": 0.1,
+            "budget_kind": "estimate_only",
+            "budget_enforced": false,
+            "timeout_seconds": 120,
+            "timeout_enforced": true,
+            "max_output_tokens": 4096,
+            "output_token_limit_enforced": false,
+            "output_token_limit_setting_configured": false,
+            "invocations": 1,
+            "automatic_retries": 0,
+            "retry_policy_scope": "adapter_attempt"
+          },
+          "cost_usd": 0.086594,
+          "started_at": "2026-09-27T05:17:38.815059+00:00",
+          "finished_at": "2026-09-27T05:18:05.095364+00:00"
+        }
+      ],
+      "cumulative_cost_usd": 0.086594,
+      "unknown_cost_attempts": 0,
+      "retry_eligible": true,
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "task_title": "Can you make my computer bring back the last tab I shut down?",
+      "outcome": "failed",
+      "score": 0.0,
+      "run_id": "e8fc70a1-7647-4ed6-8075-ecfadac50106",
+      "attempt": 1
+    }
+  ],
+  "results": [
+    {
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "title": "Can you make my computer bring back the last tab I shut down?",
+      "instruction": "Can you make my computer bring back the last tab I shut down?",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "application": "chrome",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/chrome/06fe7178-4491-4589-810f-2e2bc9502122.json"
+      },
+      "coverage_notes": [
+        "Public recorded rollout; not executed locally.",
+        "Final evaluator score is retained; no human failure diagnosis is supplied.",
+        "Pinned current task definition is not proven to be the exact historical evaluator.",
+        "Video not downloaded. Screenshots retain their recorded step association."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T to reopen the most recently closed browser tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ],
+          "episode_refs": [],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T again to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ],
+          "episode_refs": [
+            "episode_1"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T again to reopen the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ],
+          "episode_refs": [
+            "episode_1"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T once more to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ],
+          "episode_refs": [
+            "episode_1"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the leftmost tab titled \"github.com\" to view the recently restored tab\npyautogui.click(x=110, y=32, duration=0.5)",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ],
+          "episode_refs": [
+            "episode_2"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the leftmost tab labeled \u201cgithub.com\u201d to activate the restored tab\npyautogui.click(x=75, y=30, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ],
+          "episode_refs": [
+            "episode_2"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Click the leftmost tab titled \u201cgithub.com\u201d to switch focus to the restored page\npyautogui.click(x=60, y=30, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ],
+          "episode_refs": [
+            "episode_2"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "pyautogui.hotkey('ctrl', '1')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ],
+          "episode_refs": [
+            "episode_1",
+            "episode_2"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "DONE",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ],
+          "episode_refs": [
+            "episode_1"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "artifact_status": "recorded"
+        }
+      ],
+      "revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+      "revision": 1,
+      "status": "completed",
+      "processing_status": "completed",
+      "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "summary": "The agent reopened multiple tabs when asked for the last closed tab, then selected a GitHub tab that displayed a proxy error. The recorded outcome was failed; the screenshots do not identify which tab was the last one closed.",
+        "result": "issues_observed",
+        "coverage_notes": [
+          "Reviewed source steps 1\u20139 in order. Every step has an attached screenshot. Screenshots may show the state before the listed action, so effects are assessed using later frames."
+        ],
+        "steps": [
+          {
+            "step_id": "1",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "Reopen the most recently closed browser tab."
+            },
+            "action": "Pressed Ctrl+Shift+T.",
+            "observed_ui": "Frame 1 shows Chrome on a New Tab page with a History tab already open; frame 2 shows another History tab.",
+            "effect": "A History tab appears in the subsequent frame, consistent with tab restoration.",
+            "assessment": "The shortcut matches the request. The frames do not establish whether the restored History tab was the last tab closed.",
+            "evidence_refs": [
+              "event_1",
+              "frame_1",
+              "frame_2"
+            ],
+            "episode_refs": []
+          },
+          {
+            "step_id": "2",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "Restore the next most recently closed tab."
+            },
+            "action": "Pressed Ctrl+Shift+T again.",
+            "observed_ui": "Frame 2 shows three tabs, including two titled History; frame 3 shows two New Tab tabs.",
+            "effect": "The visible tab state changes after the additional restoration attempt.",
+            "assessment": "This starts restoring beyond the single tab requested.",
+            "evidence_refs": [
+              "event_2",
+              "frame_2",
+              "frame_3"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          },
+          {
+            "step_id": "3",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "Restore the next most recently closed tab."
+            },
+            "action": "Pressed Ctrl+Shift+T again.",
+            "observed_ui": "Frame 3 shows two New Tab tabs; frame 4 shows a github.com tab and a History tab.",
+            "effect": "The later frame shows a GitHub tab in the tab strip.",
+            "assessment": "Continued restoring beyond the requested single tab.",
+            "evidence_refs": [
+              "event_3",
+              "frame_3",
+              "frame_4"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          },
+          {
+            "step_id": "4",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "Restore the next most recently closed tab."
+            },
+            "action": "Pressed Ctrl+Shift+T once more.",
+            "observed_ui": "Frame 4 shows github.com and History tabs, with History active; frame 5 shows the same tabs.",
+            "effect": "No further tab change can be confirmed from the adjacent frames.",
+            "assessment": "The action continued the unnecessary restoration sequence; its individual effect is unclear.",
+            "evidence_refs": [
+              "event_4",
+              "frame_4",
+              "frame_5"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          },
+          {
+            "step_id": "5",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "View the restored github.com tab."
+            },
+            "action": "Clicked at (110, 32).",
+            "observed_ui": "Frames 5 and 6 still show History active, with github.com at the left.",
+            "effect": "The intended tab did not visibly become active.",
+            "assessment": "First visible failed attempt to activate the GitHub tab by clicking.",
+            "evidence_refs": [
+              "event_5",
+              "frame_5",
+              "frame_6"
+            ],
+            "episode_refs": [
+              "episode_2"
+            ]
+          },
+          {
+            "step_id": "6",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "Activate the restored github.com tab."
+            },
+            "action": "Clicked at (75, 30).",
+            "observed_ui": "Frames 6 and 7 still show History active.",
+            "effect": "No tab switch is visible.",
+            "assessment": "Repeated the ineffective click approach.",
+            "evidence_refs": [
+              "event_6",
+              "frame_6",
+              "frame_7"
+            ],
+            "episode_refs": [
+              "episode_2"
+            ]
+          },
+          {
+            "step_id": "7",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "declared",
+              "text": "Switch to the restored github.com page."
+            },
+            "action": "Clicked at (60, 30).",
+            "observed_ui": "Frame 7 shows History active; frame 8 shows the GitHub tab active.",
+            "effect": "A switch is visible by frame 8, but the frames do not establish whether this click or the following shortcut caused it.",
+            "assessment": "Another click at the far left of the tab strip; its individual success is uncertain.",
+            "evidence_refs": [
+              "event_7",
+              "frame_7",
+              "frame_8"
+            ],
+            "episode_refs": [
+              "episode_2"
+            ]
+          },
+          {
+            "step_id": "8",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "inferred",
+              "text": "Select the first Chrome tab."
+            },
+            "action": "Pressed Ctrl+1.",
+            "observed_ui": "Frames 8 and 9 show the first tab active on a GitHub URL, displaying \u201cThis site can\u2019t be reached\u201d and ERR_PROXY_AUTH_UNSUPPORTED.",
+            "effect": "The first tab is active in the final visible state, but the GitHub page is unreachable.",
+            "assessment": "The tab selection goal is visibly met by the end of this step, although its exact onset is uncertain. This does not show that the requested last closed tab was restored.",
+            "evidence_refs": [
+              "event_8",
+              "frame_8",
+              "frame_9"
+            ],
+            "episode_refs": [
+              "episode_1",
+              "episode_2"
+            ]
+          },
+          {
+            "step_id": "9",
+            "review_status": "reviewed",
+            "intent": {
+              "kind": "inferred",
+              "text": "End the task."
+            },
+            "action": "Returned DONE.",
+            "observed_ui": "Frame 9 still shows the active GitHub tab on the proxy error page, with History also open.",
+            "effect": "No further UI change is visible.",
+            "assessment": "Completion was declared without evidence identifying the last closed tab. The recorded outcome is failed.",
+            "evidence_refs": [
+              "event_9",
+              "frame_9"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ]
+          }
+        ],
+        "episodes": [
+          {
+            "episode_id": "episode_1",
+            "problem_number": 1,
+            "first_observed_step_id": "2",
+            "mechanism": "The agent repeated the closed-tab shortcut after the initial restoration, bringing back additional tabs beyond the single tab requested and leaving the final target ambiguous.",
+            "onset_step_ids": [
+              "2",
+              "3",
+              "4"
+            ],
+            "recovery": {
+              "status": "none_observed",
+              "step_ids": [],
+              "evidence_refs": [
+                "frame_9"
+              ],
+              "rationale": "The final frame still shows multiple tabs, and no later step identifies or restores only the last closed tab."
+            },
+            "outcome_contribution": "contributing",
+            "label_id": "new:excessive_tab_restoration",
+            "label_name": "Excessive tab restoration beyond requested scope",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "frame_2",
+              "frame_3",
+              "frame_4",
+              "frame_9"
+            ],
+            "uncertainty": "The screenshots do not identify the actual last closed tab or isolate the effect of each repeated shortcut."
+          },
+          {
+            "episode_id": "episode_2",
+            "problem_number": 2,
+            "first_observed_step_id": "5",
+            "mechanism": "Clicks intended to activate the GitHub tab left History visibly active after the first two attempts; the agent changed interaction method to a first-tab shortcut.",
+            "onset_step_ids": [
+              "5",
+              "6",
+              "7"
+            ],
+            "recovery": {
+              "status": "recovered",
+              "step_ids": [
+                "8"
+              ],
+              "evidence_refs": [
+                "frame_8",
+                "frame_9"
+              ],
+              "rationale": "The first tab is active by frames 8 and 9. The precise action that caused the switch cannot be isolated from the screenshots."
+            },
+            "outcome_contribution": "uncertain",
+            "label_id": "p001",
+            "label_name": "Repeated mis-targeted UI activation",
+            "evidence_refs": [
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_5",
+              "frame_6",
+              "frame_7",
+              "frame_8"
+            ],
+            "uncertainty": "The first two clicks visibly failed to switch tabs; whether step 7 succeeded before Ctrl+1 is unresolved."
+          }
+        ]
+      },
+      "review_provenance": {
+        "backend": "codex",
+        "requested_model": "gpt-6-sol",
+        "cli_version": "0.157.0",
+        "requested_reasoning": "low",
+        "reasoning_applied": true,
+        "image_attachments": [
+          {
+            "step_id": "1",
+            "file": "frame_001.png",
+            "media_type": "image/png",
+            "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+            "size_bytes": 104749
+          },
+          {
+            "step_id": "2",
+            "file": "frame_002.png",
+            "media_type": "image/png",
+            "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+            "size_bytes": 106417
+          },
+          {
+            "step_id": "3",
+            "file": "frame_003.png",
+            "media_type": "image/png",
+            "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+            "size_bytes": 104858
+          },
+          {
+            "step_id": "4",
+            "file": "frame_004.png",
+            "media_type": "image/png",
+            "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+            "size_bytes": 119421
+          },
+          {
+            "step_id": "5",
+            "file": "frame_005.png",
+            "media_type": "image/png",
+            "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+            "size_bytes": 118663
+          },
+          {
+            "step_id": "6",
+            "file": "frame_006.png",
+            "media_type": "image/png",
+            "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+            "size_bytes": 118790
+          },
+          {
+            "step_id": "7",
+            "file": "frame_007.png",
+            "media_type": "image/png",
+            "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+            "size_bytes": 118653
+          },
+          {
+            "step_id": "8",
+            "file": "frame_008.png",
+            "media_type": "image/png",
+            "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+            "size_bytes": 128695
+          },
+          {
+            "step_id": "9",
+            "file": "frame_009.png",
+            "media_type": "image/png",
+            "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+            "size_bytes": 128507
+          }
+        ],
+        "attachment_transport": "codex_initial_images",
+        "new_inference": true,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "adapter_attempt",
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": false,
+        "isolation": "dedicated worker container, temporary HOME and empty scratch directory",
+        "cost_estimate_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "note": "One CLI invocation per job attempt with a wall-clock timeout; the job retry policy determines additional attempts. The provider CLI may reconnect internally, and those network attempts are not counted by this adapter. Billing is not a hard cap.",
+        "model": "gpt-6-sol",
+        "duration_ms": 26158,
+        "evidence_mode": "images_and_text",
+        "source_step_count": 9,
+        "source_image_step_ids": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "supplied_image_step_ids": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "cited_image_step_ids": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "omitted_image_step_ids": [],
+        "image_selection": "all_available",
+        "omitted_image_reason": null,
+        "inspection_note": "Supplied means attached to the model request. Citations are model claims, not independent proof of visual inspection.",
+        "adapter_prompt_version": "2-visual-evidence",
+        "prompt_sha256": "3afb9ca9d7bfe34be0fa5c240376dff67d14b16ffe2b4319bc70557afd783f8c",
+        "inspected_image_step_ids": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "usage": {
+          "input_tokens": 34387,
+          "cached_input_tokens": 0,
+          "output_tokens": 1782,
+          "kind": "provider_reported_tokens",
+          "estimated_usd": 0.086594,
+          "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "billed": true,
+          "budget_usd": 0.1,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "timeout_seconds": 120,
+          "timeout_enforced": true,
+          "max_output_tokens": 4096,
+          "output_token_limit_enforced": false,
+          "output_token_limit_setting_configured": false,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "retry_policy_scope": "adapter_attempt"
+        },
+        "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+        "taxonomy_release_id": null,
+        "taxonomy_proposal_heads": {
+          "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6": {
+            "revision_id": "fc735f11-26b3-45e0-80fd-6d4fbacef13f",
+            "content_hash": "2bb9cb8b6cebc720a4a50df41348c8a479ed86914a45ec11fc4a5fb4224083b9",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p001"
+          },
+          "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9": {
+            "revision_id": "4804c0f9-97cd-42f6-a6c0-067ddb0a9dfe",
+            "content_hash": "296f55f0b798d1f086dd1805a06d1f143a8cb882ed1ee0d231ce8bb1b958a30f",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p002"
+          },
+          "a220525f-50e7-4327-b0f9-05451d59711a": {
+            "revision_id": "20460817-32c9-4754-a680-a56a30c2658e",
+            "content_hash": "afd022cd38bd3d26e7ee9de3724c45f6e44f3fd3165984576911a4a0ec9ca0bf",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p003"
+          },
+          "ecd2d1f7-f986-4911-89ce-52175b618f5a": {
+            "revision_id": "ae770f09-bb2f-4c74-ab69-48f8affc85d9",
+            "content_hash": "d0be204a9b8007b432b41c1c1628b6e0f214ae13e26ba0fbc54debd3bb748b3f",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p004"
+          },
+          "e10b7a1b-8d53-489c-8873-c81ec2dcb931": {
+            "revision_id": "a61816ab-03e6-4865-8100-b33e4a54d8c6",
+            "content_hash": "6f349688ffce6e070d5006b635f8b8ba230ee86c9e110e2695ff02c1f3f6bcf5",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p005"
+          },
+          "bbfa9658-1b3b-4700-94fb-049adf760cda": {
+            "revision_id": "1b285c53-eb72-4a4d-ab5b-115a59478448",
+            "content_hash": "b6331b8d2f59a0049a839074c9719c291bfa739699246dd1680c85b6b419bc37",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p006"
+          },
+          "3e17a9b4-9442-44c4-8404-a7331a0ca68c": {
+            "revision_id": "f6b381a8-413d-4970-9bde-c3232b2b41b1",
+            "content_hash": "3982abcfca744467179807e0b23dc9eabc5f3e4e95825f6a0d994f3163490f84",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p007"
+          },
+          "a785e4d4-d3d9-4665-9258-928e06700d51": {
+            "revision_id": "03461fee-4180-4f50-9a53-3247bd15007d",
+            "content_hash": "3c417f387420513a4644cff3f56938bd023c7d3b1cf01306a8e90cbdb1ae1209",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "p008"
+          },
+          "f1453854-3b31-4abe-bf7b-213a55c3f85c": {
+            "revision_id": "b543da21-53d1-4b8d-80bc-6f951622eb18",
+            "content_hash": "61f871b869e253d0014db477984bcc40aed13de6f7c9974c7fffffd8edb8c31e",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": null
+          },
+          "face9935-3553-42a1-b640-59a5bf53e9cc": {
+            "revision_id": "958edf44-3c98-4b29-8587-a9ca238df77d",
+            "content_hash": "a50a1eb062f442793734b2fd3e6487c9703e9de21bc7b9ca1433a5d3ac24f3a3",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "new:excessive_tab_restoration"
+          },
+          "78c53053-eb2d-4467-b978-422319df7b21": {
+            "revision_id": "eb9e58a7-02ec-4f1d-b6d1-2ae3596c535c",
+            "content_hash": "c3e987c2a7c60716aa70cfcf138fefd4d3b59a25eab3870c7f71cb6d4348d2ee",
+            "base_release_id": null,
+            "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+            "kind": "label",
+            "label_id": "new:repeated_menu_item_misselection"
+          }
+        },
+        "shared_labels_snapshot": [
+          {
+            "id": "p001",
+            "name": "Repeated mis-targeted UI activation",
+            "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+            "status": "draft",
+            "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1",
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "frame_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_9"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p002",
+            "name": "Wrong UI target activated",
+            "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+            "status": "draft",
+            "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p003",
+            "name": "Repeated ineffective modal dismissal",
+            "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+            "status": "draft",
+            "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "event_5",
+              "event_6",
+              "event_7",
+              "event_8",
+              "frame_8",
+              "event_9",
+              "event_10",
+              "event_11",
+              "event_12",
+              "event_13",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p004",
+            "name": "Online resource blocked by proxy or network path",
+            "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+            "status": "draft",
+            "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_1"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p005",
+            "name": "Malformed command-entry key sequence",
+            "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+            "status": "draft",
+            "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_10",
+              "event_12",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p006",
+            "name": "Retrieved information does not match requested scope",
+            "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+            "status": "draft",
+            "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p007",
+            "name": "Numeric entry appended in wrong field",
+            "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+            "status": "draft",
+            "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_12",
+              "event_13",
+              "frame_13"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "p008",
+            "name": "Required dialog action left incomplete",
+            "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+            "status": "draft",
+            "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "name": "Acceptance evidence gap 2999629000",
+            "description": "An action has no visible confirmation; review remains uncertain.",
+            "status": "draft",
+            "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+            "proposal_kind": "label",
+            "evidence_refs": [],
+            "feedback": [
+              "Retain evidence uncertainty; do not equate missing evidence with model failure."
+            ]
+          },
+          {
+            "id": "new:excessive_tab_restoration",
+            "name": "Excessive tab restoration beyond requested scope",
+            "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+            "status": "draft",
+            "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_2",
+              "event_3",
+              "event_4",
+              "frame_2",
+              "frame_3",
+              "frame_4",
+              "frame_5"
+            ],
+            "feedback": []
+          },
+          {
+            "id": "new:repeated_menu_item_misselection",
+            "name": "Repeated menu item misselection",
+            "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+            "status": "draft",
+            "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+            "proposal_kind": "label",
+            "evidence_refs": [
+              "event_7",
+              "frame_7",
+              "event_8",
+              "event_9",
+              "event_10",
+              "event_11",
+              "event_12",
+              "event_13",
+              "event_14",
+              "event_15",
+              "frame_15"
+            ],
+            "feedback": []
+          }
+        ],
+        "generation": 1,
+        "fence_token": 1,
+        "attempt_id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab"
+      },
+      "review_kind": "failure_analysis",
+      "review_history": [
+        {
+          "id": "b4fbf973-64ec-4c14-9e9c-71a91b4973f4",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+          "revision": 1,
+          "review_kind": "failure_analysis",
+          "schema_version": "2",
+          "source_kind": "generated",
+          "backend": "codex",
+          "model": "gpt-6-sol",
+          "review": {
+            "schema_version": "2",
+            "review_kind": "failure_analysis",
+            "summary": "The agent reopened multiple tabs when asked for the last closed tab, then selected a GitHub tab that displayed a proxy error. The recorded outcome was failed; the screenshots do not identify which tab was the last one closed.",
+            "result": "issues_observed",
+            "coverage_notes": [
+              "Reviewed source steps 1\u20139 in order. Every step has an attached screenshot. Screenshots may show the state before the listed action, so effects are assessed using later frames."
+            ],
+            "steps": [
+              {
+                "step_id": "1",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "Reopen the most recently closed browser tab."
+                },
+                "action": "Pressed Ctrl+Shift+T.",
+                "observed_ui": "Frame 1 shows Chrome on a New Tab page with a History tab already open; frame 2 shows another History tab.",
+                "effect": "A History tab appears in the subsequent frame, consistent with tab restoration.",
+                "assessment": "The shortcut matches the request. The frames do not establish whether the restored History tab was the last tab closed.",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1",
+                  "frame_2"
+                ],
+                "episode_refs": []
+              },
+              {
+                "step_id": "2",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "Restore the next most recently closed tab."
+                },
+                "action": "Pressed Ctrl+Shift+T again.",
+                "observed_ui": "Frame 2 shows three tabs, including two titled History; frame 3 shows two New Tab tabs.",
+                "effect": "The visible tab state changes after the additional restoration attempt.",
+                "assessment": "This starts restoring beyond the single tab requested.",
+                "evidence_refs": [
+                  "event_2",
+                  "frame_2",
+                  "frame_3"
+                ],
+                "episode_refs": [
+                  "episode_1"
+                ]
+              },
+              {
+                "step_id": "3",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "Restore the next most recently closed tab."
+                },
+                "action": "Pressed Ctrl+Shift+T again.",
+                "observed_ui": "Frame 3 shows two New Tab tabs; frame 4 shows a github.com tab and a History tab.",
+                "effect": "The later frame shows a GitHub tab in the tab strip.",
+                "assessment": "Continued restoring beyond the requested single tab.",
+                "evidence_refs": [
+                  "event_3",
+                  "frame_3",
+                  "frame_4"
+                ],
+                "episode_refs": [
+                  "episode_1"
+                ]
+              },
+              {
+                "step_id": "4",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "Restore the next most recently closed tab."
+                },
+                "action": "Pressed Ctrl+Shift+T once more.",
+                "observed_ui": "Frame 4 shows github.com and History tabs, with History active; frame 5 shows the same tabs.",
+                "effect": "No further tab change can be confirmed from the adjacent frames.",
+                "assessment": "The action continued the unnecessary restoration sequence; its individual effect is unclear.",
+                "evidence_refs": [
+                  "event_4",
+                  "frame_4",
+                  "frame_5"
+                ],
+                "episode_refs": [
+                  "episode_1"
+                ]
+              },
+              {
+                "step_id": "5",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "View the restored github.com tab."
+                },
+                "action": "Clicked at (110, 32).",
+                "observed_ui": "Frames 5 and 6 still show History active, with github.com at the left.",
+                "effect": "The intended tab did not visibly become active.",
+                "assessment": "First visible failed attempt to activate the GitHub tab by clicking.",
+                "evidence_refs": [
+                  "event_5",
+                  "frame_5",
+                  "frame_6"
+                ],
+                "episode_refs": [
+                  "episode_2"
+                ]
+              },
+              {
+                "step_id": "6",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "Activate the restored github.com tab."
+                },
+                "action": "Clicked at (75, 30).",
+                "observed_ui": "Frames 6 and 7 still show History active.",
+                "effect": "No tab switch is visible.",
+                "assessment": "Repeated the ineffective click approach.",
+                "evidence_refs": [
+                  "event_6",
+                  "frame_6",
+                  "frame_7"
+                ],
+                "episode_refs": [
+                  "episode_2"
+                ]
+              },
+              {
+                "step_id": "7",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "declared",
+                  "text": "Switch to the restored github.com page."
+                },
+                "action": "Clicked at (60, 30).",
+                "observed_ui": "Frame 7 shows History active; frame 8 shows the GitHub tab active.",
+                "effect": "A switch is visible by frame 8, but the frames do not establish whether this click or the following shortcut caused it.",
+                "assessment": "Another click at the far left of the tab strip; its individual success is uncertain.",
+                "evidence_refs": [
+                  "event_7",
+                  "frame_7",
+                  "frame_8"
+                ],
+                "episode_refs": [
+                  "episode_2"
+                ]
+              },
+              {
+                "step_id": "8",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "inferred",
+                  "text": "Select the first Chrome tab."
+                },
+                "action": "Pressed Ctrl+1.",
+                "observed_ui": "Frames 8 and 9 show the first tab active on a GitHub URL, displaying \u201cThis site can\u2019t be reached\u201d and ERR_PROXY_AUTH_UNSUPPORTED.",
+                "effect": "The first tab is active in the final visible state, but the GitHub page is unreachable.",
+                "assessment": "The tab selection goal is visibly met by the end of this step, although its exact onset is uncertain. This does not show that the requested last closed tab was restored.",
+                "evidence_refs": [
+                  "event_8",
+                  "frame_8",
+                  "frame_9"
+                ],
+                "episode_refs": [
+                  "episode_1",
+                  "episode_2"
+                ]
+              },
+              {
+                "step_id": "9",
+                "review_status": "reviewed",
+                "intent": {
+                  "kind": "inferred",
+                  "text": "End the task."
+                },
+                "action": "Returned DONE.",
+                "observed_ui": "Frame 9 still shows the active GitHub tab on the proxy error page, with History also open.",
+                "effect": "No further UI change is visible.",
+                "assessment": "Completion was declared without evidence identifying the last closed tab. The recorded outcome is failed.",
+                "evidence_refs": [
+                  "event_9",
+                  "frame_9"
+                ],
+                "episode_refs": [
+                  "episode_1"
+                ]
+              }
+            ],
+            "episodes": [
+              {
+                "episode_id": "episode_1",
+                "problem_number": 1,
+                "first_observed_step_id": "2",
+                "mechanism": "The agent repeated the closed-tab shortcut after the initial restoration, bringing back additional tabs beyond the single tab requested and leaving the final target ambiguous.",
+                "onset_step_ids": [
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "recovery": {
+                  "status": "none_observed",
+                  "step_ids": [],
+                  "evidence_refs": [
+                    "frame_9"
+                  ],
+                  "rationale": "The final frame still shows multiple tabs, and no later step identifies or restores only the last closed tab."
+                },
+                "outcome_contribution": "contributing",
+                "label_id": "new:excessive_tab_restoration",
+                "label_name": "Excessive tab restoration beyond requested scope",
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "frame_2",
+                  "frame_3",
+                  "frame_4",
+                  "frame_9"
+                ],
+                "uncertainty": "The screenshots do not identify the actual last closed tab or isolate the effect of each repeated shortcut."
+              },
+              {
+                "episode_id": "episode_2",
+                "problem_number": 2,
+                "first_observed_step_id": "5",
+                "mechanism": "Clicks intended to activate the GitHub tab left History visibly active after the first two attempts; the agent changed interaction method to a first-tab shortcut.",
+                "onset_step_ids": [
+                  "5",
+                  "6",
+                  "7"
+                ],
+                "recovery": {
+                  "status": "recovered",
+                  "step_ids": [
+                    "8"
+                  ],
+                  "evidence_refs": [
+                    "frame_8",
+                    "frame_9"
+                  ],
+                  "rationale": "The first tab is active by frames 8 and 9. The precise action that caused the switch cannot be isolated from the screenshots."
+                },
+                "outcome_contribution": "uncertain",
+                "label_id": "p001",
+                "label_name": "Repeated mis-targeted UI activation",
+                "evidence_refs": [
+                  "event_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_5",
+                  "frame_6",
+                  "frame_7",
+                  "frame_8"
+                ],
+                "uncertainty": "The first two clicks visibly failed to switch tabs; whether step 7 succeeded before Ctrl+1 is unresolved."
+              }
+            ]
+          },
+          "artifact_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/jobs/1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1/generation-1/attempt-ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab/843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33.yaml",
+          "artifact_sha256": "843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33",
+          "provenance": {
+            "backend": "codex",
+            "requested_model": "gpt-6-sol",
+            "cli_version": "0.157.0",
+            "requested_reasoning": "low",
+            "reasoning_applied": true,
+            "image_attachments": [
+              {
+                "step_id": "1",
+                "file": "frame_001.png",
+                "media_type": "image/png",
+                "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+                "size_bytes": 104749
+              },
+              {
+                "step_id": "2",
+                "file": "frame_002.png",
+                "media_type": "image/png",
+                "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+                "size_bytes": 106417
+              },
+              {
+                "step_id": "3",
+                "file": "frame_003.png",
+                "media_type": "image/png",
+                "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+                "size_bytes": 104858
+              },
+              {
+                "step_id": "4",
+                "file": "frame_004.png",
+                "media_type": "image/png",
+                "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+                "size_bytes": 119421
+              },
+              {
+                "step_id": "5",
+                "file": "frame_005.png",
+                "media_type": "image/png",
+                "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+                "size_bytes": 118663
+              },
+              {
+                "step_id": "6",
+                "file": "frame_006.png",
+                "media_type": "image/png",
+                "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+                "size_bytes": 118790
+              },
+              {
+                "step_id": "7",
+                "file": "frame_007.png",
+                "media_type": "image/png",
+                "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+                "size_bytes": 118653
+              },
+              {
+                "step_id": "8",
+                "file": "frame_008.png",
+                "media_type": "image/png",
+                "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+                "size_bytes": 128695
+              },
+              {
+                "step_id": "9",
+                "file": "frame_009.png",
+                "media_type": "image/png",
+                "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+                "size_bytes": 128507
+              }
+            ],
+            "attachment_transport": "codex_initial_images",
+            "new_inference": true,
+            "invocations": 1,
+            "automatic_retries": 0,
+            "retry_policy_scope": "adapter_attempt",
+            "timeout_seconds": 120,
+            "timeout_enforced": true,
+            "budget_usd": 0.1,
+            "budget_kind": "estimate_only",
+            "budget_enforced": false,
+            "output_token_limit_enforced": false,
+            "output_token_limit_setting_configured": false,
+            "isolation": "dedicated worker container, temporary HOME and empty scratch directory",
+            "cost_estimate_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+            "note": "One CLI invocation per job attempt with a wall-clock timeout; the job retry policy determines additional attempts. The provider CLI may reconnect internally, and those network attempts are not counted by this adapter. Billing is not a hard cap.",
+            "model": "gpt-6-sol",
+            "duration_ms": 26158,
+            "evidence_mode": "images_and_text",
+            "source_step_count": 9,
+            "source_image_step_ids": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9"
+            ],
+            "supplied_image_step_ids": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9"
+            ],
+            "cited_image_step_ids": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9"
+            ],
+            "omitted_image_step_ids": [],
+            "image_selection": "all_available",
+            "omitted_image_reason": null,
+            "inspection_note": "Supplied means attached to the model request. Citations are model claims, not independent proof of visual inspection.",
+            "adapter_prompt_version": "2-visual-evidence",
+            "prompt_sha256": "3afb9ca9d7bfe34be0fa5c240376dff67d14b16ffe2b4319bc70557afd783f8c",
+            "inspected_image_step_ids": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9"
+            ],
+            "usage": {
+              "input_tokens": 34387,
+              "cached_input_tokens": 0,
+              "output_tokens": 1782,
+              "kind": "provider_reported_tokens",
+              "estimated_usd": 0.086594,
+              "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+              "billed": true,
+              "budget_usd": 0.1,
+              "budget_kind": "estimate_only",
+              "budget_enforced": false,
+              "timeout_seconds": 120,
+              "timeout_enforced": true,
+              "max_output_tokens": 4096,
+              "output_token_limit_enforced": false,
+              "output_token_limit_setting_configured": false,
+              "invocations": 1,
+              "automatic_retries": 0,
+              "retry_policy_scope": "adapter_attempt"
+            },
+            "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+            "taxonomy_release_id": null,
+            "taxonomy_proposal_heads": {
+              "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6": {
+                "revision_id": "fc735f11-26b3-45e0-80fd-6d4fbacef13f",
+                "content_hash": "2bb9cb8b6cebc720a4a50df41348c8a479ed86914a45ec11fc4a5fb4224083b9",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p001"
+              },
+              "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9": {
+                "revision_id": "4804c0f9-97cd-42f6-a6c0-067ddb0a9dfe",
+                "content_hash": "296f55f0b798d1f086dd1805a06d1f143a8cb882ed1ee0d231ce8bb1b958a30f",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p002"
+              },
+              "a220525f-50e7-4327-b0f9-05451d59711a": {
+                "revision_id": "20460817-32c9-4754-a680-a56a30c2658e",
+                "content_hash": "afd022cd38bd3d26e7ee9de3724c45f6e44f3fd3165984576911a4a0ec9ca0bf",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p003"
+              },
+              "ecd2d1f7-f986-4911-89ce-52175b618f5a": {
+                "revision_id": "ae770f09-bb2f-4c74-ab69-48f8affc85d9",
+                "content_hash": "d0be204a9b8007b432b41c1c1628b6e0f214ae13e26ba0fbc54debd3bb748b3f",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p004"
+              },
+              "e10b7a1b-8d53-489c-8873-c81ec2dcb931": {
+                "revision_id": "a61816ab-03e6-4865-8100-b33e4a54d8c6",
+                "content_hash": "6f349688ffce6e070d5006b635f8b8ba230ee86c9e110e2695ff02c1f3f6bcf5",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p005"
+              },
+              "bbfa9658-1b3b-4700-94fb-049adf760cda": {
+                "revision_id": "1b285c53-eb72-4a4d-ab5b-115a59478448",
+                "content_hash": "b6331b8d2f59a0049a839074c9719c291bfa739699246dd1680c85b6b419bc37",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p006"
+              },
+              "3e17a9b4-9442-44c4-8404-a7331a0ca68c": {
+                "revision_id": "f6b381a8-413d-4970-9bde-c3232b2b41b1",
+                "content_hash": "3982abcfca744467179807e0b23dc9eabc5f3e4e95825f6a0d994f3163490f84",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p007"
+              },
+              "a785e4d4-d3d9-4665-9258-928e06700d51": {
+                "revision_id": "03461fee-4180-4f50-9a53-3247bd15007d",
+                "content_hash": "3c417f387420513a4644cff3f56938bd023c7d3b1cf01306a8e90cbdb1ae1209",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "p008"
+              },
+              "f1453854-3b31-4abe-bf7b-213a55c3f85c": {
+                "revision_id": "b543da21-53d1-4b8d-80bc-6f951622eb18",
+                "content_hash": "61f871b869e253d0014db477984bcc40aed13de6f7c9974c7fffffd8edb8c31e",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": null
+              },
+              "face9935-3553-42a1-b640-59a5bf53e9cc": {
+                "revision_id": "958edf44-3c98-4b29-8587-a9ca238df77d",
+                "content_hash": "a50a1eb062f442793734b2fd3e6487c9703e9de21bc7b9ca1433a5d3ac24f3a3",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "new:excessive_tab_restoration"
+              },
+              "78c53053-eb2d-4467-b978-422319df7b21": {
+                "revision_id": "eb9e58a7-02ec-4f1d-b6d1-2ae3596c535c",
+                "content_hash": "c3e987c2a7c60716aa70cfcf138fefd4d3b59a25eab3870c7f71cb6d4348d2ee",
+                "base_release_id": null,
+                "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                "kind": "label",
+                "label_id": "new:repeated_menu_item_misselection"
+              }
+            },
+            "shared_labels_snapshot": [
+              {
+                "id": "p001",
+                "name": "Repeated mis-targeted UI activation",
+                "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+                "status": "draft",
+                "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1",
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "event_5",
+                  "frame_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_9"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p002",
+                "name": "Wrong UI target activated",
+                "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+                "status": "draft",
+                "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p003",
+                "name": "Repeated ineffective modal dismissal",
+                "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+                "status": "draft",
+                "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "event_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_8",
+                  "event_9",
+                  "event_10",
+                  "event_11",
+                  "event_12",
+                  "event_13",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p004",
+                "name": "Online resource blocked by proxy or network path",
+                "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+                "status": "draft",
+                "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "frame_1"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p005",
+                "name": "Malformed command-entry key sequence",
+                "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+                "status": "draft",
+                "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_10",
+                  "event_12",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p006",
+                "name": "Retrieved information does not match requested scope",
+                "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+                "status": "draft",
+                "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p007",
+                "name": "Numeric entry appended in wrong field",
+                "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+                "status": "draft",
+                "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_12",
+                  "event_13",
+                  "frame_13"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p008",
+                "name": "Required dialog action left incomplete",
+                "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+                "status": "draft",
+                "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                "name": "Acceptance evidence gap 2999629000",
+                "description": "An action has no visible confirmation; review remains uncertain.",
+                "status": "draft",
+                "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                "proposal_kind": "label",
+                "evidence_refs": [],
+                "feedback": [
+                  "Retain evidence uncertainty; do not equate missing evidence with model failure."
+                ]
+              },
+              {
+                "id": "new:excessive_tab_restoration",
+                "name": "Excessive tab restoration beyond requested scope",
+                "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+                "status": "draft",
+                "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "frame_2",
+                  "frame_3",
+                  "frame_4",
+                  "frame_5"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "new:repeated_menu_item_misselection",
+                "name": "Repeated menu item misselection",
+                "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+                "status": "draft",
+                "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_7",
+                  "frame_7",
+                  "event_8",
+                  "event_9",
+                  "event_10",
+                  "event_11",
+                  "event_12",
+                  "event_13",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              }
+            ],
+            "generation": 1,
+            "fence_token": 1,
+            "attempt_id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab"
+          },
+          "created_at": "2026-09-27T05:18:05.091987+00:00"
+        }
+      ],
+      "jobs": [
+        {
+          "id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "batch_id": "e8fc70a1-7647-4ed6-8075-ecfadac50106",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "stage": "review",
+          "review_kind": "failure_analysis",
+          "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+          "idempotency_key": "review:01077bdc-e5d4-4caa-9f5e-299229148c90:b5a39a69-d306-4730-92ae-b78b334fa369:1",
+          "generation": 1,
+          "fence_token": 1,
+          "status": "completed",
+          "attempt_count": 1,
+          "max_attempts": 4,
+          "lease_owner": null,
+          "lease_expires_at": null,
+          "available_at": "2026-09-27T05:13:46.795006+00:00",
+          "error": null,
+          "usage": {
+            "input_tokens": 34387,
+            "cached_input_tokens": 0,
+            "output_tokens": 1782,
+            "kind": "provider_reported_tokens",
+            "estimated_usd": 0.086594,
+            "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+            "billed": true,
+            "budget_usd": 0.1,
+            "budget_kind": "estimate_only",
+            "budget_enforced": false,
+            "timeout_seconds": 120,
+            "timeout_enforced": true,
+            "max_output_tokens": 4096,
+            "output_token_limit_enforced": false,
+            "output_token_limit_setting_configured": false,
+            "invocations": 1,
+            "automatic_retries": 0,
+            "retry_policy_scope": "adapter_attempt"
+          },
+          "cost_usd": 0.086594,
+          "shared_labels_snapshot": [
+            {
+              "id": "p001",
+              "name": "Repeated mis-targeted UI activation",
+              "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+              "status": "draft",
+              "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1",
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "frame_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_9"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p002",
+              "name": "Wrong UI target activated",
+              "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+              "status": "draft",
+              "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p003",
+              "name": "Repeated ineffective modal dismissal",
+              "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+              "status": "draft",
+              "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p004",
+              "name": "Online resource blocked by proxy or network path",
+              "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+              "status": "draft",
+              "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p005",
+              "name": "Malformed command-entry key sequence",
+              "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+              "status": "draft",
+              "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_10",
+                "event_12",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p006",
+              "name": "Retrieved information does not match requested scope",
+              "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+              "status": "draft",
+              "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p007",
+              "name": "Numeric entry appended in wrong field",
+              "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+              "status": "draft",
+              "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_12",
+                "event_13",
+                "frame_13"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p008",
+              "name": "Required dialog action left incomplete",
+              "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+              "status": "draft",
+              "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "name": "Acceptance evidence gap 2999629000",
+              "description": "An action has no visible confirmation; review remains uncertain.",
+              "status": "draft",
+              "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "proposal_kind": "label",
+              "evidence_refs": [],
+              "feedback": [
+                "Retain evidence uncertainty; do not equate missing evidence with model failure."
+              ]
+            },
+            {
+              "id": "new:excessive_tab_restoration",
+              "name": "Excessive tab restoration beyond requested scope",
+              "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+              "status": "draft",
+              "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "frame_2",
+                "frame_3",
+                "frame_4",
+                "frame_5"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "new:repeated_menu_item_misselection",
+              "name": "Repeated menu item misselection",
+              "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+              "status": "draft",
+              "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_7",
+                "frame_7",
+                "event_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            }
+          ],
+          "created_at": "2026-09-27T05:13:46.795009+00:00",
+          "updated_at": "2026-09-27T05:18:05.094437+00:00",
+          "budget_usd": 0.1,
+          "max_total_budget_usd": 0.4,
+          "attempts": [
+            {
+              "id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab",
+              "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+              "attempt_number": 1,
+              "generation": 1,
+              "fence_token": 1,
+              "status": "completed",
+              "error": null,
+              "usage": {
+                "input_tokens": 34387,
+                "cached_input_tokens": 0,
+                "output_tokens": 1782,
+                "kind": "provider_reported_tokens",
+                "estimated_usd": 0.086594,
+                "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+                "billed": true,
+                "budget_usd": 0.1,
+                "budget_kind": "estimate_only",
+                "budget_enforced": false,
+                "timeout_seconds": 120,
+                "timeout_enforced": true,
+                "max_output_tokens": 4096,
+                "output_token_limit_enforced": false,
+                "output_token_limit_setting_configured": false,
+                "invocations": 1,
+                "automatic_retries": 0,
+                "retry_policy_scope": "adapter_attempt"
+              },
+              "cost_usd": 0.086594,
+              "started_at": "2026-09-27T05:17:38.815059+00:00",
+              "finished_at": "2026-09-27T05:18:05.095364+00:00"
+            }
+          ],
+          "cumulative_cost_usd": 0.086594,
+          "unknown_cost_attempts": 0,
+          "retry_eligible": true
+        }
+      ],
+      "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+      "artifacts": [
+        {
+          "id": "914f0ed4-62a7-4694-8a97-466f5fe01edd",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775.png",
+          "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772078+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "118efa09-68ba-4572-9b0a-b2b80ed5eadb",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5.png",
+          "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772092+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "03f728d6-d5a3-418b-b46b-376b43fe681e",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8.png",
+          "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772096+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "f50c1b64-3ded-46ac-88f0-0c970186b392",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb.png",
+          "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772098+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "5720f6a0-3efc-4f20-9df5-2d6c646d24cc",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8.png",
+          "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772101+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "61bf969e-9104-4233-b8ac-535db93c71d3",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58.png",
+          "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772105+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "4c385e71-4d1e-41e6-9fd1-6190e7d13f7a",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3.png",
+          "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772107+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "db28131d-df08-4295-915a-a653b4f17d9b",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e.png",
+          "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772109+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "b4d62641-8789-41c9-84cc-9299581d806d",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b.png",
+          "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:13:46.772110+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        },
+        {
+          "id": "172fc0b5-0088-4b44-99c1-24c1101a22f6",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+          "relative_path": "reviews/06fe7178-4491-4589-810f-2e2bc9502122/review-r1.yaml",
+          "media_type": "application/yaml",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/jobs/1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1/generation-1/attempt-ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab/843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33.yaml",
+          "sha256": "843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:18:05.093666+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/reviews/06fe7178-4491-4589-810f-2e2bc9502122/review-r1.yaml?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+        }
+      ],
+      "raw_url": "/api/batches/e8fc70a1-7647-4ed6-8075-ecfadac50106/tasks/06fe7178-4491-4589-810f-2e2bc9502122/export?format=json&member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+      "member": {
+        "id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+        "batch_id": "e8fc70a1-7647-4ed6-8075-ecfadac50106",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "status": "completed",
+        "processing_status": "completed",
+        "review_kind": "failure_analysis"
+      },
+      "task": {
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "title": "Can you make my computer bring back the last tab I shut down?",
+        "instruction": "Can you make my computer bring back the last tab I shut down?",
+        "outcome": "failed",
+        "score": 0.0,
+        "source": {
+          "dataset": "OSWorld-Verified",
+          "application": "chrome",
+          "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+          "agent_model": "o3",
+          "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+          "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+          "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+          "task_definition_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/chrome/06fe7178-4491-4589-810f-2e2bc9502122.json"
+        },
+        "coverage_notes": [
+          "Public recorded rollout; not executed locally.",
+          "Final evaluator score is retained; no human failure diagnosis is supplied.",
+          "Pinned current task definition is not proven to be the exact historical evaluator.",
+          "Video not downloaded. Screenshots retain their recorded step association."
+        ],
+        "steps": [
+          {
+            "step_id": "1",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T to reopen the most recently closed browser tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "episode_refs": [],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "2",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T again to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+            "evidence_refs": [
+              "event_2",
+              "frame_2"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "3",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T again to reopen the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+            "evidence_refs": [
+              "event_3",
+              "frame_3"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "4",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T once more to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+            "evidence_refs": [
+              "event_4",
+              "frame_4"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "5",
+            "intent": null,
+            "action": "# Click the leftmost tab titled \"github.com\" to view the recently restored tab\npyautogui.click(x=110, y=32, duration=0.5)",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+            "evidence_refs": [
+              "event_5",
+              "frame_5"
+            ],
+            "episode_refs": [
+              "episode_2"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "6",
+            "intent": null,
+            "action": "# Click the leftmost tab labeled \u201cgithub.com\u201d to activate the restored tab\npyautogui.click(x=75, y=30, duration=0.3)",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+            "evidence_refs": [
+              "event_6",
+              "frame_6"
+            ],
+            "episode_refs": [
+              "episode_2"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "7",
+            "intent": null,
+            "action": "# Click the leftmost tab titled \u201cgithub.com\u201d to switch focus to the restored page\npyautogui.click(x=60, y=30, duration=0.3)",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+            "evidence_refs": [
+              "event_7",
+              "frame_7"
+            ],
+            "episode_refs": [
+              "episode_2"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "8",
+            "intent": null,
+            "action": "pyautogui.hotkey('ctrl', '1')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+            "evidence_refs": [
+              "event_8",
+              "frame_8"
+            ],
+            "episode_refs": [
+              "episode_1",
+              "episode_2"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "9",
+            "intent": null,
+            "action": "DONE",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+            "evidence_refs": [
+              "event_9",
+              "frame_9"
+            ],
+            "episode_refs": [
+              "episode_1"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "artifact_status": "recorded"
+          }
+        ],
+        "revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+        "revision": 1,
+        "status": "completed",
+        "processing_status": "completed",
+        "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+        "review": {
+          "schema_version": "2",
+          "review_kind": "failure_analysis",
+          "summary": "The agent reopened multiple tabs when asked for the last closed tab, then selected a GitHub tab that displayed a proxy error. The recorded outcome was failed; the screenshots do not identify which tab was the last one closed.",
+          "result": "issues_observed",
+          "coverage_notes": [
+            "Reviewed source steps 1\u20139 in order. Every step has an attached screenshot. Screenshots may show the state before the listed action, so effects are assessed using later frames."
+          ],
+          "steps": [
+            {
+              "step_id": "1",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "Reopen the most recently closed browser tab."
+              },
+              "action": "Pressed Ctrl+Shift+T.",
+              "observed_ui": "Frame 1 shows Chrome on a New Tab page with a History tab already open; frame 2 shows another History tab.",
+              "effect": "A History tab appears in the subsequent frame, consistent with tab restoration.",
+              "assessment": "The shortcut matches the request. The frames do not establish whether the restored History tab was the last tab closed.",
+              "evidence_refs": [
+                "event_1",
+                "frame_1",
+                "frame_2"
+              ],
+              "episode_refs": []
+            },
+            {
+              "step_id": "2",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "Restore the next most recently closed tab."
+              },
+              "action": "Pressed Ctrl+Shift+T again.",
+              "observed_ui": "Frame 2 shows three tabs, including two titled History; frame 3 shows two New Tab tabs.",
+              "effect": "The visible tab state changes after the additional restoration attempt.",
+              "assessment": "This starts restoring beyond the single tab requested.",
+              "evidence_refs": [
+                "event_2",
+                "frame_2",
+                "frame_3"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            },
+            {
+              "step_id": "3",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "Restore the next most recently closed tab."
+              },
+              "action": "Pressed Ctrl+Shift+T again.",
+              "observed_ui": "Frame 3 shows two New Tab tabs; frame 4 shows a github.com tab and a History tab.",
+              "effect": "The later frame shows a GitHub tab in the tab strip.",
+              "assessment": "Continued restoring beyond the requested single tab.",
+              "evidence_refs": [
+                "event_3",
+                "frame_3",
+                "frame_4"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            },
+            {
+              "step_id": "4",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "Restore the next most recently closed tab."
+              },
+              "action": "Pressed Ctrl+Shift+T once more.",
+              "observed_ui": "Frame 4 shows github.com and History tabs, with History active; frame 5 shows the same tabs.",
+              "effect": "No further tab change can be confirmed from the adjacent frames.",
+              "assessment": "The action continued the unnecessary restoration sequence; its individual effect is unclear.",
+              "evidence_refs": [
+                "event_4",
+                "frame_4",
+                "frame_5"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            },
+            {
+              "step_id": "5",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "View the restored github.com tab."
+              },
+              "action": "Clicked at (110, 32).",
+              "observed_ui": "Frames 5 and 6 still show History active, with github.com at the left.",
+              "effect": "The intended tab did not visibly become active.",
+              "assessment": "First visible failed attempt to activate the GitHub tab by clicking.",
+              "evidence_refs": [
+                "event_5",
+                "frame_5",
+                "frame_6"
+              ],
+              "episode_refs": [
+                "episode_2"
+              ]
+            },
+            {
+              "step_id": "6",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "Activate the restored github.com tab."
+              },
+              "action": "Clicked at (75, 30).",
+              "observed_ui": "Frames 6 and 7 still show History active.",
+              "effect": "No tab switch is visible.",
+              "assessment": "Repeated the ineffective click approach.",
+              "evidence_refs": [
+                "event_6",
+                "frame_6",
+                "frame_7"
+              ],
+              "episode_refs": [
+                "episode_2"
+              ]
+            },
+            {
+              "step_id": "7",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "declared",
+                "text": "Switch to the restored github.com page."
+              },
+              "action": "Clicked at (60, 30).",
+              "observed_ui": "Frame 7 shows History active; frame 8 shows the GitHub tab active.",
+              "effect": "A switch is visible by frame 8, but the frames do not establish whether this click or the following shortcut caused it.",
+              "assessment": "Another click at the far left of the tab strip; its individual success is uncertain.",
+              "evidence_refs": [
+                "event_7",
+                "frame_7",
+                "frame_8"
+              ],
+              "episode_refs": [
+                "episode_2"
+              ]
+            },
+            {
+              "step_id": "8",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "inferred",
+                "text": "Select the first Chrome tab."
+              },
+              "action": "Pressed Ctrl+1.",
+              "observed_ui": "Frames 8 and 9 show the first tab active on a GitHub URL, displaying \u201cThis site can\u2019t be reached\u201d and ERR_PROXY_AUTH_UNSUPPORTED.",
+              "effect": "The first tab is active in the final visible state, but the GitHub page is unreachable.",
+              "assessment": "The tab selection goal is visibly met by the end of this step, although its exact onset is uncertain. This does not show that the requested last closed tab was restored.",
+              "evidence_refs": [
+                "event_8",
+                "frame_8",
+                "frame_9"
+              ],
+              "episode_refs": [
+                "episode_1",
+                "episode_2"
+              ]
+            },
+            {
+              "step_id": "9",
+              "review_status": "reviewed",
+              "intent": {
+                "kind": "inferred",
+                "text": "End the task."
+              },
+              "action": "Returned DONE.",
+              "observed_ui": "Frame 9 still shows the active GitHub tab on the proxy error page, with History also open.",
+              "effect": "No further UI change is visible.",
+              "assessment": "Completion was declared without evidence identifying the last closed tab. The recorded outcome is failed.",
+              "evidence_refs": [
+                "event_9",
+                "frame_9"
+              ],
+              "episode_refs": [
+                "episode_1"
+              ]
+            }
+          ],
+          "episodes": [
+            {
+              "episode_id": "episode_1",
+              "problem_number": 1,
+              "first_observed_step_id": "2",
+              "mechanism": "The agent repeated the closed-tab shortcut after the initial restoration, bringing back additional tabs beyond the single tab requested and leaving the final target ambiguous.",
+              "onset_step_ids": [
+                "2",
+                "3",
+                "4"
+              ],
+              "recovery": {
+                "status": "none_observed",
+                "step_ids": [],
+                "evidence_refs": [
+                  "frame_9"
+                ],
+                "rationale": "The final frame still shows multiple tabs, and no later step identifies or restores only the last closed tab."
+              },
+              "outcome_contribution": "contributing",
+              "label_id": "new:excessive_tab_restoration",
+              "label_name": "Excessive tab restoration beyond requested scope",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "frame_2",
+                "frame_3",
+                "frame_4",
+                "frame_9"
+              ],
+              "uncertainty": "The screenshots do not identify the actual last closed tab or isolate the effect of each repeated shortcut."
+            },
+            {
+              "episode_id": "episode_2",
+              "problem_number": 2,
+              "first_observed_step_id": "5",
+              "mechanism": "Clicks intended to activate the GitHub tab left History visibly active after the first two attempts; the agent changed interaction method to a first-tab shortcut.",
+              "onset_step_ids": [
+                "5",
+                "6",
+                "7"
+              ],
+              "recovery": {
+                "status": "recovered",
+                "step_ids": [
+                  "8"
+                ],
+                "evidence_refs": [
+                  "frame_8",
+                  "frame_9"
+                ],
+                "rationale": "The first tab is active by frames 8 and 9. The precise action that caused the switch cannot be isolated from the screenshots."
+              },
+              "outcome_contribution": "uncertain",
+              "label_id": "p001",
+              "label_name": "Repeated mis-targeted UI activation",
+              "evidence_refs": [
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_5",
+                "frame_6",
+                "frame_7",
+                "frame_8"
+              ],
+              "uncertainty": "The first two clicks visibly failed to switch tabs; whether step 7 succeeded before Ctrl+1 is unresolved."
+            }
+          ]
+        },
+        "review_provenance": {
+          "backend": "codex",
+          "requested_model": "gpt-6-sol",
+          "cli_version": "0.157.0",
+          "requested_reasoning": "low",
+          "reasoning_applied": true,
+          "image_attachments": [
+            {
+              "step_id": "1",
+              "file": "frame_001.png",
+              "media_type": "image/png",
+              "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+              "size_bytes": 104749
+            },
+            {
+              "step_id": "2",
+              "file": "frame_002.png",
+              "media_type": "image/png",
+              "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+              "size_bytes": 106417
+            },
+            {
+              "step_id": "3",
+              "file": "frame_003.png",
+              "media_type": "image/png",
+              "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+              "size_bytes": 104858
+            },
+            {
+              "step_id": "4",
+              "file": "frame_004.png",
+              "media_type": "image/png",
+              "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+              "size_bytes": 119421
+            },
+            {
+              "step_id": "5",
+              "file": "frame_005.png",
+              "media_type": "image/png",
+              "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+              "size_bytes": 118663
+            },
+            {
+              "step_id": "6",
+              "file": "frame_006.png",
+              "media_type": "image/png",
+              "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+              "size_bytes": 118790
+            },
+            {
+              "step_id": "7",
+              "file": "frame_007.png",
+              "media_type": "image/png",
+              "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+              "size_bytes": 118653
+            },
+            {
+              "step_id": "8",
+              "file": "frame_008.png",
+              "media_type": "image/png",
+              "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+              "size_bytes": 128695
+            },
+            {
+              "step_id": "9",
+              "file": "frame_009.png",
+              "media_type": "image/png",
+              "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+              "size_bytes": 128507
+            }
+          ],
+          "attachment_transport": "codex_initial_images",
+          "new_inference": true,
+          "invocations": 1,
+          "automatic_retries": 0,
+          "retry_policy_scope": "adapter_attempt",
+          "timeout_seconds": 120,
+          "timeout_enforced": true,
+          "budget_usd": 0.1,
+          "budget_kind": "estimate_only",
+          "budget_enforced": false,
+          "output_token_limit_enforced": false,
+          "output_token_limit_setting_configured": false,
+          "isolation": "dedicated worker container, temporary HOME and empty scratch directory",
+          "cost_estimate_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+          "note": "One CLI invocation per job attempt with a wall-clock timeout; the job retry policy determines additional attempts. The provider CLI may reconnect internally, and those network attempts are not counted by this adapter. Billing is not a hard cap.",
+          "model": "gpt-6-sol",
+          "duration_ms": 26158,
+          "evidence_mode": "images_and_text",
+          "source_step_count": 9,
+          "source_image_step_ids": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "supplied_image_step_ids": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "cited_image_step_ids": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "omitted_image_step_ids": [],
+          "image_selection": "all_available",
+          "omitted_image_reason": null,
+          "inspection_note": "Supplied means attached to the model request. Citations are model claims, not independent proof of visual inspection.",
+          "adapter_prompt_version": "2-visual-evidence",
+          "prompt_sha256": "3afb9ca9d7bfe34be0fa5c240376dff67d14b16ffe2b4319bc70557afd783f8c",
+          "inspected_image_step_ids": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "usage": {
+            "input_tokens": 34387,
+            "cached_input_tokens": 0,
+            "output_tokens": 1782,
+            "kind": "provider_reported_tokens",
+            "estimated_usd": 0.086594,
+            "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+            "billed": true,
+            "budget_usd": 0.1,
+            "budget_kind": "estimate_only",
+            "budget_enforced": false,
+            "timeout_seconds": 120,
+            "timeout_enforced": true,
+            "max_output_tokens": 4096,
+            "output_token_limit_enforced": false,
+            "output_token_limit_setting_configured": false,
+            "invocations": 1,
+            "automatic_retries": 0,
+            "retry_policy_scope": "adapter_attempt"
+          },
+          "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+          "taxonomy_release_id": null,
+          "taxonomy_proposal_heads": {
+            "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6": {
+              "revision_id": "fc735f11-26b3-45e0-80fd-6d4fbacef13f",
+              "content_hash": "2bb9cb8b6cebc720a4a50df41348c8a479ed86914a45ec11fc4a5fb4224083b9",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p001"
+            },
+            "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9": {
+              "revision_id": "4804c0f9-97cd-42f6-a6c0-067ddb0a9dfe",
+              "content_hash": "296f55f0b798d1f086dd1805a06d1f143a8cb882ed1ee0d231ce8bb1b958a30f",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p002"
+            },
+            "a220525f-50e7-4327-b0f9-05451d59711a": {
+              "revision_id": "20460817-32c9-4754-a680-a56a30c2658e",
+              "content_hash": "afd022cd38bd3d26e7ee9de3724c45f6e44f3fd3165984576911a4a0ec9ca0bf",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p003"
+            },
+            "ecd2d1f7-f986-4911-89ce-52175b618f5a": {
+              "revision_id": "ae770f09-bb2f-4c74-ab69-48f8affc85d9",
+              "content_hash": "d0be204a9b8007b432b41c1c1628b6e0f214ae13e26ba0fbc54debd3bb748b3f",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p004"
+            },
+            "e10b7a1b-8d53-489c-8873-c81ec2dcb931": {
+              "revision_id": "a61816ab-03e6-4865-8100-b33e4a54d8c6",
+              "content_hash": "6f349688ffce6e070d5006b635f8b8ba230ee86c9e110e2695ff02c1f3f6bcf5",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p005"
+            },
+            "bbfa9658-1b3b-4700-94fb-049adf760cda": {
+              "revision_id": "1b285c53-eb72-4a4d-ab5b-115a59478448",
+              "content_hash": "b6331b8d2f59a0049a839074c9719c291bfa739699246dd1680c85b6b419bc37",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p006"
+            },
+            "3e17a9b4-9442-44c4-8404-a7331a0ca68c": {
+              "revision_id": "f6b381a8-413d-4970-9bde-c3232b2b41b1",
+              "content_hash": "3982abcfca744467179807e0b23dc9eabc5f3e4e95825f6a0d994f3163490f84",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p007"
+            },
+            "a785e4d4-d3d9-4665-9258-928e06700d51": {
+              "revision_id": "03461fee-4180-4f50-9a53-3247bd15007d",
+              "content_hash": "3c417f387420513a4644cff3f56938bd023c7d3b1cf01306a8e90cbdb1ae1209",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "p008"
+            },
+            "f1453854-3b31-4abe-bf7b-213a55c3f85c": {
+              "revision_id": "b543da21-53d1-4b8d-80bc-6f951622eb18",
+              "content_hash": "61f871b869e253d0014db477984bcc40aed13de6f7c9974c7fffffd8edb8c31e",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": null
+            },
+            "face9935-3553-42a1-b640-59a5bf53e9cc": {
+              "revision_id": "958edf44-3c98-4b29-8587-a9ca238df77d",
+              "content_hash": "a50a1eb062f442793734b2fd3e6487c9703e9de21bc7b9ca1433a5d3ac24f3a3",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "new:excessive_tab_restoration"
+            },
+            "78c53053-eb2d-4467-b978-422319df7b21": {
+              "revision_id": "eb9e58a7-02ec-4f1d-b6d1-2ae3596c535c",
+              "content_hash": "c3e987c2a7c60716aa70cfcf138fefd4d3b59a25eab3870c7f71cb6d4348d2ee",
+              "base_release_id": null,
+              "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+              "kind": "label",
+              "label_id": "new:repeated_menu_item_misselection"
+            }
+          },
+          "shared_labels_snapshot": [
+            {
+              "id": "p001",
+              "name": "Repeated mis-targeted UI activation",
+              "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+              "status": "draft",
+              "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1",
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "frame_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_9"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p002",
+              "name": "Wrong UI target activated",
+              "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+              "status": "draft",
+              "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p003",
+              "name": "Repeated ineffective modal dismissal",
+              "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+              "status": "draft",
+              "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p004",
+              "name": "Online resource blocked by proxy or network path",
+              "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+              "status": "draft",
+              "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p005",
+              "name": "Malformed command-entry key sequence",
+              "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+              "status": "draft",
+              "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_10",
+                "event_12",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p006",
+              "name": "Retrieved information does not match requested scope",
+              "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+              "status": "draft",
+              "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p007",
+              "name": "Numeric entry appended in wrong field",
+              "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+              "status": "draft",
+              "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_12",
+                "event_13",
+                "frame_13"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p008",
+              "name": "Required dialog action left incomplete",
+              "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+              "status": "draft",
+              "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "name": "Acceptance evidence gap 2999629000",
+              "description": "An action has no visible confirmation; review remains uncertain.",
+              "status": "draft",
+              "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "proposal_kind": "label",
+              "evidence_refs": [],
+              "feedback": [
+                "Retain evidence uncertainty; do not equate missing evidence with model failure."
+              ]
+            },
+            {
+              "id": "new:excessive_tab_restoration",
+              "name": "Excessive tab restoration beyond requested scope",
+              "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+              "status": "draft",
+              "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "frame_2",
+                "frame_3",
+                "frame_4",
+                "frame_5"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "new:repeated_menu_item_misselection",
+              "name": "Repeated menu item misselection",
+              "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+              "status": "draft",
+              "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_7",
+                "frame_7",
+                "event_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            }
+          ],
+          "generation": 1,
+          "fence_token": 1,
+          "attempt_id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab"
+        },
+        "review_kind": "failure_analysis",
+        "review_history": [
+          {
+            "id": "b4fbf973-64ec-4c14-9e9c-71a91b4973f4",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+            "revision": 1,
+            "review_kind": "failure_analysis",
+            "schema_version": "2",
+            "source_kind": "generated",
+            "backend": "codex",
+            "model": "gpt-6-sol",
+            "review": {
+              "schema_version": "2",
+              "review_kind": "failure_analysis",
+              "summary": "The agent reopened multiple tabs when asked for the last closed tab, then selected a GitHub tab that displayed a proxy error. The recorded outcome was failed; the screenshots do not identify which tab was the last one closed.",
+              "result": "issues_observed",
+              "coverage_notes": [
+                "Reviewed source steps 1\u20139 in order. Every step has an attached screenshot. Screenshots may show the state before the listed action, so effects are assessed using later frames."
+              ],
+              "steps": [
+                {
+                  "step_id": "1",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "Reopen the most recently closed browser tab."
+                  },
+                  "action": "Pressed Ctrl+Shift+T.",
+                  "observed_ui": "Frame 1 shows Chrome on a New Tab page with a History tab already open; frame 2 shows another History tab.",
+                  "effect": "A History tab appears in the subsequent frame, consistent with tab restoration.",
+                  "assessment": "The shortcut matches the request. The frames do not establish whether the restored History tab was the last tab closed.",
+                  "evidence_refs": [
+                    "event_1",
+                    "frame_1",
+                    "frame_2"
+                  ],
+                  "episode_refs": []
+                },
+                {
+                  "step_id": "2",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "Restore the next most recently closed tab."
+                  },
+                  "action": "Pressed Ctrl+Shift+T again.",
+                  "observed_ui": "Frame 2 shows three tabs, including two titled History; frame 3 shows two New Tab tabs.",
+                  "effect": "The visible tab state changes after the additional restoration attempt.",
+                  "assessment": "This starts restoring beyond the single tab requested.",
+                  "evidence_refs": [
+                    "event_2",
+                    "frame_2",
+                    "frame_3"
+                  ],
+                  "episode_refs": [
+                    "episode_1"
+                  ]
+                },
+                {
+                  "step_id": "3",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "Restore the next most recently closed tab."
+                  },
+                  "action": "Pressed Ctrl+Shift+T again.",
+                  "observed_ui": "Frame 3 shows two New Tab tabs; frame 4 shows a github.com tab and a History tab.",
+                  "effect": "The later frame shows a GitHub tab in the tab strip.",
+                  "assessment": "Continued restoring beyond the requested single tab.",
+                  "evidence_refs": [
+                    "event_3",
+                    "frame_3",
+                    "frame_4"
+                  ],
+                  "episode_refs": [
+                    "episode_1"
+                  ]
+                },
+                {
+                  "step_id": "4",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "Restore the next most recently closed tab."
+                  },
+                  "action": "Pressed Ctrl+Shift+T once more.",
+                  "observed_ui": "Frame 4 shows github.com and History tabs, with History active; frame 5 shows the same tabs.",
+                  "effect": "No further tab change can be confirmed from the adjacent frames.",
+                  "assessment": "The action continued the unnecessary restoration sequence; its individual effect is unclear.",
+                  "evidence_refs": [
+                    "event_4",
+                    "frame_4",
+                    "frame_5"
+                  ],
+                  "episode_refs": [
+                    "episode_1"
+                  ]
+                },
+                {
+                  "step_id": "5",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "View the restored github.com tab."
+                  },
+                  "action": "Clicked at (110, 32).",
+                  "observed_ui": "Frames 5 and 6 still show History active, with github.com at the left.",
+                  "effect": "The intended tab did not visibly become active.",
+                  "assessment": "First visible failed attempt to activate the GitHub tab by clicking.",
+                  "evidence_refs": [
+                    "event_5",
+                    "frame_5",
+                    "frame_6"
+                  ],
+                  "episode_refs": [
+                    "episode_2"
+                  ]
+                },
+                {
+                  "step_id": "6",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "Activate the restored github.com tab."
+                  },
+                  "action": "Clicked at (75, 30).",
+                  "observed_ui": "Frames 6 and 7 still show History active.",
+                  "effect": "No tab switch is visible.",
+                  "assessment": "Repeated the ineffective click approach.",
+                  "evidence_refs": [
+                    "event_6",
+                    "frame_6",
+                    "frame_7"
+                  ],
+                  "episode_refs": [
+                    "episode_2"
+                  ]
+                },
+                {
+                  "step_id": "7",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "declared",
+                    "text": "Switch to the restored github.com page."
+                  },
+                  "action": "Clicked at (60, 30).",
+                  "observed_ui": "Frame 7 shows History active; frame 8 shows the GitHub tab active.",
+                  "effect": "A switch is visible by frame 8, but the frames do not establish whether this click or the following shortcut caused it.",
+                  "assessment": "Another click at the far left of the tab strip; its individual success is uncertain.",
+                  "evidence_refs": [
+                    "event_7",
+                    "frame_7",
+                    "frame_8"
+                  ],
+                  "episode_refs": [
+                    "episode_2"
+                  ]
+                },
+                {
+                  "step_id": "8",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "inferred",
+                    "text": "Select the first Chrome tab."
+                  },
+                  "action": "Pressed Ctrl+1.",
+                  "observed_ui": "Frames 8 and 9 show the first tab active on a GitHub URL, displaying \u201cThis site can\u2019t be reached\u201d and ERR_PROXY_AUTH_UNSUPPORTED.",
+                  "effect": "The first tab is active in the final visible state, but the GitHub page is unreachable.",
+                  "assessment": "The tab selection goal is visibly met by the end of this step, although its exact onset is uncertain. This does not show that the requested last closed tab was restored.",
+                  "evidence_refs": [
+                    "event_8",
+                    "frame_8",
+                    "frame_9"
+                  ],
+                  "episode_refs": [
+                    "episode_1",
+                    "episode_2"
+                  ]
+                },
+                {
+                  "step_id": "9",
+                  "review_status": "reviewed",
+                  "intent": {
+                    "kind": "inferred",
+                    "text": "End the task."
+                  },
+                  "action": "Returned DONE.",
+                  "observed_ui": "Frame 9 still shows the active GitHub tab on the proxy error page, with History also open.",
+                  "effect": "No further UI change is visible.",
+                  "assessment": "Completion was declared without evidence identifying the last closed tab. The recorded outcome is failed.",
+                  "evidence_refs": [
+                    "event_9",
+                    "frame_9"
+                  ],
+                  "episode_refs": [
+                    "episode_1"
+                  ]
+                }
+              ],
+              "episodes": [
+                {
+                  "episode_id": "episode_1",
+                  "problem_number": 1,
+                  "first_observed_step_id": "2",
+                  "mechanism": "The agent repeated the closed-tab shortcut after the initial restoration, bringing back additional tabs beyond the single tab requested and leaving the final target ambiguous.",
+                  "onset_step_ids": [
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  "recovery": {
+                    "status": "none_observed",
+                    "step_ids": [],
+                    "evidence_refs": [
+                      "frame_9"
+                    ],
+                    "rationale": "The final frame still shows multiple tabs, and no later step identifies or restores only the last closed tab."
+                  },
+                  "outcome_contribution": "contributing",
+                  "label_id": "new:excessive_tab_restoration",
+                  "label_name": "Excessive tab restoration beyond requested scope",
+                  "evidence_refs": [
+                    "event_2",
+                    "event_3",
+                    "event_4",
+                    "frame_2",
+                    "frame_3",
+                    "frame_4",
+                    "frame_9"
+                  ],
+                  "uncertainty": "The screenshots do not identify the actual last closed tab or isolate the effect of each repeated shortcut."
+                },
+                {
+                  "episode_id": "episode_2",
+                  "problem_number": 2,
+                  "first_observed_step_id": "5",
+                  "mechanism": "Clicks intended to activate the GitHub tab left History visibly active after the first two attempts; the agent changed interaction method to a first-tab shortcut.",
+                  "onset_step_ids": [
+                    "5",
+                    "6",
+                    "7"
+                  ],
+                  "recovery": {
+                    "status": "recovered",
+                    "step_ids": [
+                      "8"
+                    ],
+                    "evidence_refs": [
+                      "frame_8",
+                      "frame_9"
+                    ],
+                    "rationale": "The first tab is active by frames 8 and 9. The precise action that caused the switch cannot be isolated from the screenshots."
+                  },
+                  "outcome_contribution": "uncertain",
+                  "label_id": "p001",
+                  "label_name": "Repeated mis-targeted UI activation",
+                  "evidence_refs": [
+                    "event_5",
+                    "event_6",
+                    "event_7",
+                    "event_8",
+                    "frame_5",
+                    "frame_6",
+                    "frame_7",
+                    "frame_8"
+                  ],
+                  "uncertainty": "The first two clicks visibly failed to switch tabs; whether step 7 succeeded before Ctrl+1 is unresolved."
+                }
+              ]
+            },
+            "artifact_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/jobs/1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1/generation-1/attempt-ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab/843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33.yaml",
+            "artifact_sha256": "843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33",
+            "provenance": {
+              "backend": "codex",
+              "requested_model": "gpt-6-sol",
+              "cli_version": "0.157.0",
+              "requested_reasoning": "low",
+              "reasoning_applied": true,
+              "image_attachments": [
+                {
+                  "step_id": "1",
+                  "file": "frame_001.png",
+                  "media_type": "image/png",
+                  "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+                  "size_bytes": 104749
+                },
+                {
+                  "step_id": "2",
+                  "file": "frame_002.png",
+                  "media_type": "image/png",
+                  "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+                  "size_bytes": 106417
+                },
+                {
+                  "step_id": "3",
+                  "file": "frame_003.png",
+                  "media_type": "image/png",
+                  "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+                  "size_bytes": 104858
+                },
+                {
+                  "step_id": "4",
+                  "file": "frame_004.png",
+                  "media_type": "image/png",
+                  "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+                  "size_bytes": 119421
+                },
+                {
+                  "step_id": "5",
+                  "file": "frame_005.png",
+                  "media_type": "image/png",
+                  "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+                  "size_bytes": 118663
+                },
+                {
+                  "step_id": "6",
+                  "file": "frame_006.png",
+                  "media_type": "image/png",
+                  "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+                  "size_bytes": 118790
+                },
+                {
+                  "step_id": "7",
+                  "file": "frame_007.png",
+                  "media_type": "image/png",
+                  "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+                  "size_bytes": 118653
+                },
+                {
+                  "step_id": "8",
+                  "file": "frame_008.png",
+                  "media_type": "image/png",
+                  "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+                  "size_bytes": 128695
+                },
+                {
+                  "step_id": "9",
+                  "file": "frame_009.png",
+                  "media_type": "image/png",
+                  "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+                  "size_bytes": 128507
+                }
+              ],
+              "attachment_transport": "codex_initial_images",
+              "new_inference": true,
+              "invocations": 1,
+              "automatic_retries": 0,
+              "retry_policy_scope": "adapter_attempt",
+              "timeout_seconds": 120,
+              "timeout_enforced": true,
+              "budget_usd": 0.1,
+              "budget_kind": "estimate_only",
+              "budget_enforced": false,
+              "output_token_limit_enforced": false,
+              "output_token_limit_setting_configured": false,
+              "isolation": "dedicated worker container, temporary HOME and empty scratch directory",
+              "cost_estimate_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+              "note": "One CLI invocation per job attempt with a wall-clock timeout; the job retry policy determines additional attempts. The provider CLI may reconnect internally, and those network attempts are not counted by this adapter. Billing is not a hard cap.",
+              "model": "gpt-6-sol",
+              "duration_ms": 26158,
+              "evidence_mode": "images_and_text",
+              "source_step_count": 9,
+              "source_image_step_ids": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+              ],
+              "supplied_image_step_ids": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+              ],
+              "cited_image_step_ids": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+              ],
+              "omitted_image_step_ids": [],
+              "image_selection": "all_available",
+              "omitted_image_reason": null,
+              "inspection_note": "Supplied means attached to the model request. Citations are model claims, not independent proof of visual inspection.",
+              "adapter_prompt_version": "2-visual-evidence",
+              "prompt_sha256": "3afb9ca9d7bfe34be0fa5c240376dff67d14b16ffe2b4319bc70557afd783f8c",
+              "inspected_image_step_ids": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+              ],
+              "usage": {
+                "input_tokens": 34387,
+                "cached_input_tokens": 0,
+                "output_tokens": 1782,
+                "kind": "provider_reported_tokens",
+                "estimated_usd": 0.086594,
+                "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+                "billed": true,
+                "budget_usd": 0.1,
+                "budget_kind": "estimate_only",
+                "budget_enforced": false,
+                "timeout_seconds": 120,
+                "timeout_enforced": true,
+                "max_output_tokens": 4096,
+                "output_token_limit_enforced": false,
+                "output_token_limit_setting_configured": false,
+                "invocations": 1,
+                "automatic_retries": 0,
+                "retry_policy_scope": "adapter_attempt"
+              },
+              "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+              "taxonomy_release_id": null,
+              "taxonomy_proposal_heads": {
+                "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6": {
+                  "revision_id": "fc735f11-26b3-45e0-80fd-6d4fbacef13f",
+                  "content_hash": "2bb9cb8b6cebc720a4a50df41348c8a479ed86914a45ec11fc4a5fb4224083b9",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p001"
+                },
+                "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9": {
+                  "revision_id": "4804c0f9-97cd-42f6-a6c0-067ddb0a9dfe",
+                  "content_hash": "296f55f0b798d1f086dd1805a06d1f143a8cb882ed1ee0d231ce8bb1b958a30f",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p002"
+                },
+                "a220525f-50e7-4327-b0f9-05451d59711a": {
+                  "revision_id": "20460817-32c9-4754-a680-a56a30c2658e",
+                  "content_hash": "afd022cd38bd3d26e7ee9de3724c45f6e44f3fd3165984576911a4a0ec9ca0bf",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p003"
+                },
+                "ecd2d1f7-f986-4911-89ce-52175b618f5a": {
+                  "revision_id": "ae770f09-bb2f-4c74-ab69-48f8affc85d9",
+                  "content_hash": "d0be204a9b8007b432b41c1c1628b6e0f214ae13e26ba0fbc54debd3bb748b3f",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p004"
+                },
+                "e10b7a1b-8d53-489c-8873-c81ec2dcb931": {
+                  "revision_id": "a61816ab-03e6-4865-8100-b33e4a54d8c6",
+                  "content_hash": "6f349688ffce6e070d5006b635f8b8ba230ee86c9e110e2695ff02c1f3f6bcf5",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p005"
+                },
+                "bbfa9658-1b3b-4700-94fb-049adf760cda": {
+                  "revision_id": "1b285c53-eb72-4a4d-ab5b-115a59478448",
+                  "content_hash": "b6331b8d2f59a0049a839074c9719c291bfa739699246dd1680c85b6b419bc37",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p006"
+                },
+                "3e17a9b4-9442-44c4-8404-a7331a0ca68c": {
+                  "revision_id": "f6b381a8-413d-4970-9bde-c3232b2b41b1",
+                  "content_hash": "3982abcfca744467179807e0b23dc9eabc5f3e4e95825f6a0d994f3163490f84",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p007"
+                },
+                "a785e4d4-d3d9-4665-9258-928e06700d51": {
+                  "revision_id": "03461fee-4180-4f50-9a53-3247bd15007d",
+                  "content_hash": "3c417f387420513a4644cff3f56938bd023c7d3b1cf01306a8e90cbdb1ae1209",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "p008"
+                },
+                "f1453854-3b31-4abe-bf7b-213a55c3f85c": {
+                  "revision_id": "b543da21-53d1-4b8d-80bc-6f951622eb18",
+                  "content_hash": "61f871b869e253d0014db477984bcc40aed13de6f7c9974c7fffffd8edb8c31e",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": null
+                },
+                "face9935-3553-42a1-b640-59a5bf53e9cc": {
+                  "revision_id": "958edf44-3c98-4b29-8587-a9ca238df77d",
+                  "content_hash": "a50a1eb062f442793734b2fd3e6487c9703e9de21bc7b9ca1433a5d3ac24f3a3",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "new:excessive_tab_restoration"
+                },
+                "78c53053-eb2d-4467-b978-422319df7b21": {
+                  "revision_id": "eb9e58a7-02ec-4f1d-b6d1-2ae3596c535c",
+                  "content_hash": "c3e987c2a7c60716aa70cfcf138fefd4d3b59a25eab3870c7f71cb6d4348d2ee",
+                  "base_release_id": null,
+                  "base_hash": "5d4f265fd067634807932ea31fedb1c02225fdfb87909b4c8b900e13081c5b04",
+                  "kind": "label",
+                  "label_id": "new:repeated_menu_item_misselection"
+                }
+              },
+              "shared_labels_snapshot": [
+                {
+                  "id": "p001",
+                  "name": "Repeated mis-targeted UI activation",
+                  "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+                  "status": "draft",
+                  "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_1",
+                    "frame_1",
+                    "event_2",
+                    "event_3",
+                    "event_4",
+                    "event_5",
+                    "frame_5",
+                    "event_6",
+                    "event_7",
+                    "event_8",
+                    "frame_9"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p002",
+                  "name": "Wrong UI target activated",
+                  "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+                  "status": "draft",
+                  "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_1",
+                    "frame_1"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p003",
+                  "name": "Repeated ineffective modal dismissal",
+                  "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+                  "status": "draft",
+                  "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_2",
+                    "event_3",
+                    "event_4",
+                    "event_5",
+                    "event_6",
+                    "event_7",
+                    "event_8",
+                    "frame_8",
+                    "event_9",
+                    "event_10",
+                    "event_11",
+                    "event_12",
+                    "event_13",
+                    "event_14",
+                    "event_15",
+                    "frame_15"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p004",
+                  "name": "Online resource blocked by proxy or network path",
+                  "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+                  "status": "draft",
+                  "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "frame_1"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p005",
+                  "name": "Malformed command-entry key sequence",
+                  "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+                  "status": "draft",
+                  "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_10",
+                    "event_12",
+                    "event_14",
+                    "event_15",
+                    "frame_15"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p006",
+                  "name": "Retrieved information does not match requested scope",
+                  "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+                  "status": "draft",
+                  "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "frame_15"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p007",
+                  "name": "Numeric entry appended in wrong field",
+                  "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+                  "status": "draft",
+                  "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_12",
+                    "event_13",
+                    "frame_13"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "p008",
+                  "name": "Required dialog action left incomplete",
+                  "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+                  "status": "draft",
+                  "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_15",
+                    "frame_15"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                  "name": "Acceptance evidence gap 2999629000",
+                  "description": "An action has no visible confirmation; review remains uncertain.",
+                  "status": "draft",
+                  "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                  "proposal_kind": "label",
+                  "evidence_refs": [],
+                  "feedback": [
+                    "Retain evidence uncertainty; do not equate missing evidence with model failure."
+                  ]
+                },
+                {
+                  "id": "new:excessive_tab_restoration",
+                  "name": "Excessive tab restoration beyond requested scope",
+                  "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+                  "status": "draft",
+                  "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_2",
+                    "event_3",
+                    "event_4",
+                    "frame_2",
+                    "frame_3",
+                    "frame_4",
+                    "frame_5"
+                  ],
+                  "feedback": []
+                },
+                {
+                  "id": "new:repeated_menu_item_misselection",
+                  "name": "Repeated menu item misselection",
+                  "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+                  "status": "draft",
+                  "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+                  "proposal_kind": "label",
+                  "evidence_refs": [
+                    "event_7",
+                    "frame_7",
+                    "event_8",
+                    "event_9",
+                    "event_10",
+                    "event_11",
+                    "event_12",
+                    "event_13",
+                    "event_14",
+                    "event_15",
+                    "frame_15"
+                  ],
+                  "feedback": []
+                }
+              ],
+              "generation": 1,
+              "fence_token": 1,
+              "attempt_id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab"
+            },
+            "created_at": "2026-09-27T05:18:05.091987+00:00"
+          }
+        ],
+        "jobs": [
+          {
+            "id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "batch_id": "e8fc70a1-7647-4ed6-8075-ecfadac50106",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "stage": "review",
+            "review_kind": "failure_analysis",
+            "preset_revision_id": "b5a39a69-d306-4730-92ae-b78b334fa369",
+            "idempotency_key": "review:01077bdc-e5d4-4caa-9f5e-299229148c90:b5a39a69-d306-4730-92ae-b78b334fa369:1",
+            "generation": 1,
+            "fence_token": 1,
+            "status": "completed",
+            "attempt_count": 1,
+            "max_attempts": 4,
+            "lease_owner": null,
+            "lease_expires_at": null,
+            "available_at": "2026-09-27T05:13:46.795006+00:00",
+            "error": null,
+            "usage": {
+              "input_tokens": 34387,
+              "cached_input_tokens": 0,
+              "output_tokens": 1782,
+              "kind": "provider_reported_tokens",
+              "estimated_usd": 0.086594,
+              "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+              "billed": true,
+              "budget_usd": 0.1,
+              "budget_kind": "estimate_only",
+              "budget_enforced": false,
+              "timeout_seconds": 120,
+              "timeout_enforced": true,
+              "max_output_tokens": 4096,
+              "output_token_limit_enforced": false,
+              "output_token_limit_setting_configured": false,
+              "invocations": 1,
+              "automatic_retries": 0,
+              "retry_policy_scope": "adapter_attempt"
+            },
+            "cost_usd": 0.086594,
+            "shared_labels_snapshot": [
+              {
+                "id": "p001",
+                "name": "Repeated mis-targeted UI activation",
+                "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+                "status": "draft",
+                "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1",
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "event_5",
+                  "frame_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_9"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p002",
+                "name": "Wrong UI target activated",
+                "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+                "status": "draft",
+                "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p003",
+                "name": "Repeated ineffective modal dismissal",
+                "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+                "status": "draft",
+                "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "event_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_8",
+                  "event_9",
+                  "event_10",
+                  "event_11",
+                  "event_12",
+                  "event_13",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p004",
+                "name": "Online resource blocked by proxy or network path",
+                "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+                "status": "draft",
+                "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "frame_1"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p005",
+                "name": "Malformed command-entry key sequence",
+                "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+                "status": "draft",
+                "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_10",
+                  "event_12",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p006",
+                "name": "Retrieved information does not match requested scope",
+                "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+                "status": "draft",
+                "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p007",
+                "name": "Numeric entry appended in wrong field",
+                "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+                "status": "draft",
+                "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_12",
+                  "event_13",
+                  "frame_13"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p008",
+                "name": "Required dialog action left incomplete",
+                "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+                "status": "draft",
+                "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                "name": "Acceptance evidence gap 2999629000",
+                "description": "An action has no visible confirmation; review remains uncertain.",
+                "status": "draft",
+                "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                "proposal_kind": "label",
+                "evidence_refs": [],
+                "feedback": [
+                  "Retain evidence uncertainty; do not equate missing evidence with model failure."
+                ]
+              },
+              {
+                "id": "new:excessive_tab_restoration",
+                "name": "Excessive tab restoration beyond requested scope",
+                "description": "The agent pressed Ctrl+Shift+T repeatedly across steps 2, 3, and 4 after having already reopened the last closed tab in step 1, exceeding the scope of restoring a single tab.",
+                "status": "draft",
+                "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "frame_2",
+                  "frame_3",
+                  "frame_4",
+                  "frame_5"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "new:repeated_menu_item_misselection",
+                "name": "Repeated menu item misselection",
+                "description": "Repeated attempts to click 'Header and Footer' within the Insert dropdown repeatedly clicked the wrong menu items ('Bookmark' at step 7, 'Fields' at step 11, 'Special Characters' at step 14), opening modal dialogs that had to be cancelled and leaving page numbers uninserted.",
+                "status": "draft",
+                "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_7",
+                  "frame_7",
+                  "event_8",
+                  "event_9",
+                  "event_10",
+                  "event_11",
+                  "event_12",
+                  "event_13",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              }
+            ],
+            "created_at": "2026-09-27T05:13:46.795009+00:00",
+            "updated_at": "2026-09-27T05:18:05.094437+00:00",
+            "budget_usd": 0.1,
+            "max_total_budget_usd": 0.4,
+            "attempts": [
+              {
+                "id": "ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab",
+                "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+                "attempt_number": 1,
+                "generation": 1,
+                "fence_token": 1,
+                "status": "completed",
+                "error": null,
+                "usage": {
+                  "input_tokens": 34387,
+                  "cached_input_tokens": 0,
+                  "output_tokens": 1782,
+                  "kind": "provider_reported_tokens",
+                  "estimated_usd": 0.086594,
+                  "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+                  "billed": true,
+                  "budget_usd": 0.1,
+                  "budget_kind": "estimate_only",
+                  "budget_enforced": false,
+                  "timeout_seconds": 120,
+                  "timeout_enforced": true,
+                  "max_output_tokens": 4096,
+                  "output_token_limit_enforced": false,
+                  "output_token_limit_setting_configured": false,
+                  "invocations": 1,
+                  "automatic_retries": 0,
+                  "retry_policy_scope": "adapter_attempt"
+                },
+                "cost_usd": 0.086594,
+                "started_at": "2026-09-27T05:17:38.815059+00:00",
+                "finished_at": "2026-09-27T05:18:05.095364+00:00"
+              }
+            ],
+            "cumulative_cost_usd": 0.086594,
+            "unknown_cost_attempts": 0,
+            "retry_eligible": true
+          }
+        ],
+        "job_id": "1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1",
+        "artifacts": [
+          {
+            "id": "914f0ed4-62a7-4694-8a97-466f5fe01edd",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775.png",
+            "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772078+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "118efa09-68ba-4572-9b0a-b2b80ed5eadb",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5.png",
+            "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772092+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "03f728d6-d5a3-418b-b46b-376b43fe681e",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8.png",
+            "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772096+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "f50c1b64-3ded-46ac-88f0-0c970186b392",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb.png",
+            "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772098+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "5720f6a0-3efc-4f20-9df5-2d6c646d24cc",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8.png",
+            "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772101+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "61bf969e-9104-4233-b8ac-535db93c71d3",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58.png",
+            "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772105+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "4c385e71-4d1e-41e6-9fd1-6190e7d13f7a",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3.png",
+            "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772107+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "db28131d-df08-4295-915a-a653b4f17d9b",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e.png",
+            "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772109+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "b4d62641-8789-41c9-84cc-9299581d806d",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b.png",
+            "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:13:46.772110+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          },
+          {
+            "id": "172fc0b5-0088-4b44-99c1-24c1101a22f6",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "01077bdc-e5d4-4caa-9f5e-299229148c90",
+            "relative_path": "reviews/06fe7178-4491-4589-810f-2e2bc9502122/review-r1.yaml",
+            "media_type": "application/yaml",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/jobs/1fa1bcdf-5e0a-4d82-b8d0-a8a55aefc1f1/generation-1/attempt-ec2ee0f8-b0d9-4bff-a309-fc49ddc799ab/843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33.yaml",
+            "sha256": "843f5e529f3f7380e399ddb0a25707513b4caf359840ae422f9209183388aa33",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:18:05.093666+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/reviews/06fe7178-4491-4589-810f-2e2bc9502122/review-r1.yaml?member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+          }
+        ],
+        "raw_url": "/api/batches/e8fc70a1-7647-4ed6-8075-ecfadac50106/tasks/06fe7178-4491-4589-810f-2e2bc9502122/export?format=json&member_id=01077bdc-e5d4-4caa-9f5e-299229148c90"
+      },
+      "feedback": []
+    }
+  ],
+  "finished_at": "2026-09-27T05:18:07.817216+00:00"
+}

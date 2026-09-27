@@ -1,0 +1,116 @@
+name: cuautoreview
+x-app-env: &app-env
+  CUAUTOREVIEW_PROJECT_ROOT: /workspace
+  DATABASE_URL: ${CUAUTOREVIEW_DATABASE_URL:-postgresql+psycopg://cuauto:local_database@postgres:5432/cuautoreview}
+  CELERY_BROKER_URL: ${CUAUTOREVIEW_BROKER_URL:-amqp://cuauto:local_broker@rabbitmq:5672/cuautoreview}
+  OBJECT_STORE_BACKEND: s3
+  S3_ENDPOINT_URL: ${CUAUTOREVIEW_S3_ENDPOINT:-http://storage:8333}
+  S3_BUCKET: ${CUAUTOREVIEW_S3_BUCKET:-cuautoreview-local}
+  AWS_ACCESS_KEY_ID: ${CUAUTOREVIEW_S3_ACCESS_KEY:-local_access}
+  AWS_SECRET_ACCESS_KEY: ${CUAUTOREVIEW_S3_SECRET_KEY:-local_secret}
+  AWS_REGION: ${CUAUTOREVIEW_S3_REGION:-us-east-1}
+  SEED_POC: "true"
+  SECURE_COOKIES: "false"
+  ALLOW_HOSTED_INFERENCE: ${ALLOW_HOSTED_INFERENCE:-false}
+  ANTHROPIC_API_KEY_CONFIGURED: ${ANTHROPIC_API_KEY:+true}
+  OPENAI_API_KEY_CONFIGURED: ${OPENAI_API_KEY:+true}
+  CODEX_API_KEY_CONFIGURED: ${CODEX_API_KEY:+true}
+  GEMINI_API_KEY_CONFIGURED: ${GEMINI_API_KEY:+true}
+  CUAUTOREVIEW_CODEX_BASE_URL: ${CUAUTOREVIEW_CODEX_BASE_URL:-https://api.openai.com/v1}
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: cuautoreview
+      POSTGRES_USER: cuauto
+      POSTGRES_PASSWORD: local_database
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U cuauto -d cuautoreview]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  rabbitmq:
+    image: rabbitmq:4.3.6-management@sha256:cdf40d8cb363d145e377ed88d59696a42386ffe54b30125f10eb128b862eea95
+    environment:
+      RABBITMQ_DEFAULT_USER: cuauto
+      RABBITMQ_DEFAULT_PASS: local_broker
+      RABBITMQ_DEFAULT_VHOST: cuautoreview
+    volumes: [rabbitmq-data:/var/lib/rabbitmq]
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  storage:
+    image: chrislusf/seaweedfs:4.47@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882
+    command: [mini, -dir=/data, -ip=storage, -ip.bind=0.0.0.0, -master.volumeSizeLimitMB=64, -volume.max=4, -master.telemetry=false, -s3.config=/etc/seaweedfs/s3.json, -bucket=cuautoreview-local]
+    volumes:
+      - storage-data:/data
+      - ./deploy/s3.json:/etc/seaweedfs/s3.json:ro
+    healthcheck:
+      test: [CMD-SHELL, wget -q -O /dev/null http://localhost:9333/cluster/status]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  app:
+    image: cuautoreview-local:dev
+    build:
+      context: ..
+      dockerfile: platform/Dockerfile
+    environment: *app-env
+    ports: [127.0.0.1:8000:8000]
+    depends_on:
+      postgres: {condition: service_healthy}
+      rabbitmq: {condition: service_healthy}
+      storage: {condition: service_healthy}
+    command: [uvicorn, app.main:app, --host, 0.0.0.0, --port, "8000"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  worker:
+    image: cuautoreview-local:dev
+    environment:
+      <<: *app-env
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      CODEX_API_KEY: ${CODEX_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    user: "10001:10001"
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=512m
+    depends_on:
+      app: {condition: service_healthy}
+    command: [celery, -A, app.queue:celery_app, worker, --loglevel=INFO, --concurrency=2, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.reviews]
+    stop_grace_period: 180s
+  cli-worker:
+    image: cuautoreview-local:dev
+    environment:
+      <<: *app-env
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      CODEX_API_KEY: ${CODEX_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    user: "10001:10001"
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: 2g
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=512m
+    depends_on:
+      app: {condition: service_healthy}
+    command: [celery, -A, app.queue:celery_app, worker, --loglevel=INFO, --concurrency=1, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.cli]
+    stop_grace_period: 150s
+volumes:
+  postgres-data:
+  rabbitmq-data:
+  storage-data:

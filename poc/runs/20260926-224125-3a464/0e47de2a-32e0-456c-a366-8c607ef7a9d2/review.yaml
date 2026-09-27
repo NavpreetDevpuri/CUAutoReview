@@ -1,0 +1,235 @@
+review_kind: failure_analysis
+summary: The attempt repeatedly missed the intended footer command; no evidence shows
+  page numbers were inserted.
+result: issues_observed
+coverage_notes:
+- Only steps 1, 7, and 15 have screenshots.
+- Steps 2–6 and 8–14 are assessed from actions and cited events only.
+- No approved or reusable labels were available; new-label proposals were rejected
+  by the helper.
+steps:
+- step_id: '1'
+  review_status: reviewed
+  intent:
+    kind: inferred
+    text: Open Insert menu.
+  action: Clicked near the Insert menu.
+  observed_ui: Writer document visible; no menu shown in frame.
+  effect: Menu-opening effect is unconfirmed.
+  assessment: Insufficient evidence of a successful menu open.
+  evidence_refs:
+  - event_1
+  - frame_1
+  episode_refs: []
+- step_id: '2'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu.
+  action: Clicked another coordinate near Insert.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Possible retry after an ineffective prior click; outcome unverified.
+  evidence_refs:
+  - event_2
+  episode_refs: []
+- step_id: '3'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu.
+  action: Clicked another menu coordinate.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Repeated coordinate adjustment suggests prior targeting uncertainty.
+  evidence_refs:
+  - event_3
+  episode_refs: []
+- step_id: '4'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu.
+  action: Clicked another menu coordinate.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Menu state and result are unverified.
+  evidence_refs:
+  - event_4
+  episode_refs: []
+- step_id: '5'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu.
+  action: Clicked another menu coordinate.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Further retry without visible confirmation.
+  evidence_refs:
+  - event_5
+  episode_refs: []
+- step_id: '6'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu.
+  action: Pressed Alt+I.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Keyboard retry did not establish the menu state.
+  evidence_refs:
+  - event_6
+  episode_refs: []
+- step_id: '7'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Choose Header and Footer.
+  action: Clicked near a menu entry.
+  observed_ui: Bookmark dialog lists existing bookmarks.
+  effect: An unintended Bookmark dialog was open.
+  assessment: Supported mis-targeting of the intended Insert command.
+  evidence_refs:
+  - event_7
+  - frame_7
+  episode_refs:
+  - ep1
+- step_id: '8'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Close Bookmark dialog.
+  action: Clicked Close.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Dismissal is not visibly confirmed.
+  evidence_refs:
+  - event_8
+  episode_refs:
+  - ep1
+- step_id: '9'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Bookmark dialog.
+  action: Pressed Escape.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Possible recovery, but dialog state is unverified.
+  evidence_refs:
+  - event_9
+  episode_refs:
+  - ep1
+- step_id: '10'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu.
+  action: Pressed Alt+I.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Retry outcome is unverified.
+  evidence_refs:
+  - event_10
+  episode_refs: []
+- step_id: '11'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Choose Header and Footer.
+  action: Clicked near the claimed menu entry.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: The action may have targeted another command; no screenshot confirms
+    it.
+  evidence_refs:
+  - event_11
+  episode_refs:
+  - ep1
+- step_id: '12'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Close Fields dialog.
+  action: Pressed Escape.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Fields dialog is only declared by the action text.
+  evidence_refs:
+  - event_12
+  episode_refs:
+  - ep1
+- step_id: '13'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Insert menu for footer options.
+  action: Pressed Alt+I.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: Another retry without visible confirmation.
+  evidence_refs:
+  - event_13
+  episode_refs: []
+- step_id: '14'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Choose Header and Footer.
+  action: Clicked near a claimed menu entry.
+  observed_ui: Not captured.
+  effect: Unknown.
+  assessment: No evidence confirms the intended submenu opened.
+  evidence_refs:
+  - event_14
+  episode_refs:
+  - ep1
+- step_id: '15'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Close Special Characters dialog.
+  action: Pressed Escape.
+  observed_ui: Document visible; no dialog shown.
+  effect: Document remained without visible page-number change.
+  assessment: No evidence of successful footer or page-number insertion; final failure
+    remains unexplained beyond prior mis-targeting.
+  evidence_refs:
+  - event_15
+  - frame_15
+  episode_refs:
+  - ep1
+episodes:
+- episode_id: ep1
+  mechanism: The intended Header and Footer command appears to have been missed, with
+    later actions encountering unintended dialogs.
+  onset_step_ids:
+  - '7'
+  - '11'
+  - '14'
+  recovery:
+    status: partial
+    step_ids:
+    - '8'
+    - '9'
+    - '12'
+    - '15'
+    evidence_refs:
+    - event_8
+    - event_9
+    - event_12
+    - frame_15
+    rationale: Dismissal attempts occurred, but no evidence shows successful navigation
+      to footer settings.
+  outcome_contribution: contributing
+  label_id: ''
+  label_name: mis-targeted Insert menu command
+  evidence_refs:
+  - event_7
+  - frame_7
+  - event_12
+  - event_15
+  - frame_15
+  uncertainty: The later Fields and Special Characters dialogs are declared in action
+    text but not visually shown.

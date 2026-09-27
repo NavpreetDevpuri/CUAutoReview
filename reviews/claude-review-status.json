@@ -1,0 +1,11 @@
+{
+  "status": "blocked_missing_credential",
+  "requested_model": "claude-opus-5-5",
+  "requested_effort": "medium",
+  "planned_cli_budget_usd": 1.5,
+  "credential_source": "/Users/navpreetsinghdevpuri/personal_workspace/ac/.env",
+  "reason": "Specified file has no ANTHROPIC_API_KEY entry or recognizable Anthropic key. Awaiting the corrected path or file.",
+  "inference_calls": 0,
+  "incurred_cost_usd": 0,
+  "model_availability_verified": false
+}

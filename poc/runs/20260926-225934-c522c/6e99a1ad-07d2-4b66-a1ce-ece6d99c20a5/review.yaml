@@ -1,0 +1,282 @@
+review_kind: failure_analysis
+summary: The first click opened Function Wizard instead of selecting Spent. Repeated
+  dismissal attempts left it visible through step 15; formatting was not observed.
+result: issues_observed
+coverage_notes:
+- Only frames 1, 8, and 15 were visually reviewed.
+- Effects of steps without attached frames cannot be isolated.
+- The current reference checker is not proven to match the historical evaluator.
+steps:
+- step_id: '1'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Select the entire Spent column C.
+  action: Clicked at (270,174).
+  observed_ui: Function Wizard is open; A1 appears selected and column C is not selected.
+  effect: Activated an unintended dialog rather than visibly selecting column C.
+  assessment: Supported wrong-target activation; coordinate mapping or window geometry
+    may explain it, but the cause is uncertain.
+  evidence_refs:
+  - event_1
+  - frame_1
+  episode_refs:
+  - ep1
+- step_id: '2'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its close button.
+  action: Clicked at (959,209).
+  observed_ui: No attached frame; later frame 8 still shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: A recovery attempt, but later persistence does not isolate whether this
+    specific click worked temporarily.
+  evidence_refs:
+  - event_2
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '3'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Close Function Wizard using Cancel.
+  action: Clicked at (876,627).
+  observed_ui: No attached frame; later frame 8 still shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Another recovery attempt; no observed restoration attributable to it.
+  evidence_refs:
+  - event_3
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '4'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its title-bar close button.
+  action: Clicked at (967,209).
+  observed_ui: No attached frame; later frame 8 still shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated dismissal without verified restoration.
+  evidence_refs:
+  - event_4
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '5'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Close Function Wizard using Cancel.
+  action: Clicked at (886,627).
+  observed_ui: No attached frame; later frame 8 still shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated recovery attempt; effectiveness is unsupported.
+  evidence_refs:
+  - event_5
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '6'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its title-bar close button.
+  action: Clicked at (965,209).
+  observed_ui: No attached frame; later frame 8 still shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated dismissal attempt with no attributable recovery.
+  evidence_refs:
+  - event_6
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '7'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Close Function Wizard with Escape.
+  action: Pressed Escape.
+  observed_ui: No attached frame; frame 8 still shows Function Wizard afterward.
+  effect: Immediate effect is unknown; later restoration is absent.
+  assessment: Changed method, but later evidence shows the obstruction persisted.
+  evidence_refs:
+  - event_7
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '8'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Close Function Wizard with Alt+F4.
+  action: Pressed Alt+F4.
+  observed_ui: Function Wizard remains open in the captured frame.
+  effect: The dialog was not visibly dismissed.
+  assessment: Supported ineffective recovery, though why Alt+F4 failed is unknown.
+  evidence_refs:
+  - event_8
+  - frame_8
+  episode_refs:
+  - ep2
+- step_id: '9'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Dismiss Function Wizard, based on surrounding attempts.
+  action: Clicked at (865,627).
+  observed_ui: No attached frame; frame 15 later shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Likely another dismissal attempt; later persistence does not prove this
+    individual click failed.
+  evidence_refs:
+  - event_9
+  - frame_15
+  episode_refs:
+  - ep2
+- step_id: '10'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its close button.
+  action: Clicked at (958,208).
+  observed_ui: No attached frame; frame 15 later shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated recovery attempt without observed lasting restoration.
+  evidence_refs:
+  - event_10
+  - frame_15
+  episode_refs:
+  - ep2
+- step_id: '11'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its title-bar close button.
+  action: Clicked at (795,208).
+  observed_ui: No attached frame; frame 15 later shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated dismissal attempt; the declared approximate target may not
+    match the actual control.
+  evidence_refs:
+  - event_11
+  - frame_15
+  episode_refs:
+  - ep2
+- step_id: '12'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its close icon.
+  action: Clicked at (962,209).
+  observed_ui: No attached frame; frame 15 later shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated recovery attempt without observed lasting restoration.
+  evidence_refs:
+  - event_12
+  - frame_15
+  episode_refs:
+  - ep2
+- step_id: '13'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Close Function Wizard using Cancel.
+  action: Clicked at (865,629).
+  observed_ui: No attached frame; frame 15 later shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated recovery attempt; no restoration is attributable to it.
+  evidence_refs:
+  - event_13
+  - frame_15
+  episode_refs:
+  - ep2
+- step_id: '14'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its title-bar close icon.
+  action: Clicked at (846,209).
+  observed_ui: No attached frame; frame 15 later shows Function Wizard.
+  effect: This click's immediate effect is unknown.
+  assessment: Repeated dismissal attempt; declared targeting and recorded coordinates
+    may be inconsistent.
+  evidence_refs:
+  - event_14
+  - frame_15
+  episode_refs:
+  - ep2
+- step_id: '15'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Dismiss Function Wizard using its close icon.
+  action: Clicked at (810,209).
+  observed_ui: Function Wizard remains open; spreadsheet values still display mixed
+    decimal places.
+  effect: The modal remained and no requested formatting is visible.
+  assessment: Final recovery attempt failed visibly, leaving the task incomplete.
+  evidence_refs:
+  - event_15
+  - frame_15
+  episode_refs:
+  - ep2
+episodes:
+- episode_id: ep1
+  mechanism: The initial click activated Function Wizard instead of selecting the
+    Spent column.
+  onset_step_ids:
+  - '1'
+  recovery:
+    status: none_observed
+    step_ids: []
+    evidence_refs:
+    - frame_8
+    - frame_15
+    rationale: Later frames never show the intended column selected or formatting
+      underway.
+  outcome_contribution: contributing
+  label_id: p002
+  label_name: Wrong UI target activated
+  evidence_refs:
+  - event_1
+  - frame_1
+  uncertainty: A coordinate mismatch or changed window geometry is plausible, but
+    sparse evidence cannot establish the underlying cause.
+- episode_id: ep2
+  mechanism: Repeated close, Cancel, Escape, and Alt+F4 attempts did not produce an
+    observed lasting dismissal of Function Wizard.
+  onset_step_ids:
+  - '2'
+  recovery:
+    status: none_observed
+    step_ids: []
+    evidence_refs:
+    - frame_8
+    - frame_15
+    rationale: Attempts alone are not recovery; the modal remains visible in both
+      later reviewed frames.
+  outcome_contribution: contributing
+  label_id: p003
+  label_name: Repeated ineffective modal dismissal
+  evidence_refs:
+  - event_2
+  - event_3
+  - event_4
+  - event_5
+  - event_6
+  - event_7
+  - event_8
+  - frame_8
+  - event_9
+  - event_10
+  - event_11
+  - event_12
+  - event_13
+  - event_14
+  - event_15
+  - frame_15
+  uncertainty: Intermediate effects are unknown; inaccurate targeting, modal behavior,
+    or coordinate mapping could explain persistence.

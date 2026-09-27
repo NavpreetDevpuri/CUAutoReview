@@ -1,0 +1,324 @@
+{
+  "format": "cuautoreview",
+  "tasks": [
+    {
+      "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+      "title": "Could you assist me in adding a new layer and naming it 'Square'?",
+      "instruction": "Could you assist me in adding a new layer and naming it 'Square'?",
+      "outcome": "passed",
+      "score": 1.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+        "application": "gimp",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/task.json",
+        "trajectory": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/traj.jsonl",
+        "score_file": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/result.txt",
+        "runtime_log": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/runtime.log",
+        "provenance_file": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/provenance.json"
+      },
+      "coverage_notes": [
+        "Archive label is 15steps; source traj.jsonl contains 9 recorded actions.",
+        "Downloaded 9 available recorded step screenshots: 1, 2, 3, 4, 5, 6, 7, 8, 9.",
+        "The archive recording.mp4 was not downloaded.",
+        "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+        "No human-authored failure diagnosis or recovery annotation is included."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Click the \"+\" icon in the Layers panel to create a new layer\npyautogui.click(x=1290, y=382, duration=0.5)",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_1_20250728@115850.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Click the \"+\" icon in the Layers panel (bottom-right) to open the New Layer dialog\npyautogui.click(x=1290, y=401, duration=0.5)",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_2_20250728@115910.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the blank-page icon at the bottom of the Layers panel to open the New Layer dialog\npyautogui.click(x=1258, y=734, duration=0.5)",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_3_20250728@115934.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the leftmost blank-sheet \u201cCreate a new layer\u201d icon beneath the layer list in Layers panel\npyautogui.click(x=1225, y=706, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_4_20250728@120005.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the leftmost \u201csheet\u201d icon at the bottom of the Layers panel to open the New Layer dialog\npyautogui.click(x=1185, y=744, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_5_20250728@120041.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the left-most blank-sheet \u201cCreate a new layer\u201d icon just above the dock\u2019s bottom-right bar\npyautogui.click(x=1330, y=728, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_6_20250728@120224.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Open the \u201cNew Layer\u201d dialog via keyboard shortcut\npyautogui.hotkey('ctrl', 'shift', 'n')",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_7_20250728@120350.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Replace the current layer name with 'Square' and confirm creation\npyautogui.hotkey('ctrl','a')\npyautogui.typewrite('Square')\npyautogui.press('enter')",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_8_20250728@120412.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "DONE",
+          "observation": null,
+          "screenshot": "assets/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_9_20250728@120425.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "045bf3ff-9077-4b86-b483-a1040a949cff",
+      "title": "Could you turn my image into CYMK mode within GIMP ?",
+      "instruction": "Could you turn my image into CYMK mode within GIMP ?",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "application": "gimp",
+        "task_id": "045bf3ff-9077-4b86-b483-a1040a949cff",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/gimp/045bf3ff-9077-4b86-b483-a1040a949cff.json"
+      },
+      "coverage_notes": [
+        "Public recorded rollout; not executed locally.",
+        "Final evaluator score is retained; no human failure diagnosis is supplied.",
+        "Pinned current task definition is not proven to be the exact historical evaluator.",
+        "Video not downloaded. Screenshots retain their recorded step association."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Click the \"Convert\" button in the center pop-up to proceed with sRGB conversion\npyautogui.click(x=1080, y=620, duration=0.5)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_1_20250728@120703.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Click the \"Convert\" button in the color profile dialog to accept sRGB conversion\npyautogui.click(x=880, y=507, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_2_20250728@120729.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the \"Convert\" button at the bottom-right of the color-profile dialog to close it\npyautogui.click(x=815, y=502, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_3_20250728@120806.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the \"Convert\" button at the bottom-right of the colour-profile dialog to dismiss it\npyautogui.click(x=1150, y=705, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_4_20250728@120836.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click on \"Image\" menu in the top menu bar to open it\npyautogui.click(x=181, y=54, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_5_20250728@120853.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the \"Image\" menu on the top bar to open its dropdown\npyautogui.click(x=182, y=54, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_6_20250728@120917.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Open the \"Image\" menu in the top menu bar\npyautogui.click(x=185, y=52, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_7_20250728@120940.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Click the \"Image\" menu label in the top bar to open its dropdown\npyautogui.click(x=170, y=52, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_8_20250728@121014.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "# Open the \"Image\" menu using the Alt+I keyboard shortcut\npyautogui.hotkey('alt', 'i')",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_9_20250728@121045.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ]
+        },
+        {
+          "step_id": "10",
+          "intent": null,
+          "action": "# Open the \"Mode\" submenu under the currently open \"Image\" menu\npyautogui.click(x=197, y=101, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_10_20250728@121105.png",
+          "evidence_refs": [
+            "event_10",
+            "frame_10"
+          ]
+        },
+        {
+          "step_id": "11",
+          "intent": null,
+          "action": "# Open the \"Image\" menu to access color management options\npyautogui.hotkey('alt', 'i')",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_11_20250728@121127.png",
+          "evidence_refs": [
+            "event_11",
+            "frame_11"
+          ]
+        },
+        {
+          "step_id": "12",
+          "intent": null,
+          "action": "# Click the \"Color Management\" option within the open Image menu to access profile conversion tools\npyautogui.click(x=210, y=139, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_12_20250728@121155.png",
+          "evidence_refs": [
+            "event_12",
+            "frame_12"
+          ]
+        },
+        {
+          "step_id": "13",
+          "intent": null,
+          "action": "# Open Image menu then navigate right into the \"Color Management\" submenu via keyboard\npyautogui.hotkey('alt','i')\npyautogui.press(['down','down','down','right'])",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_13_20250728@121239.png",
+          "evidence_refs": [
+            "event_13",
+            "frame_13"
+          ]
+        },
+        {
+          "step_id": "14",
+          "intent": null,
+          "action": "# Click the \u201cConvert to Color Profile\u2026\u201d option in the Color Management submenu (second line) to open the conversion dialog\npyautogui.click(x=430, y=183, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_14_20250728@121257.png",
+          "evidence_refs": [
+            "event_14",
+            "frame_14"
+          ]
+        },
+        {
+          "step_id": "15",
+          "intent": null,
+          "action": "# Click on the \u201cColor Management\u201d row in the open Image menu to expand its submenu\npyautogui.click(x=245, y=138, duration=0.2)",
+          "observation": null,
+          "screenshot": "assets/045bf3ff-9077-4b86-b483-a1040a949cff/step_15_20250728@121325.png",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ]
+        }
+      ]
+    }
+  ]
+}

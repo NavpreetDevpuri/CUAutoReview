@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "acquired_at_utc": "2026-09-26T14:44:35.025177+00:00",
+  "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+  "dataset": {
+    "repository": "xlangai/ubuntu_osworld_verified_trajs",
+    "commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+    "dataset_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs",
+    "archive_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+    "archive_bytes": 3408011289,
+    "archive_sha256_as_declared_by_huggingface_lfs": "976c2028235156cd767ebf723c5b301761ae7c951afb9c507f1ac1ef9b014b2b",
+    "full_archive_checksum_verified_locally": false
+  },
+  "acquisition": {
+    "method": "HTTP Range reads of ZIP central directory and selected local members; raw deflate decompression with ZIP CRC32 and length validation. Full archive not downloaded.",
+    "central_directory_range": "bytes=3406999538-3408011266",
+    "original_trace_and_result_preserved_byte_for_byte": true,
+    "screenshot_policy": "Three original PNG members: first recorded action frame, selected intermediate frame, last recorded action frame. No video or other screenshots downloaded."
+  },
+  "rollout": {
+    "agent_model_as_published": "o3",
+    "step_budget_as_archive_name": 15,
+    "recorded_action_count": 15,
+    "recorded_first_action_timestamp": "20250728@131045",
+    "recorded_last_action_timestamp": "20250728@131917",
+    "timestamp_timezone": "unknown",
+    "recorded_final_score": 0,
+    "score_source": "result.txt",
+    "recorded_step_reward_values": [
+      0
+    ],
+    "recorded_done_values": [
+      false
+    ],
+    "original_agent_implementation_revision": "unknown",
+    "original_evaluator_revision": "unknown",
+    "original_task_revision": "unknown",
+    "original_environment_revision": "unknown",
+    "human_failure_annotations": "absent from selected task directory; no human failure labels supplied by this example"
+  },
+  "task_definition": {
+    "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2.json",
+    "source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+    "matches_rollout_task_id": true,
+    "exact_historical_match_verified": false,
+    "limitation": "This is the pinned current public task definition, not proven to be the exact definition or evaluator used for the July 2025 rollout.",
+    "evaluator_function": "has_page_numbers_in_footers",
+    "oracle_artifacts": [],
+    "inspected_current_evaluator_limitations": "At the pinned task-source commit, has_page_numbers_in_footers checks for any digit in the first footer paragraph of each section; it does not verify left alignment or dynamic page-number fields. This is a limitation of the inspected current evaluator, not a claim about the unknown historical evaluator.",
+    "evaluator_source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/desktop_env/evaluators/metrics/docs.py"
+  },
+  "screenshot_timing": {
+    "status": "exact archive capture timing not independently proven",
+    "public_historical_harness_convention": "post-action: env.step(action, ...) returns obs, then obs[screenshot] is written; action_timestamp is captured before execution",
+    "harness_source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/39e5baf5ae19859b9fc73f27377e180bb45be96e/lib_run_single.py",
+    "harness_source_commit": "39e5baf5ae19859b9fc73f27377e180bb45be96e",
+    "archive_harness_revision": "unknown",
+    "initial_pre_action_frame_present": false,
+    "first_downloaded_frame": "first recorded action frame, not a verified initial observation",
+    "last_downloaded_frame": "last recorded action frame, not a verified post-evaluation final state"
+  },
+  "screenshots": [
+    {
+      "file": "step_1_20250728@131045.png",
+      "step_num": 1,
+      "role": "first recorded action frame"
+    },
+    {
+      "file": "step_7_20250728@131349.png",
+      "step_num": 7,
+      "role": "selected intermediate action frame"
+    },
+    {
+      "file": "step_15_20250728@131917.png",
+      "step_num": 15,
+      "role": "last recorded action frame"
+    }
+  ],
+  "available_archive_members_for_task": [
+    "step_5_20250728@131223.png",
+    "step_15_20250728@131917.png",
+    "step_4_20250728@131157.png",
+    "step_7_20250728@131349.png",
+    "step_14_20250728@131756.png",
+    "recording.mp4",
+    "step_8_20250728@131405.png",
+    "result.txt",
+    "runtime.log",
+    "step_10_20250728@131450.png",
+    "step_3_20250728@131125.png",
+    "step_11_20250728@131517.png",
+    "step_12_20250728@131557.png",
+    "traj.jsonl",
+    "step_6_20250728@131306.png",
+    "step_13_20250728@131628.png",
+    "step_2_20250728@131103.png",
+    "step_1_20250728@131045.png",
+    "step_9_20250728@131430.png"
+  ],
+  "licensing": {
+    "trajectory_dataset_declared_license": "MIT (dataset-card YAML: license: mit)",
+    "dataset_card_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/5473c39e42a538a187a9b2c2b499db59d560fd8c/README.md",
+    "dataset_card_citation": "Tianbao Xie et al., Introducing OSWorld-Verified, July 2025, https://xlang.ai/blog/osworld-verified",
+    "task_repository_license": "Apache-2.0",
+    "task_repository_license_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/LICENSE",
+    "limitations": [
+      "The dataset card declares MIT; the dataset root listing has no separate LICENSE file.",
+      "The card does not individually itemize licenses of third-party content visible in screenshots or referenced source documents.",
+      "The dataset card lists training use as not recommended.",
+      "No human-authored failure explanation or independently adjudicated first-error label is supplied here."
+    ]
+  },
+  "files": {
+    "step_15_20250728@131917.png": {
+      "archive_member": "o3_15steps/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_15_20250728@131917.png",
+      "http_range": "bytes=22112111-22288895",
+      "uncompressed_bytes": 182052,
+      "sha256": "d1ee455c2f6e48abd476f5efcbb88648d1741926e938147fa70ec030aa3e0b00",
+      "zip_crc32": "0a4c7aa9",
+      "zip_crc_verified": true
+    },
+    "step_7_20250728@131349.png": {
+      "archive_member": "o3_15steps/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_7_20250728@131349.png",
+      "http_range": "bytes=22463697-22662426",
+      "uncompressed_bytes": 203617,
+      "sha256": "d5988236665b5405eddceacaef8bcd1b3789314b583cbf5ab9f1bccd17d486e2",
+      "zip_crc32": "d8c8a547",
+      "zip_crc_verified": true
+    },
+    "result.txt": {
+      "archive_member": "o3_15steps/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2/result.txt",
+      "http_range": "bytes=26858887-26859912",
+      "uncompressed_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "zip_crc32": "7e4acd12",
+      "zip_crc_verified": true
+    },
+    "runtime.log": {
+      "archive_member": "o3_15steps/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2/runtime.log",
+      "http_range": "bytes=26859024-26863495",
+      "uncompressed_bytes": 15548,
+      "sha256": "e1bccbef54da0913c2b391d7133bd26144a1594eda93cd0c27af9a275cb9469d",
+      "zip_crc32": "dfa1b0db",
+      "zip_crc_verified": true
+    },
+    "traj.jsonl": {
+      "archive_member": "o3_15steps/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2/traj.jsonl",
+      "http_range": "bytes=27601272-27603128",
+      "uncompressed_bytes": 4051,
+      "sha256": "7b765909aeb19850c93af12c69e5229640fd8a867bd07095f42d96723e30e419",
+      "zip_crc32": "b7283901",
+      "zip_crc_verified": true
+    },
+    "step_1_20250728@131045.png": {
+      "archive_member": "o3_15steps/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_1_20250728@131045.png",
+      "http_range": "bytes=28199829-28376688",
+      "uncompressed_bytes": 182116,
+      "sha256": "3ff664787796e38ff3249765eed3fac87ba33e241869b692b4ec361737674631",
+      "zip_crc32": "0c5c2d3d",
+      "zip_crc_verified": true
+    },
+    "task.json": {
+      "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/libreoffice_writer/0e47de2a-32e0-456c-a366-8c607ef7a9d2.json",
+      "bytes": 1823,
+      "sha256": "4395cc3300da919051c2a318f0000db1d5c5de32af616abda99df7a284bed61d"
+    },
+    "dataset-card.md": {
+      "source_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/5473c39e42a538a187a9b2c2b499db59d560fd8c/README.md",
+      "bytes": 2278,
+      "sha256": "3e115bb35b01a9be2c797effd4cac3e9ee2ff10036c0c7df648126db0a5a11fc"
+    },
+    "LICENSE-task-source.txt": {
+      "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/LICENSE",
+      "bytes": 11343,
+      "sha256": "a8d1d88a0f9cce3cdbff73b03a80dc5e5d69e3ba2443946c268815a550c9e0ec"
+    }
+  }
+}

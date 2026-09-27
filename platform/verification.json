@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-09-26T18:46:24.642884+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "provider_calls": 0,
+  "checks": [
+    {
+      "check": "Signup/login and first administrator",
+      "status": "passed"
+    },
+    {
+      "check": "Import five recorded tasks, repeated import unchanged, source access scoped",
+      "status": "passed"
+    },
+    {
+      "check": "Team grant, reviewer feedback/export and immediate revocation on evidence",
+      "status": "passed"
+    },
+    {
+      "check": "Unrecorded artifact and path traversal rejected",
+      "status": "passed"
+    },
+    {
+      "check": "Real RabbitMQ delivery, five Celery reviews, both routes, immutable S3 YAML and zero new inference cost",
+      "status": "passed"
+    },
+    {
+      "check": "Repeated start preserves completed results",
+      "status": "passed"
+    },
+    {
+      "check": "Appendable sync idempotency and immutable source revision selection",
+      "status": "passed"
+    },
+    {
+      "check": "Fixed batch rejects sync",
+      "status": "passed"
+    },
+    {
+      "check": "Preset revision does not change existing batch configuration",
+      "status": "passed"
+    },
+    {
+      "check": "Stale taxonomy feedback and rejected candidate both block approval",
+      "status": "passed"
+    },
+    {
+      "check": "Deactivated account loses existing session access",
+      "status": "passed"
+    }
+  ],
+  "batch_id": "b234c5cb-bbe7-4b73-b0e9-945a1b20426f",
+  "job_ids": [
+    "191b6ed8-1945-4c69-8450-7ceea01a2781",
+    "c1642745-8b0c-4680-a7ec-c5c640858f0a",
+    "009cfc54-4bb9-4ff3-94ee-4b079b8ab149",
+    "f404ddad-2eb3-44ea-bcbc-9cf0ace83743",
+    "0d402723-9e67-4685-aad3-df038f3fb531"
+  ],
+  "note": "Functional saved-replay checks, not model quality, scale or production certification."
+}

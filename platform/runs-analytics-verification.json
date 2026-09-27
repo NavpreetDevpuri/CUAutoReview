@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-09-27T04:02:39.414946+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "admin_user_id": "6123c305-e0b7-4e28-a4c2-67293edb13a8",
+  "provider_calls": 0,
+  "checks": [
+    {
+      "check": "Explicit two-dataset task selection and draft workflow/execution configure",
+      "status": "passed"
+    },
+    {
+      "check": "Draft cancel and new rerun successor preserve source history and frozen snapshots",
+      "status": "passed"
+    },
+    {
+      "check": "Saved replay completes with no provider calls and freezes successor configuration",
+      "status": "passed"
+    },
+    {
+      "check": "Same-revision saved replay comparison includes task identity, backend, model and full reviews",
+      "status": "passed"
+    },
+    {
+      "check": "Task history preserves source run, successors and saved replay reviews",
+      "status": "passed"
+    },
+    {
+      "check": "Analytics dimensions intersect, with matched and pre-intersection task counts",
+      "status": "passed"
+    },
+    {
+      "check": "Dataset sharing grants multi-source visibility only while all source grants remain",
+      "status": "passed"
+    }
+  ],
+  "fixtures": {
+    "dataset_ids": [
+      "6e75688b-d5a1-4a81-b6a0-e52d02fd7bb4",
+      "b2741784-6117-4634-9a71-9a6a39289c83"
+    ],
+    "task_definition_ids": [
+      "38c0e749-22cc-4cbc-979e-c64d716d34c9",
+      "d4bc0e79-8e3e-44fa-82e2-3b73dc66f8fa"
+    ],
+    "source_run_id": "2c7a17be-98ab-4d39-8d12-6a03df2e4c98",
+    "successor_run_id": "bd2117af-4875-4c08-baab-75aaaf8a6abf",
+    "second_successor_run_id": "e77ec108-2cf7-4466-8ac5-116d44744cd9",
+    "source_task_revision_ids": {
+      "368d9ba4-203c-40c1-9fa3-da2f1430ce63": "723c2b72-2de0-4782-bf8a-28412bf05c69",
+      "b148e375-fe0b-4bec-90e7-38632b0d73c2": "517a7479-81a8-4d0e-971a-9ee67d0bcf12"
+    },
+    "saved_replay_job_ids": [
+      "0b62b86c-bd76-410e-9ff5-5029d0578a99",
+      "03891300-030d-471d-8a83-23fab324e767",
+      "a9e0914c-d65c-4aed-8166-7cdabd708bb2",
+      "76c4a8de-b24a-4eb7-b7e2-674af4621ab1"
+    ],
+    "compared_review_result_ids": [
+      "38ee6d9b-5b54-40ff-8ffb-f0b08467b938",
+      "8bc7b01d-99c1-47e9-b0b2-c0d0c03e3f40"
+    ],
+    "viewer_id": "1bb528e2-2e97-43c7-9cfe-d81319242194"
+  },
+  "soft_archived": {
+    "run_ids": [
+      "2c7a17be-98ab-4d39-8d12-6a03df2e4c98",
+      "bd2117af-4875-4c08-baab-75aaaf8a6abf",
+      "e77ec108-2cf7-4466-8ac5-116d44744cd9",
+      "2b17408b-ccc5-4bb3-b618-1df3eb60a7a4"
+    ],
+    "task_definition_ids": [
+      "38c0e749-22cc-4cbc-979e-c64d716d34c9",
+      "d4bc0e79-8e3e-44fa-82e2-3b73dc66f8fa"
+    ],
+    "dataset_ids": [
+      "6e75688b-d5a1-4a81-b6a0-e52d02fd7bb4",
+      "b2741784-6117-4634-9a71-9a6a39289c83"
+    ]
+  },
+  "note": "Local saved-replay hierarchy and analytics checks. No live model calls or production certification."
+}

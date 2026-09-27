@@ -1,0 +1,15 @@
+{
+  "response": null,
+  "usage": {
+    "input_tokens": null,
+    "cached_input_tokens": null,
+    "output_tokens": null,
+    "estimated_usd": null,
+    "billing_basis": "API-equivalent estimate, not ChatGPT invoice",
+    "pricing_note": "ChatGPT login uses plan allowance/credits. Actual dollar charge is unavailable. Standard short-context API rates, checked 2026-09-26.",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing",
+    "model": "gpt-6-sol"
+  },
+  "error": "{\"message\": \"{\\\"type\\\":\\\"error\\\",\\\"status\\\":400,\\\"error\\\":{\\\"type\\\":\\\"invalid_request_error\\\",\\\"message\\\":\\\"The 'gpt-6-sol' model is not supported when using Codex with a ChatGPT account.\\\"}}\"}",
+  "duration_seconds": 3.66
+}

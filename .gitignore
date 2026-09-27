@@ -1,0 +1,19 @@
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+platform/web/dist/
+platform/.local/
+platform/backend/.local/
+*.pyc
+.DS_Store
+platform/backend/var/
+*.tsbuildinfo
+# POC runtime database and SQLite sidecars; published reviews/proposals retain results.
+poc/runs/**/labels.sqlite*

@@ -1,0 +1,160 @@
+{
+  "pool_version": "v8",
+  "approved_release": "0.0.0",
+  "approved_labels": [],
+  "proposals": [
+    {
+      "id": "p001",
+      "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+      "episode_id": "ep1",
+      "name": "Repeated mis-targeted UI activation",
+      "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+      "target_label_id": "",
+      "base_version": "v0",
+      "status": "draft",
+      "created_at": "2026-09-26T17:29:48.308622+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "event_1",
+        "frame_1",
+        "event_2",
+        "event_3",
+        "event_4",
+        "event_5",
+        "frame_5",
+        "event_6",
+        "event_7",
+        "event_8",
+        "frame_9"
+      ]
+    },
+    {
+      "id": "p002",
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "episode_id": "ep1",
+      "name": "Wrong UI target activated",
+      "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+      "target_label_id": "",
+      "base_version": "v0",
+      "status": "stale_base",
+      "created_at": "2026-09-26T17:30:03.313381+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ]
+    },
+    {
+      "id": "p003",
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "episode_id": "ep2",
+      "name": "Repeated ineffective modal dismissal",
+      "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+      "target_label_id": "",
+      "base_version": "v0",
+      "status": "stale_base",
+      "created_at": "2026-09-26T17:30:03.316538+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "event_2",
+        "event_3",
+        "event_4",
+        "event_5",
+        "event_6",
+        "event_7",
+        "event_8",
+        "frame_8",
+        "event_9",
+        "event_10",
+        "event_11",
+        "event_12",
+        "event_13",
+        "event_14",
+        "event_15",
+        "frame_15"
+      ]
+    },
+    {
+      "id": "p004",
+      "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+      "episode_id": "ep1",
+      "name": "Online resource blocked by proxy or network path",
+      "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+      "target_label_id": "",
+      "base_version": "v0",
+      "status": "stale_base",
+      "created_at": "2026-09-26T17:30:11.602895+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "frame_1"
+      ]
+    },
+    {
+      "id": "p005",
+      "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+      "episode_id": "ep2",
+      "name": "Malformed command-entry key sequence",
+      "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+      "target_label_id": "",
+      "base_version": "v4",
+      "status": "draft",
+      "created_at": "2026-09-26T17:30:16.501756+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "event_10",
+        "event_12",
+        "event_14",
+        "event_15",
+        "frame_15"
+      ]
+    },
+    {
+      "id": "p006",
+      "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+      "episode_id": "ep3",
+      "name": "Retrieved information does not match requested scope",
+      "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+      "target_label_id": "",
+      "base_version": "v5",
+      "status": "draft",
+      "created_at": "2026-09-26T17:30:20.323502+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "frame_15"
+      ]
+    },
+    {
+      "id": "p007",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "episode_id": "ep2",
+      "name": "Numeric entry appended in wrong field",
+      "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+      "target_label_id": "",
+      "base_version": "v6",
+      "status": "draft",
+      "created_at": "2026-09-26T17:31:39.491547+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "event_12",
+        "event_13",
+        "frame_13"
+      ]
+    },
+    {
+      "id": "p008",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "episode_id": "ep3",
+      "name": "Required dialog action left incomplete",
+      "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+      "target_label_id": "",
+      "base_version": "v7",
+      "status": "draft",
+      "created_at": "2026-09-26T17:31:43.187264+00:00",
+      "type": "new",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-09-27T03:31:11.062976+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "provider_calls": 0,
+  "checks": [
+    {
+      "check": "Five retained tasks complete with persisted batch status completed",
+      "status": "passed"
+    },
+    {
+      "check": "Explicit reconcile is a no-op for an already completed batch",
+      "status": "passed"
+    },
+    {
+      "check": "Unknown outcome remains awaiting_review with zero jobs",
+      "status": "passed"
+    },
+    {
+      "check": "Explicit reconcile preserves unresolved unknown outcome",
+      "status": "passed"
+    }
+  ],
+  "batch_id": "c28261a5-19c7-4fef-b630-fdcc6c08b048",
+  "task_count": 5,
+  "unknown_batch_id": "de284bd9-7aef-4987-95ec-9223d1ca6f83",
+  "unknown_jobs_added": 0,
+  "note": "Real-service saved-replay status checks, not model quality, scale, or production certification."
+}

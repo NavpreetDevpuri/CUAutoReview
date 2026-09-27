@@ -1,0 +1,70 @@
+summary: Consolidated six frozen draft proposals into five mechanism labels; recovery
+  and outcome remain separate attributes.
+labels:
+- id: c01
+  name: dialog dismissal failure
+  description: Repeated attempts to dismiss a dialog do not visibly restore the underlying
+    workspace.
+  aliases:
+  - repeated_dialog_dismissal_without_restoration
+  status: draft
+- id: c02
+  name: off-target UI targeting
+  description: Repeated UI targeting misses the intended control and leads to unrelated
+    or absent UI states.
+  aliases:
+  - Repeated control targeting misses
+  - off_target_menu_navigation
+  status: draft
+- id: c03
+  name: off-target retrieval path
+  description: The attempt pursues an alternative retrieval route instead of establishing
+    the requested browser result.
+  aliases:
+  - off-target retrieval path
+  status: draft
+- id: c04
+  name: proxy access failure
+  description: A visible proxy authentication or access error blocks or may block
+    browser access.
+  aliases:
+  - proxy access failure
+  status: draft
+- id: c05
+  name: numeric field append error
+  description: Input is appended to an existing numeric field value instead of replacing
+    it.
+  aliases:
+  - numeric_field_append_without_clear
+  status: draft
+mappings:
+- proposal_id: p001
+  canonical_label_id: c01
+  rationale: The Function Wizard remained visible after repeated dismissal attempts;
+    this is a dialog-state failure, not merely an unsuccessful click.
+- proposal_id: p002
+  canonical_label_id: c03
+  rationale: The episode used wttr.in and terminal commands instead of establishing
+    the requested browser page, a strategy/path deviation distinct from proxy access.
+- proposal_id: p003
+  canonical_label_id: c04
+  rationale: The browser visibly reported ERR_PROXY_AUTH_UNSUPPORTED, indicating an
+    access-layer failure; its causal effect on later retrieval remains uncertain.
+- proposal_id: p004
+  canonical_label_id: c02
+  rationale: Repeated clicks missed the intended Layers-panel control and the dialog
+    opened only after a shortcut; this shares the targeting-miss mechanism with p005.
+- proposal_id: p005
+  canonical_label_id: c02
+  rationale: Menu targeting led to unrelated dialogs rather than footer controls,
+    matching the same off-target UI targeting mechanism as p004 despite a different
+    UI area.
+- proposal_id: p006
+  canonical_label_id: c05
+  rationale: Typing produced 75 from an existing 2 rather than replacing the field
+    value, which is a distinct input-editing mechanism.
+unresolved:
+- The proxy error is visible, but whether it caused all later retrieval problems is
+  not established.
+- Intermediate UI states are sparse, so the exact causes of some targeting misses
+  in p004 and p005 are not proven.

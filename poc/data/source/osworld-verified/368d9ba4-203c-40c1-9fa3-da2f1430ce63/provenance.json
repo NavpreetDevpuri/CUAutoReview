@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "acquired_at_utc": "2026-09-26T17:09:38.962536+00:00",
+  "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+  "dataset": {
+    "repository": "xlangai/ubuntu_osworld_verified_trajs",
+    "commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+    "dataset_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs",
+    "archive_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+    "archive_bytes": 3408011289,
+    "archive_sha256_as_declared_by_huggingface_lfs": "976c2028235156cd767ebf723c5b301761ae7c951afb9c507f1ac1ef9b014b2b",
+    "full_archive_checksum_verified_locally": false,
+    "acquisition_method": "HTTP Range reads of ZIP central directory, local headers, and selected members; ZIP CRC32 and uncompressed length checked. Full archive and recording.mp4 not downloaded.",
+    "central_directory_range": "bytes=3406999538-3408011266",
+    "end_of_central_directory_range": "bytes=3408011267-3408011288"
+  },
+  "rollout": {
+    "agent_model_as_published": "o3",
+    "step_budget_as_archive_name": 15,
+    "recorded_action_count": 15,
+    "recorded_final_score_text": "0",
+    "recorded_final_score": 0.0,
+    "score_source": "result.txt",
+    "human_failure_annotations": "absent from selected task directory; no human failure labels supplied by this example"
+  },
+  "task_definition": {
+    "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63.json",
+    "source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+    "matches_rollout_task_id": true,
+    "exact_historical_match_verified": false,
+    "limitation": "This is the pinned current public task definition, not proven to be the exact definition or evaluator used for the July 2025 rollout."
+  },
+  "screenshot_coverage": {
+    "recorded_action_steps": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "screenshots_available_in_selected_archive_members": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "screenshots_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "screenshots_missing_or_not_present_in_archive": [],
+    "recording_mp4_downloaded": false
+  },
+  "licensing": {
+    "trajectory_dataset_declared_license": "MIT (dataset-card YAML: license: mit)",
+    "dataset_card_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/5473c39e42a538a187a9b2c2b499db59d560fd8c/README.md",
+    "task_repository_license": "Apache-2.0",
+    "task_repository_license_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/LICENSE",
+    "third_party_screenshot_or_document_rights": "Not individually itemized by the dataset card."
+  },
+  "files": {
+    "step_15_20250728@115857.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_15_20250728@115857.png",
+      "data_http_range": "bytes=3009443572-3009641128",
+      "compressed_bytes": 197557,
+      "uncompressed_bytes": 204620,
+      "zip_crc32": "fba2dd09",
+      "zip_crc_verified": true,
+      "sha256": "8c9444566e5b367e691ea603dfce3577391dfc63ecf334097c02995aa5aa7eba"
+    },
+    "step_7_20250728@115508.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_7_20250728@115508.png",
+      "data_http_range": "bytes=3009641268-3009744959",
+      "compressed_bytes": 103692,
+      "uncompressed_bytes": 111104,
+      "zip_crc32": "ed573724",
+      "zip_crc_verified": true,
+      "sha256": "ed4ddb3b645e43db766d58e9c2831e09d0336e5278e00621870db6cefcb812db"
+    },
+    "step_4_20250728@115329.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_4_20250728@115329.png",
+      "data_http_range": "bytes=3009745099-3009969197",
+      "compressed_bytes": 224099,
+      "uncompressed_bytes": 230000,
+      "zip_crc32": "cbaf00cc",
+      "zip_crc_verified": true,
+      "sha256": "384bc834c7099077fb52d053df84a0b7a2162303584aabad935ace8bb267a80b"
+    },
+    "step_10_20250728@115646.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_10_20250728@115646.png",
+      "data_http_range": "bytes=3013760449-3013944353",
+      "compressed_bytes": 183905,
+      "uncompressed_bytes": 192381,
+      "zip_crc32": "a4d0e352",
+      "zip_crc_verified": true,
+      "sha256": "f83b84777e98528b5fe9097765c20bf5374d55a63752c8fa398dd4b294dfd7e4"
+    },
+    "step_9_20250728@115608.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_9_20250728@115608.png",
+      "data_http_range": "bytes=3013944493-3014124999",
+      "compressed_bytes": 180507,
+      "uncompressed_bytes": 188798,
+      "zip_crc32": "30149650",
+      "zip_crc_verified": true,
+      "sha256": "88a5d34716b3655ff247e046e3683c3de3bc3d7cb5f84a79a18ee6006495e884"
+    },
+    "result.txt": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/result.txt",
+      "data_http_range": "bytes=3014125123-3014125124",
+      "compressed_bytes": 2,
+      "uncompressed_bytes": 2,
+      "zip_crc32": "7e4acd12",
+      "zip_crc_verified": true,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "step_8_20250728@115539.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_8_20250728@115539.png",
+      "data_http_range": "bytes=3014125264-3014286172",
+      "compressed_bytes": 160909,
+      "uncompressed_bytes": 167904,
+      "zip_crc32": "13294896",
+      "zip_crc_verified": true,
+      "sha256": "d437fd9580c26881ec25f81c9e99cafb8c1dc4633ecb6a07ed444c8f4c3576a0"
+    },
+    "runtime.log": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/runtime.log",
+      "data_http_range": "bytes=3014286297-3014289513",
+      "compressed_bytes": 3217,
+      "uncompressed_bytes": 12022,
+      "zip_crc32": "a0fc03e9",
+      "zip_crc_verified": true,
+      "sha256": "342931ebdde2fac4f83a1e8a1b8af612469d87c83f6c044cc8b7405d32d98b15"
+    },
+    "step_5_20250728@115359.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_5_20250728@115359.png",
+      "data_http_range": "bytes=3014289653-3014512530",
+      "compressed_bytes": 222878,
+      "uncompressed_bytes": 229027,
+      "zip_crc32": "c1dd0375",
+      "zip_crc_verified": true,
+      "sha256": "17668c6005675163cd85f5656f678a55700a629c225e4c854134c9cfd33410f3"
+    },
+    "step_1_20250728@115146.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_1_20250728@115146.png",
+      "data_http_range": "bytes=3014512670-3014608978",
+      "compressed_bytes": 96309,
+      "uncompressed_bytes": 103628,
+      "zip_crc32": "3f1cddd8",
+      "zip_crc_verified": true,
+      "sha256": "8a059c5163a9aad1ccd7bffadbd259fa5aca0fff1e7329014265feb7f624333e"
+    },
+    "traj.jsonl": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/traj.jsonl",
+      "data_http_range": "bytes=3014609102-3014610210",
+      "compressed_bytes": 1109,
+      "uncompressed_bytes": 4697,
+      "zip_crc32": "acdd3d91",
+      "zip_crc_verified": true,
+      "sha256": "c8628f1d9ad92cf0cdfbe1de9e97213177bd09656c61dd1a0ceaab32e5cc0dc6"
+    },
+    "step_12_20250728@115736.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_12_20250728@115736.png",
+      "data_http_range": "bytes=3014610351-3014794285",
+      "compressed_bytes": 183935,
+      "uncompressed_bytes": 192399,
+      "zip_crc32": "d652bfa2",
+      "zip_crc_verified": true,
+      "sha256": "84d41046180d9b5b2d565ac79489ce7e60d80e2ab5fff7e7dc1f6a77753e0c9e"
+    },
+    "step_3_20250728@115303.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_3_20250728@115303.png",
+      "data_http_range": "bytes=3014794425-3015021186",
+      "compressed_bytes": 226762,
+      "uncompressed_bytes": 232944,
+      "zip_crc32": "398a9f9d",
+      "zip_crc_verified": true,
+      "sha256": "5aa67441f6955ba02218beb28f56e413f4ee5252c059e0aa6fb9ab6a0cc4c983"
+    },
+    "step_13_20250728@115759.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_13_20250728@115759.png",
+      "data_http_range": "bytes=3015021327-3015205262",
+      "compressed_bytes": 183936,
+      "uncompressed_bytes": 192286,
+      "zip_crc32": "430a91dc",
+      "zip_crc_verified": true,
+      "sha256": "0a6985bbd64c87585fa9120931b9e994f7bcc4e6c2f4ac7959512e52a842ecf7"
+    },
+    "step_11_20250728@115717.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_11_20250728@115717.png",
+      "data_http_range": "bytes=3015205403-3015385712",
+      "compressed_bytes": 180310,
+      "uncompressed_bytes": 188708,
+      "zip_crc32": "8c576f47",
+      "zip_crc_verified": true,
+      "sha256": "a7835232190c973660fb3ff288695792b5cbb67028bee4ce8f8fff94e37f5610"
+    },
+    "step_2_20250728@115158.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_2_20250728@115158.png",
+      "data_http_range": "bytes=3015385852-3015473746",
+      "compressed_bytes": 87895,
+      "uncompressed_bytes": 93175,
+      "zip_crc32": "b15c6813",
+      "zip_crc_verified": true,
+      "sha256": "3b86673add5552a1c8a0143b59fba493e09d236d1d7ff056ed1d093f78334227"
+    },
+    "step_14_20250728@115832.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_14_20250728@115832.png",
+      "data_http_range": "bytes=3015473887-3015664090",
+      "compressed_bytes": 190204,
+      "uncompressed_bytes": 198047,
+      "zip_crc32": "15e21ab5",
+      "zip_crc_verified": true,
+      "sha256": "9215a1ea5949d17556456ca3bfb1d21c2c1f0b27a8bdc13c235ecbfa18702fcd"
+    },
+    "step_6_20250728@115438.png": {
+      "archive_member": "o3_15steps/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_6_20250728@115438.png",
+      "data_http_range": "bytes=3015664230-3015762143",
+      "compressed_bytes": 97914,
+      "uncompressed_bytes": 105568,
+      "zip_crc32": "9dec132e",
+      "zip_crc_verified": true,
+      "sha256": "87856f0bf30485a81a86487b341ce4204b4054fa05ef77a0b74bb0db324b5882"
+    },
+    "task.json": {
+      "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/chrome/368d9ba4-203c-40c1-9fa3-da2f1430ce63.json",
+      "bytes": 1784,
+      "sha256": "9c1cda14c053a66bf443bbe066505f922b89654cb7514ed803e628c99b71889e"
+    },
+    "dataset-card.md": {
+      "source_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/5473c39e42a538a187a9b2c2b499db59d560fd8c/README.md",
+      "bytes": 2278,
+      "sha256": "3e115bb35b01a9be2c797effd4cac3e9ee2ff10036c0c7df648126db0a5a11fc"
+    },
+    "LICENSE-task-source.txt": {
+      "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/LICENSE",
+      "bytes": 11343,
+      "sha256": "a8d1d88a0f9cce3cdbff73b03a80dc5e5d69e3ba2443946c268815a550c9e0ec"
+    }
+  }
+}

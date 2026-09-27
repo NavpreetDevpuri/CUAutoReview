@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "cli_version": "0.61.0",
+  "transport": "loopback fake Gemini API; network disabled by caller",
+  "request_sequence": [
+    "/v1beta/models/gemini-3.8-flash:countTokens",
+    "/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse"
+  ],
+  "request_path": "/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse",
+  "image_mime": "image/png",
+  "image_bytes_match": true,
+  "response_mime_type": "application/json",
+  "response_schema_forwarded": true,
+  "structured_response": "{\"ok\":true}",
+  "deny_all_policy": "/etc/cuautoreview/gemini-deny-all.toml"
+}

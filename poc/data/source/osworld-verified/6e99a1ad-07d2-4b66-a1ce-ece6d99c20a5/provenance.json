@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "acquired_at_utc": "2026-09-26T17:09:38.962536+00:00",
+  "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+  "dataset": {
+    "repository": "xlangai/ubuntu_osworld_verified_trajs",
+    "commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+    "dataset_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs",
+    "archive_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+    "archive_bytes": 3408011289,
+    "archive_sha256_as_declared_by_huggingface_lfs": "976c2028235156cd767ebf723c5b301761ae7c951afb9c507f1ac1ef9b014b2b",
+    "full_archive_checksum_verified_locally": false,
+    "acquisition_method": "HTTP Range reads of ZIP central directory, local headers, and selected members; ZIP CRC32 and uncompressed length checked. Full archive and recording.mp4 not downloaded.",
+    "central_directory_range": "bytes=3406999538-3408011266",
+    "end_of_central_directory_range": "bytes=3408011267-3408011288"
+  },
+  "rollout": {
+    "agent_model_as_published": "o3",
+    "step_budget_as_archive_name": 15,
+    "recorded_action_count": 15,
+    "recorded_final_score_text": "0.0",
+    "recorded_final_score": 0.0,
+    "score_source": "result.txt",
+    "human_failure_annotations": "absent from selected task directory; no human failure labels supplied by this example"
+  },
+  "task_definition": {
+    "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5.json",
+    "source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+    "matches_rollout_task_id": true,
+    "exact_historical_match_verified": false,
+    "limitation": "This is the pinned current public task definition, not proven to be the exact definition or evaluator used for the July 2025 rollout."
+  },
+  "screenshot_coverage": {
+    "recorded_action_steps": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "screenshots_available_in_selected_archive_members": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "screenshots_downloaded": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "screenshots_missing_or_not_present_in_archive": [],
+    "recording_mp4_downloaded": false
+  },
+  "licensing": {
+    "trajectory_dataset_declared_license": "MIT (dataset-card YAML: license: mit)",
+    "dataset_card_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/5473c39e42a538a187a9b2c2b499db59d560fd8c/README.md",
+    "task_repository_license": "Apache-2.0",
+    "task_repository_license_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/LICENSE",
+    "third_party_screenshot_or_document_rights": "Not individually itemized by the dataset card."
+  },
+  "files": {
+    "step_11_20250728@123753.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_11_20250728@123753.png",
+      "data_http_range": "bytes=217131751-217314369",
+      "compressed_bytes": 182619,
+      "uncompressed_bytes": 196125,
+      "zip_crc32": "bae549a0",
+      "zip_crc_verified": true,
+      "sha256": "0b8627c03155f942df2355b068c5d9022f3f7751cf44f4f3d5e7f2d90a356480"
+    },
+    "step_13_20250728@123942.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_13_20250728@123942.png",
+      "data_http_range": "bytes=217314520-217499491",
+      "compressed_bytes": 184972,
+      "uncompressed_bytes": 197806,
+      "zip_crc32": "f074b631",
+      "zip_crc_verified": true,
+      "sha256": "74bac3c3d502ff57e1ad9eb40e5ca986c1bf00dd4422b81325971248c896f4b8"
+    },
+    "step_10_20250728@123727.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_10_20250728@123727.png",
+      "data_http_range": "bytes=217499642-217682287",
+      "compressed_bytes": 182646,
+      "uncompressed_bytes": 196118,
+      "zip_crc32": "bcd17c03",
+      "zip_crc_verified": true,
+      "sha256": "82e2fddfad40700a38be09180a714c85559d8acebb41617d3871caf52a57be1a"
+    },
+    "step_2_20250728@123352.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_2_20250728@123352.png",
+      "data_http_range": "bytes=224022745-224205321",
+      "compressed_bytes": 182577,
+      "uncompressed_bytes": 195980,
+      "zip_crc32": "e4390597",
+      "zip_crc_verified": true,
+      "sha256": "521e4164beebb5584e2a0637be162e23cea431ab248f50e6db97b90caaec7a72"
+    },
+    "result.txt": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/result.txt",
+      "data_http_range": "bytes=224205455-224205458",
+      "compressed_bytes": 4,
+      "uncompressed_bytes": 4,
+      "zip_crc32": "dc2f93ba",
+      "zip_crc_verified": true,
+      "sha256": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4"
+    },
+    "runtime.log": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/runtime.log",
+      "data_http_range": "bytes=224205593-224208386",
+      "compressed_bytes": 2794,
+      "uncompressed_bytes": 13457,
+      "zip_crc32": "27af070a",
+      "zip_crc_verified": true,
+      "sha256": "cfca4b097843f4acf5a52e051f6311a9c4b95ecdb4b62cdbd66d4b35608ad0b7"
+    },
+    "step_7_20250728@123555.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_7_20250728@123555.png",
+      "data_http_range": "bytes=224208536-224391518",
+      "compressed_bytes": 182983,
+      "uncompressed_bytes": 196156,
+      "zip_crc32": "7675d637",
+      "zip_crc_verified": true,
+      "sha256": "6e679ef0baaa607e42689ba935a7d47100d55a59226af0581b47faa6d4840dd0"
+    },
+    "step_5_20250728@123502.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_5_20250728@123502.png",
+      "data_http_range": "bytes=224391668-224576923",
+      "compressed_bytes": 185256,
+      "uncompressed_bytes": 197747,
+      "zip_crc32": "c86e7ad0",
+      "zip_crc_verified": true,
+      "sha256": "79bcdfe820be885f459f9c1f855296db540eca2c33a72bc23a518769c9f93369"
+    },
+    "traj.jsonl": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/traj.jsonl",
+      "data_http_range": "bytes=224577057-224577826",
+      "compressed_bytes": 770,
+      "uncompressed_bytes": 4277,
+      "zip_crc32": "81c866cc",
+      "zip_crc_verified": true,
+      "sha256": "9226560500cc7d7e282d5f8a9edfe762be7dee6e2749dc32a3911dd9c5bdc2c7"
+    },
+    "step_15_20250728@124033.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_15_20250728@124033.png",
+      "data_http_range": "bytes=224577977-224760524",
+      "compressed_bytes": 182548,
+      "uncompressed_bytes": 195942,
+      "zip_crc32": "3f993f79",
+      "zip_crc_verified": true,
+      "sha256": "37d9415a210a606277a3a783db8222c5da4a46a03d6454aa7d1d922d8a053cd4"
+    },
+    "step_12_20250728@123824.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_12_20250728@123824.png",
+      "data_http_range": "bytes=224760675-224943075",
+      "compressed_bytes": 182401,
+      "uncompressed_bytes": 195982,
+      "zip_crc32": "7cf25ba9",
+      "zip_crc_verified": true,
+      "sha256": "0a762f392bfdb2cf0a471665a3e60b12467137b0d6546be57e0b9ca79cd76430"
+    },
+    "step_4_20250728@123433.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_4_20250728@123433.png",
+      "data_http_range": "bytes=224943225-225125771",
+      "compressed_bytes": 182547,
+      "uncompressed_bytes": 196147,
+      "zip_crc32": "f208fc0f",
+      "zip_crc_verified": true,
+      "sha256": "81da3ec6964023dc7c45b0c6a2754d002a32ea22e6de65f023931bdae547572d"
+    },
+    "step_8_20250728@123611.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_8_20250728@123611.png",
+      "data_http_range": "bytes=225125921-225308807",
+      "compressed_bytes": 182887,
+      "uncompressed_bytes": 196205,
+      "zip_crc32": "763a02fc",
+      "zip_crc_verified": true,
+      "sha256": "be3f3868b391217d2ee8d715811edfa6357169f124f62b4053d41fc3bbfa68df"
+    },
+    "step_14_20250728@124009.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_14_20250728@124009.png",
+      "data_http_range": "bytes=225308958-225491674",
+      "compressed_bytes": 182717,
+      "uncompressed_bytes": 195947,
+      "zip_crc32": "c850a345",
+      "zip_crc_verified": true,
+      "sha256": "585931efa8cf4e1e79739be7563ae2719e704e5b14cf0306c2e8f13659dbbd6d"
+    },
+    "step_1_20250728@123327.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_1_20250728@123327.png",
+      "data_http_range": "bytes=225491824-225678992",
+      "compressed_bytes": 187169,
+      "uncompressed_bytes": 199922,
+      "zip_crc32": "de00d343",
+      "zip_crc_verified": true,
+      "sha256": "22783e3764dea696e7221ae3b2fcb776a6a9f82bedb26d1c47710b4c30d66b06"
+    },
+    "step_9_20250728@123702.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_9_20250728@123702.png",
+      "data_http_range": "bytes=225679142-225864211",
+      "compressed_bytes": 185070,
+      "uncompressed_bytes": 197693,
+      "zip_crc32": "b3cdc259",
+      "zip_crc_verified": true,
+      "sha256": "697710c50918086506ed1b2e6f2c28fd5fc0fa2d6ef8a0c7964a69177c891a80"
+    },
+    "step_6_20250728@123523.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_6_20250728@123523.png",
+      "data_http_range": "bytes=225864361-226047343",
+      "compressed_bytes": 182983,
+      "uncompressed_bytes": 196156,
+      "zip_crc32": "7675d637",
+      "zip_crc_verified": true,
+      "sha256": "6e679ef0baaa607e42689ba935a7d47100d55a59226af0581b47faa6d4840dd0"
+    },
+    "step_3_20250728@123413.png": {
+      "archive_member": "o3_15steps/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_3_20250728@123413.png",
+      "data_http_range": "bytes=226047493-226232514",
+      "compressed_bytes": 185022,
+      "uncompressed_bytes": 197704,
+      "zip_crc32": "66b863e2",
+      "zip_crc_verified": true,
+      "sha256": "f4756c2c7325a88149d5e0711b04d2b5f59ae339ab1b2e9d292051fd5988ee17"
+    },
+    "task.json": {
+      "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/libreoffice_calc/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5.json",
+      "bytes": 3142,
+      "sha256": "610adfe4461f26cd2c0dd95053d010be0b1ed1eac294a780a82c67df6b8f46f7"
+    },
+    "dataset-card.md": {
+      "source_url": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/5473c39e42a538a187a9b2c2b499db59d560fd8c/README.md",
+      "bytes": 2278,
+      "sha256": "3e115bb35b01a9be2c797effd4cac3e9ee2ff10036c0c7df648126db0a5a11fc"
+    },
+    "LICENSE-task-source.txt": {
+      "source_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/LICENSE",
+      "bytes": 11343,
+      "sha256": "a8d1d88a0f9cce3cdbff73b03a80dc5e5d69e3ba2443946c268815a550c9e0ec"
+    }
+  }
+}

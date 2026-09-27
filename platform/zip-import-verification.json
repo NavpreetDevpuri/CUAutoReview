@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-09-27T03:32:46.996392+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "provider_calls": 0,
+  "checks": [
+    "ZIP preview without persistence",
+    "Valid import and repeat idempotency",
+    "Invalid archive atomicity",
+    "Dataset/batch/artifact authorization and viewer ZIP import rejection",
+    "Dataset screenshot URLs remain pinned to their immutable revision",
+    "Changed image checksum creates a revision and syncs as member-scoped evidence"
+  ],
+  "dataset_id": "45bb3329-4168-4821-8867-a9b4bdf7acfa",
+  "batch_id": "56e4288f-adff-4189-8328-037727fc5519",
+  "task_id": "acceptance-zip-966640187000",
+  "revision_ids": [
+    "337cc7bd-3349-4058-912c-1899e2f93f80",
+    "8fa401d8-a8e7-4b4b-bc12-a51a3f91c9e6"
+  ],
+  "note": "Named acceptance fixtures only. No batch jobs are started; no model/provider calls are made."
+}

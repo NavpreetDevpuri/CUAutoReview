@@ -1,0 +1,1279 @@
+{
+  "created_at": "2026-09-27T05:04:59.489020+00:00",
+  "run_id": "da34e827-008c-463b-aeb1-040e01ab065c",
+  "scope": "canary",
+  "execution": {
+    "backend": "gemini_cli",
+    "model": "gemini-3.8-flash",
+    "reasoning": "low",
+    "budget_usd": 0.1,
+    "configuration": {
+      "timeout_seconds": 120,
+      "max_output_tokens": 4096,
+      "max_images": 32
+    }
+  },
+  "planned_allowance": {
+    "per_task_attempt_usd": 0.1,
+    "max_attempts": 4,
+    "total_usd": 0.4,
+    "hard_billing_cap": false
+  },
+  "tasks": [
+    {
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "task_definition_id": "2f25728e-1b94-4323-911c-d95c89be90ca",
+      "source_steps": 9,
+      "source_images": 9
+    }
+  ],
+  "jobs": [
+    {
+      "id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+      "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+      "batch_id": "da34e827-008c-463b-aeb1-040e01ab065c",
+      "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+      "stage": "review",
+      "review_kind": "failure_analysis",
+      "preset_revision_id": "9a5b1ef2-c381-4e4b-8fbf-228880da629f",
+      "idempotency_key": "review:6fe8c2bc-0c9b-4d09-95b2-46a274060190:9a5b1ef2-c381-4e4b-8fbf-228880da629f:1",
+      "generation": 1,
+      "fence_token": 2,
+      "status": "failed",
+      "attempt_count": 1,
+      "max_attempts": 4,
+      "lease_owner": null,
+      "lease_expires_at": null,
+      "available_at": "2026-09-27T05:04:59.516159+00:00",
+      "error": "Worker lease expired; provider usage and completion state are unknown. Retry requires an explicit action.",
+      "usage": {
+        "kind": "unknown",
+        "estimated_usd": null
+      },
+      "cost_usd": null,
+      "shared_labels_snapshot": [
+        {
+          "id": "p001",
+          "name": "Repeated mis-targeted UI activation",
+          "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+          "status": "draft",
+          "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_1",
+            "frame_1",
+            "event_2",
+            "event_3",
+            "event_4",
+            "event_5",
+            "frame_5",
+            "event_6",
+            "event_7",
+            "event_8",
+            "frame_9"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p002",
+          "name": "Wrong UI target activated",
+          "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+          "status": "draft",
+          "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p003",
+          "name": "Repeated ineffective modal dismissal",
+          "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+          "status": "draft",
+          "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_2",
+            "event_3",
+            "event_4",
+            "event_5",
+            "event_6",
+            "event_7",
+            "event_8",
+            "frame_8",
+            "event_9",
+            "event_10",
+            "event_11",
+            "event_12",
+            "event_13",
+            "event_14",
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p004",
+          "name": "Online resource blocked by proxy or network path",
+          "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+          "status": "draft",
+          "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "frame_1"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p005",
+          "name": "Malformed command-entry key sequence",
+          "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+          "status": "draft",
+          "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_10",
+            "event_12",
+            "event_14",
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p006",
+          "name": "Retrieved information does not match requested scope",
+          "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+          "status": "draft",
+          "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p007",
+          "name": "Numeric entry appended in wrong field",
+          "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+          "status": "draft",
+          "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_12",
+            "event_13",
+            "frame_13"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "p008",
+          "name": "Required dialog action left incomplete",
+          "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+          "status": "draft",
+          "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+          "name": "Acceptance evidence gap 2999629000",
+          "description": "An action has no visible confirmation; review remains uncertain.",
+          "status": "draft",
+          "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+          "proposal_kind": "label",
+          "evidence_refs": [],
+          "feedback": [
+            "Retain evidence uncertainty; do not equate missing evidence with model failure."
+          ]
+        },
+        {
+          "id": "new:excessive_tab_restoration",
+          "name": "Excessive tab restoration beyond requested scope",
+          "description": "After one restore shortcut matched the request, the agent pressed it three more times to restore additional closed tabs, exceeding the requested single-tab scope if those shortcuts took effect.",
+          "status": "draft",
+          "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_1",
+            "event_2",
+            "event_3",
+            "event_4"
+          ],
+          "feedback": []
+        },
+        {
+          "id": "new:repeated_menu_item_misselection",
+          "name": "Repeated menu item misselection",
+          "description": "Multiple attempts to click 'Header and Footer' inside the open Insert menu repeatedly hit wrong items at incorrect vertical coordinates, opening unintended dialogs ('Bookmark', 'Fields', 'Special Characters') and leaving the required footer/page number action incomplete.",
+          "status": "draft",
+          "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+          "proposal_kind": "label",
+          "evidence_refs": [
+            "event_7",
+            "event_8",
+            "event_9",
+            "event_10",
+            "event_11",
+            "event_12",
+            "event_13",
+            "event_14",
+            "event_15"
+          ],
+          "feedback": []
+        }
+      ],
+      "created_at": "2026-09-27T05:04:59.516166+00:00",
+      "updated_at": "2026-09-27T05:08:00.321987+00:00",
+      "budget_usd": 0.1,
+      "max_total_budget_usd": 0.4,
+      "attempts": [
+        {
+          "id": "84a066d2-7750-47f5-ae0f-daab9adc37aa",
+          "job_id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+          "attempt_number": 1,
+          "generation": 1,
+          "fence_token": 1,
+          "status": "lease_expired",
+          "error": "Worker lease expired; provider usage and completion state are unknown. Retry requires an explicit action.",
+          "usage": {
+            "kind": "unknown",
+            "estimated_usd": null
+          },
+          "cost_usd": null,
+          "started_at": "2026-09-27T05:05:00.427632+00:00",
+          "finished_at": "2026-09-27T05:08:00.331742+00:00"
+        }
+      ],
+      "cumulative_cost_usd": 0,
+      "unknown_cost_attempts": 1,
+      "retry_eligible": true,
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "task_title": "Can you make my computer bring back the last tab I shut down?",
+      "outcome": "failed",
+      "score": 0.0,
+      "run_id": "da34e827-008c-463b-aeb1-040e01ab065c",
+      "attempt": 1
+    }
+  ],
+  "results": [
+    {
+      "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+      "title": "Can you make my computer bring back the last tab I shut down?",
+      "instruction": "Can you make my computer bring back the last tab I shut down?",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "application": "chrome",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/chrome/06fe7178-4491-4589-810f-2e2bc9502122.json"
+      },
+      "coverage_notes": [
+        "Public recorded rollout; not executed locally.",
+        "Final evaluator score is retained; no human failure diagnosis is supplied.",
+        "Pinned current task definition is not proven to be the exact historical evaluator.",
+        "Video not downloaded. Screenshots retain their recorded step association."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T to reopen the most recently closed browser tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T again to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T again to reopen the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Press Ctrl+Shift+T once more to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the leftmost tab titled \"github.com\" to view the recently restored tab\npyautogui.click(x=110, y=32, duration=0.5)",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the leftmost tab labeled \u201cgithub.com\u201d to activate the restored tab\npyautogui.click(x=75, y=30, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Click the leftmost tab titled \u201cgithub.com\u201d to switch focus to the restored page\npyautogui.click(x=60, y=30, duration=0.3)",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "pyautogui.hotkey('ctrl', '1')",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "DONE",
+          "observation": null,
+          "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ],
+          "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "artifact_status": "recorded"
+        }
+      ],
+      "revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+      "revision": 1,
+      "status": "failed",
+      "processing_status": "failed",
+      "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+      "review": null,
+      "review_provenance": null,
+      "review_kind": null,
+      "review_history": [],
+      "jobs": [
+        {
+          "id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "batch_id": "da34e827-008c-463b-aeb1-040e01ab065c",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "stage": "review",
+          "review_kind": "failure_analysis",
+          "preset_revision_id": "9a5b1ef2-c381-4e4b-8fbf-228880da629f",
+          "idempotency_key": "review:6fe8c2bc-0c9b-4d09-95b2-46a274060190:9a5b1ef2-c381-4e4b-8fbf-228880da629f:1",
+          "generation": 1,
+          "fence_token": 2,
+          "status": "failed",
+          "attempt_count": 1,
+          "max_attempts": 4,
+          "lease_owner": null,
+          "lease_expires_at": null,
+          "available_at": "2026-09-27T05:04:59.516159+00:00",
+          "error": "Worker lease expired; provider usage and completion state are unknown. Retry requires an explicit action.",
+          "usage": {
+            "kind": "unknown",
+            "estimated_usd": null
+          },
+          "cost_usd": null,
+          "shared_labels_snapshot": [
+            {
+              "id": "p001",
+              "name": "Repeated mis-targeted UI activation",
+              "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+              "status": "draft",
+              "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1",
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "frame_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_9"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p002",
+              "name": "Wrong UI target activated",
+              "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+              "status": "draft",
+              "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p003",
+              "name": "Repeated ineffective modal dismissal",
+              "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+              "status": "draft",
+              "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_2",
+                "event_3",
+                "event_4",
+                "event_5",
+                "event_6",
+                "event_7",
+                "event_8",
+                "frame_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p004",
+              "name": "Online resource blocked by proxy or network path",
+              "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+              "status": "draft",
+              "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_1"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p005",
+              "name": "Malformed command-entry key sequence",
+              "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+              "status": "draft",
+              "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_10",
+                "event_12",
+                "event_14",
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p006",
+              "name": "Retrieved information does not match requested scope",
+              "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+              "status": "draft",
+              "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p007",
+              "name": "Numeric entry appended in wrong field",
+              "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+              "status": "draft",
+              "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_12",
+                "event_13",
+                "frame_13"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "p008",
+              "name": "Required dialog action left incomplete",
+              "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+              "status": "draft",
+              "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_15",
+                "frame_15"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "name": "Acceptance evidence gap 2999629000",
+              "description": "An action has no visible confirmation; review remains uncertain.",
+              "status": "draft",
+              "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+              "proposal_kind": "label",
+              "evidence_refs": [],
+              "feedback": [
+                "Retain evidence uncertainty; do not equate missing evidence with model failure."
+              ]
+            },
+            {
+              "id": "new:excessive_tab_restoration",
+              "name": "Excessive tab restoration beyond requested scope",
+              "description": "After one restore shortcut matched the request, the agent pressed it three more times to restore additional closed tabs, exceeding the requested single-tab scope if those shortcuts took effect.",
+              "status": "draft",
+              "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_1",
+                "event_2",
+                "event_3",
+                "event_4"
+              ],
+              "feedback": []
+            },
+            {
+              "id": "new:repeated_menu_item_misselection",
+              "name": "Repeated menu item misselection",
+              "description": "Multiple attempts to click 'Header and Footer' inside the open Insert menu repeatedly hit wrong items at incorrect vertical coordinates, opening unintended dialogs ('Bookmark', 'Fields', 'Special Characters') and leaving the required footer/page number action incomplete.",
+              "status": "draft",
+              "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+              "proposal_kind": "label",
+              "evidence_refs": [
+                "event_7",
+                "event_8",
+                "event_9",
+                "event_10",
+                "event_11",
+                "event_12",
+                "event_13",
+                "event_14",
+                "event_15"
+              ],
+              "feedback": []
+            }
+          ],
+          "created_at": "2026-09-27T05:04:59.516166+00:00",
+          "updated_at": "2026-09-27T05:08:00.321987+00:00",
+          "budget_usd": 0.1,
+          "max_total_budget_usd": 0.4,
+          "attempts": [
+            {
+              "id": "84a066d2-7750-47f5-ae0f-daab9adc37aa",
+              "job_id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+              "attempt_number": 1,
+              "generation": 1,
+              "fence_token": 1,
+              "status": "lease_expired",
+              "error": "Worker lease expired; provider usage and completion state are unknown. Retry requires an explicit action.",
+              "usage": {
+                "kind": "unknown",
+                "estimated_usd": null
+              },
+              "cost_usd": null,
+              "started_at": "2026-09-27T05:05:00.427632+00:00",
+              "finished_at": "2026-09-27T05:08:00.331742+00:00"
+            }
+          ],
+          "cumulative_cost_usd": 0,
+          "unknown_cost_attempts": 1,
+          "retry_eligible": true
+        }
+      ],
+      "job_id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+      "artifacts": [
+        {
+          "id": "63af9351-c22b-479e-b212-9363948b988e",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775.png",
+          "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463565+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "31c229f3-87ca-470b-837a-e6fbefc59111",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5.png",
+          "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463570+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "60df4973-d8ff-4e8f-a90f-a46ab993f89b",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8.png",
+          "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463572+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "2f52dd59-db02-48c2-819e-5a84dd4f09d1",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb.png",
+          "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463574+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "3ef9013c-7331-410b-bfa5-17b9cc875393",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8.png",
+          "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463576+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "f9dcc4a2-22cc-457d-a01d-44d14502f934",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58.png",
+          "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463577+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "494a3583-8e83-4312-8fa4-a0cb5419c290",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3.png",
+          "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463579+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "9c3b96f1-62c9-48de-b24a-84c4dea34c99",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e.png",
+          "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463580+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        },
+        {
+          "id": "2588f61b-9fc7-4e02-96d5-03ce4bcecdd1",
+          "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+          "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+          "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+          "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+          "media_type": "image/png",
+          "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b.png",
+          "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+          "source_relative_path": null,
+          "created_at": "2026-09-27T05:04:59.463582+00:00",
+          "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+        }
+      ],
+      "raw_url": "/api/batches/da34e827-008c-463b-aeb1-040e01ab065c/tasks/06fe7178-4491-4589-810f-2e2bc9502122/export?format=json&member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+      "member": {
+        "id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+        "batch_id": "da34e827-008c-463b-aeb1-040e01ab065c",
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "status": "failed",
+        "processing_status": "failed",
+        "review_kind": "failure_analysis"
+      },
+      "task": {
+        "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+        "title": "Can you make my computer bring back the last tab I shut down?",
+        "instruction": "Can you make my computer bring back the last tab I shut down?",
+        "outcome": "failed",
+        "score": 0.0,
+        "source": {
+          "dataset": "OSWorld-Verified",
+          "application": "chrome",
+          "task_id": "06fe7178-4491-4589-810f-2e2bc9502122",
+          "agent_model": "o3",
+          "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+          "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+          "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+          "task_definition_url": "https://raw.githubusercontent.com/xlang-ai/OSWorld/b138d348256078fa634fc3b73567a7337c793e6b/evaluation_examples/examples/chrome/06fe7178-4491-4589-810f-2e2bc9502122.json"
+        },
+        "coverage_notes": [
+          "Public recorded rollout; not executed locally.",
+          "Final evaluator score is retained; no human failure diagnosis is supplied.",
+          "Pinned current task definition is not proven to be the exact historical evaluator.",
+          "Video not downloaded. Screenshots retain their recorded step association."
+        ],
+        "steps": [
+          {
+            "step_id": "1",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T to reopen the most recently closed browser tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+            "evidence_refs": [
+              "event_1",
+              "frame_1"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "2",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T again to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+            "evidence_refs": [
+              "event_2",
+              "frame_2"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "3",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T again to reopen the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+            "evidence_refs": [
+              "event_3",
+              "frame_3"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "4",
+            "intent": null,
+            "action": "# Press Ctrl+Shift+T once more to restore the next most-recently closed tab\npyautogui.hotkey('ctrl', 'shift', 't')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+            "evidence_refs": [
+              "event_4",
+              "frame_4"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "5",
+            "intent": null,
+            "action": "# Click the leftmost tab titled \"github.com\" to view the recently restored tab\npyautogui.click(x=110, y=32, duration=0.5)",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+            "evidence_refs": [
+              "event_5",
+              "frame_5"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "6",
+            "intent": null,
+            "action": "# Click the leftmost tab labeled \u201cgithub.com\u201d to activate the restored tab\npyautogui.click(x=75, y=30, duration=0.3)",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+            "evidence_refs": [
+              "event_6",
+              "frame_6"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "7",
+            "intent": null,
+            "action": "# Click the leftmost tab titled \u201cgithub.com\u201d to switch focus to the restored page\npyautogui.click(x=60, y=30, duration=0.3)",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+            "evidence_refs": [
+              "event_7",
+              "frame_7"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "8",
+            "intent": null,
+            "action": "pyautogui.hotkey('ctrl', '1')",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+            "evidence_refs": [
+              "event_8",
+              "frame_8"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          },
+          {
+            "step_id": "9",
+            "intent": null,
+            "action": "DONE",
+            "observation": null,
+            "screenshot": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+            "evidence_refs": [
+              "event_9",
+              "frame_9"
+            ],
+            "screenshot_url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "artifact_status": "recorded"
+          }
+        ],
+        "revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+        "revision": 1,
+        "status": "failed",
+        "processing_status": "failed",
+        "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+        "review": null,
+        "review_provenance": null,
+        "review_kind": null,
+        "review_history": [],
+        "jobs": [
+          {
+            "id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "batch_id": "da34e827-008c-463b-aeb1-040e01ab065c",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "stage": "review",
+            "review_kind": "failure_analysis",
+            "preset_revision_id": "9a5b1ef2-c381-4e4b-8fbf-228880da629f",
+            "idempotency_key": "review:6fe8c2bc-0c9b-4d09-95b2-46a274060190:9a5b1ef2-c381-4e4b-8fbf-228880da629f:1",
+            "generation": 1,
+            "fence_token": 2,
+            "status": "failed",
+            "attempt_count": 1,
+            "max_attempts": 4,
+            "lease_owner": null,
+            "lease_expires_at": null,
+            "available_at": "2026-09-27T05:04:59.516159+00:00",
+            "error": "Worker lease expired; provider usage and completion state are unknown. Retry requires an explicit action.",
+            "usage": {
+              "kind": "unknown",
+              "estimated_usd": null
+            },
+            "cost_usd": null,
+            "shared_labels_snapshot": [
+              {
+                "id": "p001",
+                "name": "Repeated mis-targeted UI activation",
+                "description": "Repeated clicks at changing coordinates fail to activate the intended control; a different interaction method later succeeds.",
+                "status": "draft",
+                "proposal_id": "08a13f5f-7f66-46ae-8ca9-8df6af5a92e6",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1",
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "event_5",
+                  "frame_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_9"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p002",
+                "name": "Wrong UI target activated",
+                "description": "The action intended for a spreadsheet target activates a different control or dialog, preventing the intended selection.",
+                "status": "draft",
+                "proposal_id": "bb49b6f6-f9f4-4813-a57c-0b5fdeca7fd9",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "frame_1"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p003",
+                "name": "Repeated ineffective modal dismissal",
+                "description": "Repeated close, cancel, or escape attempts leave the same blocking modal visible without adapting targeting or strategy.",
+                "status": "draft",
+                "proposal_id": "a220525f-50e7-4327-b0f9-05451d59711a",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_2",
+                  "event_3",
+                  "event_4",
+                  "event_5",
+                  "event_6",
+                  "event_7",
+                  "event_8",
+                  "frame_8",
+                  "event_9",
+                  "event_10",
+                  "event_11",
+                  "event_12",
+                  "event_13",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p004",
+                "name": "Online resource blocked by proxy or network path",
+                "description": "A required or chosen online resource is visibly unreachable because of a proxy or network-path error, blocking that route.",
+                "status": "draft",
+                "proposal_id": "ecd2d1f7-f986-4911-89ce-52175b618f5a",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "frame_1"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p005",
+                "name": "Malformed command-entry key sequence",
+                "description": "Input encoding or key-sequence construction enters unintended characters or fails to submit a command, requiring corrected entry.",
+                "status": "draft",
+                "proposal_id": "e10b7a1b-8d53-489c-8873-c81ec2dcb931",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_10",
+                  "event_12",
+                  "event_14",
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p006",
+                "name": "Retrieved information does not match requested scope",
+                "description": "The obtained information is narrower or differently structured than the requested scope, so it does not substantively satisfy the task.",
+                "status": "draft",
+                "proposal_id": "bbfa9658-1b3b-4700-94fb-049adf760cda",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p007",
+                "name": "Numeric entry appended in wrong field",
+                "description": "A value intended for one numeric field is appended to the still-active different field, producing an incorrect combined value.",
+                "status": "draft",
+                "proposal_id": "3e17a9b4-9442-44c4-8404-a7331a0ca68c",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_12",
+                  "event_13",
+                  "frame_13"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "p008",
+                "name": "Required dialog action left incomplete",
+                "description": "The interaction ends with required values still incorrect and the dialog unconfirmed, leaving the requested operation unapplied.",
+                "status": "draft",
+                "proposal_id": "a785e4d4-d3d9-4665-9258-928e06700d51",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_15",
+                  "frame_15"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "draft:f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                "name": "Acceptance evidence gap 2999629000",
+                "description": "An action has no visible confirmation; review remains uncertain.",
+                "status": "draft",
+                "proposal_id": "f1453854-3b31-4abe-bf7b-213a55c3f85c",
+                "proposal_kind": "label",
+                "evidence_refs": [],
+                "feedback": [
+                  "Retain evidence uncertainty; do not equate missing evidence with model failure."
+                ]
+              },
+              {
+                "id": "new:excessive_tab_restoration",
+                "name": "Excessive tab restoration beyond requested scope",
+                "description": "After one restore shortcut matched the request, the agent pressed it three more times to restore additional closed tabs, exceeding the requested single-tab scope if those shortcuts took effect.",
+                "status": "draft",
+                "proposal_id": "face9935-3553-42a1-b640-59a5bf53e9cc",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_1",
+                  "event_2",
+                  "event_3",
+                  "event_4"
+                ],
+                "feedback": []
+              },
+              {
+                "id": "new:repeated_menu_item_misselection",
+                "name": "Repeated menu item misselection",
+                "description": "Multiple attempts to click 'Header and Footer' inside the open Insert menu repeatedly hit wrong items at incorrect vertical coordinates, opening unintended dialogs ('Bookmark', 'Fields', 'Special Characters') and leaving the required footer/page number action incomplete.",
+                "status": "draft",
+                "proposal_id": "78c53053-eb2d-4467-b978-422319df7b21",
+                "proposal_kind": "label",
+                "evidence_refs": [
+                  "event_7",
+                  "event_8",
+                  "event_9",
+                  "event_10",
+                  "event_11",
+                  "event_12",
+                  "event_13",
+                  "event_14",
+                  "event_15"
+                ],
+                "feedback": []
+              }
+            ],
+            "created_at": "2026-09-27T05:04:59.516166+00:00",
+            "updated_at": "2026-09-27T05:08:00.321987+00:00",
+            "budget_usd": 0.1,
+            "max_total_budget_usd": 0.4,
+            "attempts": [
+              {
+                "id": "84a066d2-7750-47f5-ae0f-daab9adc37aa",
+                "job_id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+                "attempt_number": 1,
+                "generation": 1,
+                "fence_token": 1,
+                "status": "lease_expired",
+                "error": "Worker lease expired; provider usage and completion state are unknown. Retry requires an explicit action.",
+                "usage": {
+                  "kind": "unknown",
+                  "estimated_usd": null
+                },
+                "cost_usd": null,
+                "started_at": "2026-09-27T05:05:00.427632+00:00",
+                "finished_at": "2026-09-27T05:08:00.331742+00:00"
+              }
+            ],
+            "cumulative_cost_usd": 0,
+            "unknown_cost_attempts": 1,
+            "retry_eligible": true
+          }
+        ],
+        "job_id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+        "artifacts": [
+          {
+            "id": "63af9351-c22b-479e-b212-9363948b988e",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728@114003.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775.png",
+            "sha256": "d80d73b6212fba45bc96ae0f92b90ddf1b7cc459dac96c955dfcbbdeaf95c775",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463565+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_1_20250728%40114003.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "31c229f3-87ca-470b-837a-e6fbefc59111",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728@114020.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5.png",
+            "sha256": "db22170e26fbaa7d514073851b7972adfc0b57f15cb548b246725984570518c5",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463570+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_2_20250728%40114020.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "60df4973-d8ff-4e8f-a90f-a46ab993f89b",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728@114106.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8.png",
+            "sha256": "2107d6724b95d0eef7e625c55fc70bdafddf74ff20c586e33a74b9c781c05ca8",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463572+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_3_20250728%40114106.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "2f52dd59-db02-48c2-819e-5a84dd4f09d1",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728@114122.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb.png",
+            "sha256": "b37698598c549e9a4d7fa7ee8ce4ff754f35e23308199c5078c88af4b76ca6cb",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463574+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_4_20250728%40114122.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "3ef9013c-7331-410b-bfa5-17b9cc875393",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728@114139.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8.png",
+            "sha256": "8d76c1e8763c5a9873e30bd31a82f0b567d22b4258827009aafc5536745236d8",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463576+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_5_20250728%40114139.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "f9dcc4a2-22cc-457d-a01d-44d14502f934",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728@114203.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58.png",
+            "sha256": "b37cd77bac472ab5988a97e208b51f00b9ebc746e0f26baab8c3177399275c58",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463577+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_6_20250728%40114203.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "494a3583-8e83-4312-8fa4-a0cb5419c290",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728@114234.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3.png",
+            "sha256": "64ff77fbc1c8f62036a67c94ccd43aa6ae18c41ffd9b98d89e14c7b88ee85db3",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463579+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_7_20250728%40114234.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "9c3b96f1-62c9-48de-b24a-84c4dea34c99",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728@114306.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e.png",
+            "sha256": "58ed14d2873817875dfdaeff2ee327fb3cc5de7a3eadb1e96a6517cec330673e",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463580+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_8_20250728%40114306.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          },
+          {
+            "id": "2588f61b-9fc7-4e02-96d5-03ce4bcecdd1",
+            "workspace_id": "f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e",
+            "task_revision_id": "314b7e40-5866-47fd-9949-f625244d2663",
+            "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+            "relative_path": "assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728@114324.png",
+            "media_type": "image/png",
+            "object_key": "workspaces/f3e24a2b-8af6-4d6b-af74-dd9c2a3f5f1e/datasets/7878c36d-88c6-44b8-9114-894c6e86b948/task-revisions/314b7e40-5866-47fd-9949-f625244d2663/assets/52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b.png",
+            "sha256": "52742b65724db90652a8d02f4e9992579a42bcbb507572add0dfa215e81db96b",
+            "source_relative_path": null,
+            "created_at": "2026-09-27T05:04:59.463582+00:00",
+            "url": "/api/artifacts/06fe7178-4491-4589-810f-2e2bc9502122/assets/06fe7178-4491-4589-810f-2e2bc9502122/step_9_20250728%40114324.png?member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+          }
+        ],
+        "raw_url": "/api/batches/da34e827-008c-463b-aeb1-040e01ab065c/tasks/06fe7178-4491-4589-810f-2e2bc9502122/export?format=json&member_id=6fe8c2bc-0c9b-4d09-95b2-46a274060190"
+      },
+      "feedback": []
+    }
+  ],
+  "finished_at": "2026-09-27T05:08:01.076370+00:00"
+}

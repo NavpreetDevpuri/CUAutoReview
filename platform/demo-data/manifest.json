@@ -1,0 +1,38 @@
+{
+  "datasets": [
+    {
+      "slug": "office",
+      "name": "Office documents",
+      "task_ids": [
+        "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+        "66399b0d-8fda-4618-95c4-bfc6191617e9",
+        "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5"
+      ],
+      "task_count": 3,
+      "zip": "platform/demo-data/office.zip"
+    },
+    {
+      "slug": "web",
+      "name": "Web browsing",
+      "task_ids": [
+        "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+        "030eeff7-b492-4218-b312-701ec99ee0cc",
+        "06fe7178-4491-4589-810f-2e2bc9502122"
+      ],
+      "task_count": 3,
+      "zip": "platform/demo-data/web.zip"
+    },
+    {
+      "slug": "graphics",
+      "name": "Image editing",
+      "task_ids": [
+        "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+        "045bf3ff-9077-4b86-b483-a1040a949cff"
+      ],
+      "task_count": 2,
+      "zip": "platform/demo-data/graphics.zip"
+    }
+  ],
+  "unique_tasks": 8,
+  "no_overlap": true
+}

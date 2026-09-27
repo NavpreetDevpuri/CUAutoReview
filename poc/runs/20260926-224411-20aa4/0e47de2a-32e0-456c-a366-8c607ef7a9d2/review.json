@@ -1,0 +1,317 @@
+{
+  "review_kind": "failure_analysis",
+  "summary": "The attempt repeatedly navigated to unrelated dialogs; no visible page-number footer configuration or final restoration is evidenced.",
+  "result": "issues_observed",
+  "coverage_notes": [
+    "Screenshots cover only steps 1, 7, and 15; other steps rely on action records.",
+    "The failed outcome is recorded, but the historical evaluator match is unverified."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert menu."
+      },
+      "action": "Clicked near the Insert menu.",
+      "observed_ui": "Writer document visible; Insert menu not visibly open.",
+      "effect": "Unknown from the frame.",
+      "assessment": "The click location may have missed the intended menu; evidence is insufficient.",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "2",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert menu."
+      },
+      "action": "Clicked near Insert repeatedly.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Cannot verify whether the menu opened or whether this corrected step 1.",
+      "evidence_refs": [
+        "event_2"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "3",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert menu."
+      },
+      "action": "Clicked another Insert-menu coordinate.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Menu state and click target are unverified.",
+      "evidence_refs": [
+        "event_3"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "4",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert menu."
+      },
+      "action": "Clicked another Insert-menu coordinate.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Cannot establish successful menu navigation.",
+      "evidence_refs": [
+        "event_4"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "5",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert menu."
+      },
+      "action": "Clicked the approximate Insert-menu center.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Repeated coordinate adjustment suggests uncertainty, but no UI result is shown.",
+      "evidence_refs": [
+        "event_5"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "6",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert using Alt+I."
+      },
+      "action": "Pressed Alt+I.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Shortcut effect is not visible.",
+      "evidence_refs": [
+        "event_6"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "7",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Header and Footer submenu."
+      },
+      "action": "Clicked near the claimed Header and Footer option.",
+      "observed_ui": "Bookmark dialog is open, listing existing bookmarks.",
+      "effect": "An unrelated dialog was opened or remained active.",
+      "assessment": "Supported off-target navigation; requested footer controls were not reached in this frame.",
+      "evidence_refs": [
+        "event_7",
+        "frame_7"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "8",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Close Bookmark dialog."
+      },
+      "action": "Clicked Close.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Dismissal is not directly verified.",
+      "evidence_refs": [
+        "event_8"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "9",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Dismiss Bookmark dialog with Escape."
+      },
+      "action": "Pressed Escape.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Cannot determine whether the dialog closed.",
+      "evidence_refs": [
+        "event_9"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "10",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert using shortcut."
+      },
+      "action": "Pressed Alt+I.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Menu opening is unverified.",
+      "evidence_refs": [
+        "event_10"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "11",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Header and Footer submenu."
+      },
+      "action": "Clicked a claimed menu entry.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown; later records mention an unexpected Fields dialog.",
+      "assessment": "Likely another off-target selection, but the dialog is not directly shown.",
+      "evidence_refs": [
+        "event_11"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "12",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Close Fields dialog."
+      },
+      "action": "Pressed Escape.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "Dismissal and restoration are unverified.",
+      "evidence_refs": [
+        "event_12"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "13",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert menu."
+      },
+      "action": "Pressed Alt+I.",
+      "observed_ui": "No screenshot available.",
+      "effect": "Unknown.",
+      "assessment": "No visible evidence of menu state.",
+      "evidence_refs": [
+        "event_13"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "14",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Header and Footer submenu."
+      },
+      "action": "Clicked a claimed menu entry.",
+      "observed_ui": "No screenshot available; later action refers to Special Characters.",
+      "effect": "Unknown.",
+      "assessment": "The requested submenu was not demonstrated.",
+      "evidence_refs": [
+        "event_14"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "15",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Close Special Characters dialog."
+      },
+      "action": "Pressed Escape.",
+      "observed_ui": "Writer document is visible with the original page content; no page number is visibly shown at bottom left.",
+      "effect": "The document view is visible, but footer configuration remains unobserved.",
+      "assessment": "No successful task completion or verified recovery is shown.",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "ep1",
+      "mechanism": "Repeated menu targeting led to unrelated dialogs instead of footer controls.",
+      "onset_step_ids": [
+        "1",
+        "7"
+      ],
+      "recovery": {
+        "status": "none_observed",
+        "step_ids": [],
+        "evidence_refs": [
+          "frame_7",
+          "frame_15"
+        ],
+        "rationale": "The final frame shows the document, but does not show page numbers or prove the requested footer configuration."
+      },
+      "outcome_contribution": "contributing",
+      "label_id": "p005",
+      "label_name": "off_target_menu_navigation",
+      "evidence_refs": [
+        "event_1",
+        "frame_1",
+        "event_7",
+        "frame_7",
+        "event_11",
+        "event_14",
+        "event_15",
+        "frame_15"
+      ],
+      "uncertainty": "Intermediate dialogs and menu states are sparsely observed; exact causes of coordinate misses are not proven."
+    }
+  ]
+}

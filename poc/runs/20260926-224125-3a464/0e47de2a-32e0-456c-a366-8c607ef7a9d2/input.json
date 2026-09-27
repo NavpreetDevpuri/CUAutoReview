@@ -1,0 +1,189 @@
+{
+  "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+  "title": "Add page number for every page at the bottom left",
+  "instruction": "Add page number for every page at the bottom left",
+  "outcome": "failed",
+  "score": 0.0,
+  "source": {
+    "dataset": "OSWorld-Verified",
+    "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+    "application": "libreoffice_writer",
+    "agent_model": "o3",
+    "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+    "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+    "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+    "task_definition": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/task.json",
+    "trajectory": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/traj.jsonl",
+    "score_file": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/result.txt",
+    "runtime_log": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/runtime.log",
+    "provenance_file": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/provenance.json"
+  },
+  "coverage_notes": [
+    "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+    "Three selected screenshots are retained for source steps 1, 7, 15.",
+    "The archive recording.mp4 and all other step screenshots were not downloaded.",
+    "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+    "No human-authored failure diagnosis or recovery annotation is included.",
+    "No selected source screenshot for recorded steps: 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "intent": null,
+      "action": "# Open the \"Insert\" menu in LibreOffice Writer's menubar\npyautogui.click(x=200, y=50, duration=0.5)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_1_20250728@131045.png",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ]
+    },
+    {
+      "step_id": "2",
+      "intent": null,
+      "action": "# Click the \"Insert\" menu in the top menubar to open its dropdown\npyautogui.click(x=148, y=54, duration=0.5)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_2"
+      ]
+    },
+    {
+      "step_id": "3",
+      "intent": null,
+      "action": "# Click the \"Insert\" menu label on the top menubar to open its dropdown\npyautogui.click(x=118, y=53, duration=0.5)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_3"
+      ]
+    },
+    {
+      "step_id": "4",
+      "intent": null,
+      "action": "# Click the \"Insert\" menu in the menubar to open its dropdown\npyautogui.click(x=165, y=52, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_4"
+      ]
+    },
+    {
+      "step_id": "5",
+      "intent": null,
+      "action": "# Click the \"Insert\" menubar item (center of its label) to open its dropdown menu\npyautogui.click(x=175, y=52, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_5"
+      ]
+    },
+    {
+      "step_id": "6",
+      "intent": null,
+      "action": "# Open the \"Insert\" menu using its keyboard shortcut (Alt+I)\npyautogui.hotkey('alt', 'i')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_6"
+      ]
+    },
+    {
+      "step_id": "7",
+      "intent": null,
+      "action": "# Click \"Header and Footer\" option (near bottom of open Insert menu) to show its submenu\npyautogui.click(x=210, y=485, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_7_20250728@131349.png",
+      "evidence_refs": [
+        "event_7",
+        "frame_7"
+      ]
+    },
+    {
+      "step_id": "8",
+      "intent": null,
+      "action": "# Click the \"Close\" button on the bottom-right of the open Bookmark dialog to dismiss it\npyautogui.click(x=865, y=528, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_8"
+      ]
+    },
+    {
+      "step_id": "9",
+      "intent": null,
+      "action": "# Dismiss the unexpected \"Bookmark\" dialog by pressing Escape\npyautogui.press('esc')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_9"
+      ]
+    },
+    {
+      "step_id": "10",
+      "intent": null,
+      "action": "# Open the \"Insert\" menu using its keyboard shortcut\npyautogui.hotkey('alt', 'i')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_10"
+      ]
+    },
+    {
+      "step_id": "11",
+      "intent": null,
+      "action": "# Click the \"Header and Footer\" option (third from bottom of the current Insert menu) to open its submenu\npyautogui.click(x=215, y=515, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_11"
+      ]
+    },
+    {
+      "step_id": "12",
+      "intent": null,
+      "action": "# Close the unexpected \"Fields\" dialog with Escape so we can proceed\npyautogui.press('esc')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_12"
+      ]
+    },
+    {
+      "step_id": "13",
+      "intent": null,
+      "action": "# Open the \"Insert\" menu dropdown to access footer options\npyautogui.hotkey('alt', 'i')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_13"
+      ]
+    },
+    {
+      "step_id": "14",
+      "intent": null,
+      "action": "# Click the \"Header and Footer\" entry (one row below \"Field\") in the open Insert menu to open its submenu\npyautogui.click(x=225, y=535, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_14"
+      ]
+    },
+    {
+      "step_id": "15",
+      "intent": null,
+      "action": "# Close the open \"Special Characters\" dialog with Escape\npyautogui.press('esc')",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_15_20250728@131917.png",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ]
+    }
+  ],
+  "attached_frame_steps": [
+    "1",
+    "7",
+    "15"
+  ]
+}

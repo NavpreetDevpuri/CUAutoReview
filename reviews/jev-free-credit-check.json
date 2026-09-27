@@ -1,0 +1,7 @@
+{
+  "provider": "Jev AI independent service",
+  "base_url": "https://jev-ai.pro/api/v1/",
+  "requested_policy": "free credits only; no top-up; at most one tiny request",
+  "status": "unavailable",
+  "http_status": 403
+}

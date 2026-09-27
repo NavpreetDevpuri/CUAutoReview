@@ -1,0 +1,20 @@
+html { scroll-behavior: auto; scrollbar-gutter: stable; -webkit-text-size-adjust: 100%; }
+body { min-width: 0; margin: 0; }
+button, a, input, textarea, select { font: inherit; }
+*:focus-visible { outline: 2px solid #6d98f7; outline-offset: 2px; }
+#workspace-main { overflow-wrap: anywhere; }
+#workspace-main .MuiGrid-root, #workspace-main .MuiStack-root > * { min-width: 0; }
+#workspace-main pre { max-width: 100%; overflow-x: auto; overflow-wrap: normal; }
+#workspace-main .MuiTableContainer-root { max-width: 100%; -webkit-overflow-scrolling: touch; }
+.trajectory-page { max-width: 100% !important; }
+.screenshot-full { display: block; width: 100%; height: auto; object-fit: contain; }
+.task-card-title { overflow-wrap: anywhere; }
+.nowrap { white-space: nowrap; }
+@media (max-width: 599px) {
+  .page-header-actions { width: 100%; }
+  .page-header-actions > .MuiStack-root { flex-direction: row; align-items: stretch; gap: 8px; }
+  .page-header-actions .MuiButton-root { width: auto; flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

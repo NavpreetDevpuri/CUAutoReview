@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-09-27T03:33:00.577837+00:00",
+  "batch_id": "b234c5cb-bbe7-4b73-b0e9-945a1b20426f",
+  "name": "Acceptance replay 2999629000",
+  "before": "running",
+  "after": "completed",
+  "progress": {
+    "total": 6,
+    "completed": 6,
+    "queued": 0,
+    "running": 0,
+    "failed": 0,
+    "awaiting_review": 0,
+    "status_counts": {
+      "completed": 6
+    },
+    "outcome_summary": {
+      "failed": 5,
+      "passed": 1
+    }
+  },
+  "reconciled": true,
+  "provider_calls": 0,
+  "note": "Explicit guarded reconciliation checks committed jobs and members; no work restarted."
+}

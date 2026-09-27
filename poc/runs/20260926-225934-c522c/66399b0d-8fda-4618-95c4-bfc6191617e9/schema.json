@@ -1,0 +1,207 @@
+{
+  "type": "object",
+  "properties": {
+    "review_kind": {
+      "type": "string",
+      "enum": [
+        "failure_analysis",
+        "pass_recovery"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "issues_observed",
+        "no_issue_observed",
+        "inconclusive"
+      ]
+    },
+    "coverage_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": {
+            "type": "string"
+          },
+          "review_status": {
+            "type": "string",
+            "enum": [
+              "reviewed",
+              "not_reviewed",
+              "insufficient_evidence"
+            ]
+          },
+          "intent": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "declared",
+                  "inferred",
+                  "unknown"
+                ]
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "action": {
+            "type": "string"
+          },
+          "observed_ui": {
+            "type": "string"
+          },
+          "effect": {
+            "type": "string"
+          },
+          "assessment": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "episode_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "step_id",
+          "review_status",
+          "intent",
+          "action",
+          "observed_ui",
+          "effect",
+          "assessment",
+          "evidence_refs",
+          "episode_refs"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "episodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "episode_id": {
+            "type": "string"
+          },
+          "mechanism": {
+            "type": "string"
+          },
+          "onset_step_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recovery": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "not_assessed",
+                  "none_observed",
+                  "partial",
+                  "recovered",
+                  "unknown"
+                ]
+              },
+              "step_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "rationale": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "step_ids",
+              "evidence_refs",
+              "rationale"
+            ],
+            "additionalProperties": false
+          },
+          "outcome_contribution": {
+            "type": "string",
+            "enum": [
+              "contributing",
+              "noncontributing",
+              "uncertain",
+              "not_applicable"
+            ]
+          },
+          "label_id": {
+            "type": "string"
+          },
+          "label_name": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "uncertainty": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "episode_id",
+          "mechanism",
+          "onset_step_ids",
+          "recovery",
+          "outcome_contribution",
+          "label_id",
+          "label_name",
+          "evidence_refs",
+          "uncertainty"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "review_kind",
+    "summary",
+    "result",
+    "coverage_notes",
+    "steps",
+    "episodes"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,356 @@
+{
+  "review_kind": "failure_analysis",
+  "summary": "Repeated mis-targeting opened unrelated dialogs instead of footer controls. The final frame shows dialog dismissal, but no supported page-number insertion.",
+  "result": "issues_observed",
+  "coverage_notes": [
+    "Only steps 1, 7, and 15 have screenshots.",
+    "Visual effects for other steps remain uncertain.",
+    "The current checker is not proven to match the historical evaluator."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Insert menu."
+      },
+      "action": "Clicked near the top menu bar.",
+      "observed_ui": "Writer remained on page 1 with no dropdown visible.",
+      "effect": "No visible menu opened.",
+      "assessment": "The click appears left of Insert, beginning repeated menu mis-targeting.",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "2",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Insert menu."
+      },
+      "action": "Clicked another top-menu coordinate.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "The coordinate changed, but menu activation cannot be verified.",
+      "evidence_refs": [
+        "event_2"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "3",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Insert menu."
+      },
+      "action": "Clicked another top-menu coordinate.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Another coordinate attempt occurred without visible confirmation.",
+      "evidence_refs": [
+        "event_3"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "4",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Insert menu."
+      },
+      "action": "Clicked another top-menu coordinate.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Repeated coordinate adjustment consumed an action; success is unverified.",
+      "evidence_refs": [
+        "event_4"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "5",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Insert menu."
+      },
+      "action": "Clicked another top-menu coordinate.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "A fifth menu-targeting attempt occurred without retained visual evidence.",
+      "evidence_refs": [
+        "event_5"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "6",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert using its keyboard shortcut."
+      },
+      "action": "Pressed Alt+I.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Later interaction is consistent with an Insert-menu command becoming available.",
+      "assessment": "Keyboard navigation may have bypassed the earlier click-targeting problem, but direct confirmation is absent.",
+      "evidence_refs": [
+        "event_6"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "7",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Header and Footer submenu."
+      },
+      "action": "Clicked a presumed Insert-menu row.",
+      "observed_ui": "A Bookmark dialog is visibly open.",
+      "effect": "An unrelated dialog blocked footer configuration.",
+      "assessment": "The wrong menu command was activated.",
+      "evidence_refs": [
+        "event_7",
+        "frame_7"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "8",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Close the Bookmark dialog."
+      },
+      "action": "Clicked the presumed Close button.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "This was a repair attempt; dismissal is not visually established.",
+      "evidence_refs": [
+        "event_8"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "9",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Dismiss the Bookmark dialog."
+      },
+      "action": "Pressed Escape.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "A second repair attempt suggests uncertainty after step 8; recovery remains unverified here.",
+      "evidence_refs": [
+        "event_9"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "10",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Reopen the Insert menu."
+      },
+      "action": "Pressed Alt+I.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "The menu state cannot be confirmed.",
+      "evidence_refs": [
+        "event_10"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "11",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Header and Footer submenu."
+      },
+      "action": "Clicked a presumed Insert-menu row.",
+      "observed_ui": "No frame; the following action describes an unexpected Fields dialog.",
+      "effect": "Likely activated another wrong command.",
+      "assessment": "Wrong targeting is suggested by the next action, not directly shown.",
+      "evidence_refs": [
+        "event_11",
+        "event_12"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "12",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Close the unexpected Fields dialog."
+      },
+      "action": "Pressed Escape.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "This was another repair attempt; restoration is unverified.",
+      "evidence_refs": [
+        "event_12"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "13",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Reopen Insert for footer options."
+      },
+      "action": "Pressed Alt+I.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "The menu state cannot be confirmed.",
+      "evidence_refs": [
+        "event_13"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "14",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Header and Footer submenu."
+      },
+      "action": "Clicked a presumed Insert-menu row.",
+      "observed_ui": "No frame; the following action describes a Special Characters dialog.",
+      "effect": "Likely activated another wrong command.",
+      "assessment": "Repeated wrong targeting is suggested, but the dialog itself is not retained.",
+      "evidence_refs": [
+        "event_14",
+        "event_15"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "15",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Close the Special Characters dialog."
+      },
+      "action": "Pressed Escape.",
+      "observed_ui": "Writer is visible without a modal dialog, still showing page 1.",
+      "effect": "The blocking dialog was removed; no footer insertion is visible.",
+      "assessment": "Modal recovery is observed, but task completion is unsupported.",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "ep1",
+      "mechanism": "Repeated coordinate clicks missed the intended Insert menu; keyboard navigation may later have bypassed the targeting problem.",
+      "onset_step_ids": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "recovery": {
+        "status": "recovered",
+        "step_ids": [
+          "6"
+        ],
+        "evidence_refs": [
+          "event_6",
+          "event_7",
+          "frame_7"
+        ],
+        "rationale": "The later Bookmark dialog is consistent with successfully accessing an Insert-menu command after Alt+I."
+      },
+      "outcome_contribution": "contributing",
+      "label_id": "p001",
+      "label_name": "Repeated mis-targeted UI activation",
+      "evidence_refs": [
+        "event_1",
+        "frame_1",
+        "event_2",
+        "event_3",
+        "event_4",
+        "event_5",
+        "event_6",
+        "event_7",
+        "frame_7"
+      ],
+      "uncertainty": "Steps 2–6 lack screenshots; shortcut success is inferred from the later dialog."
+    },
+    {
+      "episode_id": "ep2",
+      "mechanism": "Clicks intended for Header and Footer activated unrelated Bookmark, Fields, and Special Characters commands.",
+      "onset_step_ids": [
+        "7",
+        "11",
+        "14"
+      ],
+      "recovery": {
+        "status": "partial",
+        "step_ids": [
+          "15"
+        ],
+        "evidence_refs": [
+          "event_15",
+          "frame_15"
+        ],
+        "rationale": "The final frame confirms modal dismissal, but not footer creation or page-number insertion."
+      },
+      "outcome_contribution": "contributing",
+      "label_id": "p002",
+      "label_name": "Wrong UI target activated",
+      "evidence_refs": [
+        "event_7",
+        "frame_7",
+        "event_11",
+        "event_12",
+        "event_14",
+        "event_15",
+        "frame_15"
+      ],
+      "uncertainty": "Only the Bookmark dialog is directly pictured; the later dialog identities come from recorded action descriptions."
+    }
+  ]
+}

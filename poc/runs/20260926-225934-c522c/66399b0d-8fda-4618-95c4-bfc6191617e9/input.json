@@ -1,0 +1,230 @@
+{
+  "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+  "title": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?",
+  "instruction": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?",
+  "outcome": "failed",
+  "score": 0.0,
+  "source": {
+    "dataset": "OSWorld-Verified",
+    "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+    "application": "libreoffice_writer",
+    "agent_model": "o3",
+    "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+    "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+    "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+    "task_definition": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/task.json",
+    "trajectory": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/traj.jsonl",
+    "score_file": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/result.txt",
+    "runtime_log": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/runtime.log",
+    "provenance_file": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/provenance.json"
+  },
+  "coverage_notes": [
+    "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+    "Three selected screenshots are retained for source steps 1, 13, 15.",
+    "The archive recording.mp4 and all other step screenshots were not downloaded.",
+    "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+    "No human-authored failure diagnosis or recovery annotation is included.",
+    "No selected source screenshot for recorded steps: 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "intent": null,
+      "action": "# Click the \"Table\" menu in LibreOffice Writer’s top menu bar to open its dropdown\npyautogui.click(x=420, y=72, duration=0.5)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/step_1_20250728@131301.png",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ]
+    },
+    {
+      "step_id": "2",
+      "intent": null,
+      "action": "# Click the \"Insert Table...\" option (first item) in the open Table menu to open the Insert Table dialog\npyautogui.click(x=310, y=87, duration=0.5)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_2"
+      ]
+    },
+    {
+      "step_id": "3",
+      "intent": null,
+      "action": "# Click the \"Table\" menu in the top menu bar to show its dropdown\npyautogui.click(x=305, y=52, duration=0.5)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_3"
+      ]
+    },
+    {
+      "step_id": "4",
+      "intent": null,
+      "action": "# Click the \"Table\" menu in the top menu bar to open its dropdown\npyautogui.click(x=285, y=52, duration=0.5)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_4"
+      ]
+    },
+    {
+      "step_id": "5",
+      "intent": null,
+      "action": "# Press Ctrl+F12 to open LibreOffice Writer’s “Insert Table” dialog\npyautogui.hotkey('ctrl', 'f12')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_5"
+      ]
+    },
+    {
+      "step_id": "6",
+      "intent": null,
+      "action": "# Click into the \"Columns\" value field (showing '2') in the Insert Table dialog to activate it for editing\npyautogui.click(x=589, y=282, duration=0.5)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_6"
+      ]
+    },
+    {
+      "step_id": "7",
+      "intent": null,
+      "action": "# Click inside the \"Columns\" spin box (currently showing '2') to give it focus for editing\npyautogui.click(x=620, y=282, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_7"
+      ]
+    },
+    {
+      "step_id": "8",
+      "intent": null,
+      "action": "# Click inside the \"Columns\" numeric field (currently displaying '2') in the Insert Table dialog to set focus\npyautogui.click(x=579, y=282, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_8"
+      ]
+    },
+    {
+      "step_id": "9",
+      "intent": null,
+      "action": "# Click inside the \"Columns\" numeric field (showing '2') in the Insert Table dialog to give it focus for editing\npyautogui.click(x=610, y=282, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_9"
+      ]
+    },
+    {
+      "step_id": "10",
+      "intent": null,
+      "action": "# Press Tab to move focus from the \"Name\" field to the \"Columns\" numeric field in the Insert Table dialog\npyautogui.press('tab')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_10"
+      ]
+    },
+    {
+      "step_id": "11",
+      "intent": null,
+      "action": "# Type \"7\" in the highlighted \"Columns\" field of the Insert Table dialog to set columns to 7\npyautogui.typewrite('7')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_11"
+      ]
+    },
+    {
+      "step_id": "12",
+      "intent": null,
+      "action": "# Click inside the \"Rows\" numeric field (currently showing '2') in the Insert Table dialog to focus it for editing\npyautogui.click(x=780, y=282, duration=0.3)",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_12"
+      ]
+    },
+    {
+      "step_id": "13",
+      "intent": null,
+      "action": "# Type \"5\" in the highlighted \"Rows\" numeric field of the Insert Table dialog to set rows to 5\npyautogui.typewrite('5')",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/step_13_20250728@131733.png",
+      "evidence_refs": [
+        "event_13",
+        "frame_13"
+      ]
+    },
+    {
+      "step_id": "14",
+      "intent": null,
+      "action": "# Press Backspace once in the Columns field to change the value from \"75\" to \"7\"\npyautogui.press('backspace')",
+      "observation": null,
+      "screenshot": null,
+      "evidence_refs": [
+        "event_14"
+      ]
+    },
+    {
+      "step_id": "15",
+      "intent": null,
+      "action": "# Click inside the \"Rows\" numeric field (currently showing '2') in the Insert Table dialog to focus it for editing\npyautogui.click(x=780, y=276, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/step_15_20250728@131805.png",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ]
+    }
+  ],
+  "attached_frame_steps": [
+    "1",
+    "13",
+    "15"
+  ],
+  "reference_checker": {
+    "historical_match_verified": false,
+    "evaluator": {
+      "postconfig": [
+        {
+          "type": "activate_window",
+          "parameters": {
+            "window_name": "Table_Of_Work_Effort_Instructions.docx - LibreOffice Writer",
+            "strict": true
+          }
+        },
+        {
+          "type": "sleep",
+          "parameters": {
+            "seconds": 0.5
+          }
+        },
+        {
+          "type": "execute",
+          "parameters": {
+            "command": [
+              "python",
+              "-c",
+              "import pyautogui; import time; pyautogui.hotkey('ctrl', 's'); time.sleep(0.5); "
+            ]
+          }
+        }
+      ],
+      "func": "compare_docx_tables",
+      "expected": {
+        "type": "cloud_file",
+        "path": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_file_cache/resolve/main/libreoffice_writer/66399b0d-8fda-4618-95c4-bfc6191617e9/Table_Of_Work_Effort_Instructions_Gold.docx",
+        "dest": "Table_Of_Work_Effort_Instructions_Gold.docx"
+      },
+      "result": {
+        "type": "vm_file",
+        "path": "/home/user/Desktop/Table_Of_Work_Effort_Instructions.docx",
+        "dest": "Table_Of_Work_Effort_Instructions.docx"
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "response": {
+    "status": "ready"
+  },
+  "usage": {
+    "input_tokens": 2581,
+    "cached_input_tokens": 0,
+    "output_tokens": 15,
+    "estimated_usd": null,
+    "billing_basis": "API-equivalent estimate, not ChatGPT invoice",
+    "pricing_note": "ChatGPT login uses plan allowance/credits. Actual dollar charge is unavailable. Standard short-context API rates, checked 2026-09-26.",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing",
+    "model": "gpt-5.6-luna"
+  },
+  "error": null,
+  "duration_seconds": 6.26
+}

@@ -1,0 +1,6 @@
+2026-09-26T17:28:53.149860Z  WARN codex_models_manager::model_info: Unknown model gpt-6-sol is used. This will use fallback model metadata.
+2026-09-26T17:28:53.259022Z  WARN codex_models_manager::model_info: Unknown model gpt-6-sol is used. This will use fallback model metadata.
+2026-09-26T17:28:53.285741Z  WARN codex_models_manager::model_info: Unknown model gpt-6-sol is used. This will use fallback model metadata.
+2026-09-26T17:28:54.497882Z  WARN codex_core::client: model_verbosity is set but ignored as the model does not support verbosity: gpt-6-sol
+2026-09-26T17:28:55.433143Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: {"type":"error","status":400,"error":{"type":"invalid_request_error","message":"The 'gpt-6-sol' model is not supported when using Codex with a ChatGPT account."}}
+2026-09-26T17:28:55.879991Z  WARN codex_core::client: model_verbosity is set but ignored as the model does not support verbosity: gpt-6-sol

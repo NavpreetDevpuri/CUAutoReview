@@ -1,0 +1,903 @@
+{
+  "schema_version": "1",
+  "batch_id": "osworld-five",
+  "notes": [
+    "Five distinct OSWorld-Verified task IDs from public o3_15steps rollouts. Source task, trace, score, runtime log where selected, and provenance are retained under data/source/osworld-verified/.",
+    "The score in each result.txt is the recorded terminal grade. Per-step reward/done values are not substituted for that grade.",
+    "Outcome categories are derived only from source result.txt values 0/0.0 or 1/1.0; other values are unknown.",
+    "These are source-scored examples, not human-adjudicated labels. No human gold annotation is included or inferred.",
+    "Dataset revision is pinned at 5473c39e42a538a187a9b2c2b499db59d560fd8c. Task definitions are from OSWorld commit b138d348256078fa634fc3b73567a7337c793e6b and are not verified historical evaluator matches.",
+    "The 3.4 GB archive was not downloaded. ZIP Range reads fetched the central directory plus selected trajectory, score, runtime, and step screenshot members; MP4 recordings were omitted.",
+    "Selected screenshots are linked per step. Screenshot coverage notes list missing or unselected frames, including the two pre-existing failures with sparse frames.",
+    "The dataset card declares MIT, and OSWorld task source declares Apache-2.0. The dataset card does not itemize third-party document or screenshot rights."
+  ],
+  "tasks": [
+    {
+      "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+      "title": "Find the Monthly forecast for Manchester, GB for this month",
+      "instruction": "Find the Monthly forecast for Manchester, GB for this month",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+        "application": "chrome",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/task.json",
+        "trajectory": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/traj.jsonl",
+        "score_file": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/result.txt",
+        "runtime_log": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/runtime.log",
+        "provenance_file": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/provenance.json"
+      },
+      "coverage_notes": [
+        "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+        "Downloaded 15 available recorded step screenshots: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15.",
+        "The archive recording.mp4 was not downloaded.",
+        "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+        "No human-authored failure diagnosis or recovery annotation is included."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Click the browser's address bar to focus it for entering a new URL\npyautogui.click(x=152, y=64, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_1_20250728@115146.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Type \"weather.com\" into the address bar and submit to navigate to Weather.com\npyautogui.typewrite('weather.com\\n', interval=0.05)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_2_20250728@115158.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the bottom Dock \"Show Applications\" grid icon to open the applications overview\npyautogui.click(x=36, y=740, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_3_20250728@115303.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the bottom-most 3×3 grid “Show Applications” icon on the dock to open the applications overview\npyautogui.click(x=25, y=760, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_4_20250728@115329.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the Terminal icon (black screen with '>_' symbol) on the left dock to open a terminal window\npyautogui.click(x=23, y=427, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_5_20250728@115359.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the black “>_” Terminal icon on the left dock (just above the orange bag icon) to open a terminal window\npyautogui.click(x=24, y=585, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_6_20250728@115438.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Click the black “>_” Terminal icon (just below the green LibreOffice Calc icon) on the left dock to open a terminal window\npyautogui.click(x=25, y=520, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_7_20250728@115508.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Click the black “>_” Terminal icon located below the GIMP icon on the left dock to open a terminal window\npyautogui.click(x=24, y=648, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_8_20250728@115539.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "# Type command to fetch a text-based monthly-style weather display for Manchester from wttr.in and execute\npyautogui.typewrite('curl -s http://wttr.in/Manchester?m\\n', interval=0.05)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_9_20250728@115608.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ]
+        },
+        {
+          "step_id": "10",
+          "intent": null,
+          "action": "# Fetch and display monthly forecast for Manchester from wttr.in using wget\npyautogui.typewrite('wget -qO- http://wttr.in/Manchester?M\\\\n', interval=0.05)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_10_20250728@115646.png",
+          "evidence_refs": [
+            "event_10",
+            "frame_10"
+          ]
+        },
+        {
+          "step_id": "11",
+          "intent": null,
+          "action": "# Clear the incorrect command line in the Terminal using Ctrl+U\npyautogui.hotkey('ctrl', 'u')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_11_20250728@115717.png",
+          "evidence_refs": [
+            "event_11",
+            "frame_11"
+          ]
+        },
+        {
+          "step_id": "12",
+          "intent": null,
+          "action": "# Type and execute a command to display the monthly ASCII weather forecast for Manchester via wttr.in using wget\npyautogui.typewrite(\"wget -qO- 'https://wttr.in/Manchester?M'\\\\n\", interval=0.05)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_12_20250728@115736.png",
+          "evidence_refs": [
+            "event_12",
+            "frame_12"
+          ]
+        },
+        {
+          "step_id": "13",
+          "intent": null,
+          "action": "WAIT",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_13_20250728@115759.png",
+          "evidence_refs": [
+            "event_13",
+            "frame_13"
+          ]
+        },
+        {
+          "step_id": "14",
+          "intent": null,
+          "action": "# Clear current partial command then run wget to retrieve monthly forecast ASCII for Manchester\npyautogui.typewrite(['ctrl','u','w','g','e','t',' ','-','q','O','-',' ','h','t','t','p','s',':','/','/','w','t','t','r','.','i','n','/','M','a','n','c','h','e','s','t','e','r','?','M','enter'], interval=0.05)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_14_20250728@115832.png",
+          "evidence_refs": [
+            "event_14",
+            "frame_14"
+          ]
+        },
+        {
+          "step_id": "15",
+          "intent": null,
+          "action": "# Run wget without proxy to fetch and display the monthly ASCII forecast for Manchester\npyautogui.typewrite(\"wget -qO- --no-proxy https://wttr.in/Manchester?M\\n\", interval=0.05)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/368d9ba4-203c-40c1-9fa3-da2f1430ce63/step_15_20250728@115857.png",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+      "title": "Could you assist me in adding a new layer and naming it 'Square'?",
+      "instruction": "Could you assist me in adding a new layer and naming it 'Square'?",
+      "outcome": "passed",
+      "score": 1.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+        "application": "gimp",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/task.json",
+        "trajectory": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/traj.jsonl",
+        "score_file": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/result.txt",
+        "runtime_log": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/runtime.log",
+        "provenance_file": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/provenance.json"
+      },
+      "coverage_notes": [
+        "Archive label is 15steps; source traj.jsonl contains 9 recorded actions.",
+        "Downloaded 9 available recorded step screenshots: 1, 2, 3, 4, 5, 6, 7, 8, 9.",
+        "The archive recording.mp4 was not downloaded.",
+        "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+        "No human-authored failure diagnosis or recovery annotation is included."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Click the \"+\" icon in the Layers panel to create a new layer\npyautogui.click(x=1290, y=382, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_1_20250728@115850.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Click the \"+\" icon in the Layers panel (bottom-right) to open the New Layer dialog\npyautogui.click(x=1290, y=401, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_2_20250728@115910.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the blank-page icon at the bottom of the Layers panel to open the New Layer dialog\npyautogui.click(x=1258, y=734, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_3_20250728@115934.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the leftmost blank-sheet “Create a new layer” icon beneath the layer list in Layers panel\npyautogui.click(x=1225, y=706, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_4_20250728@120005.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the leftmost “sheet” icon at the bottom of the Layers panel to open the New Layer dialog\npyautogui.click(x=1185, y=744, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_5_20250728@120041.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the left-most blank-sheet “Create a new layer” icon just above the dock’s bottom-right bar\npyautogui.click(x=1330, y=728, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_6_20250728@120224.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Open the “New Layer” dialog via keyboard shortcut\npyautogui.hotkey('ctrl', 'shift', 'n')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_7_20250728@120350.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Replace the current layer name with 'Square' and confirm creation\npyautogui.hotkey('ctrl','a')\npyautogui.typewrite('Square')\npyautogui.press('enter')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_8_20250728@120412.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "DONE",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/b148e375-fe0b-4bec-90e7-38632b0d73c2/step_9_20250728@120425.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "title": "Help me format column \"spent\" by keeping two decimal points. ",
+      "instruction": "Help me format column \"spent\" by keeping two decimal points. ",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+        "application": "libreoffice_calc",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/task.json",
+        "trajectory": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/traj.jsonl",
+        "score_file": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/result.txt",
+        "runtime_log": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/runtime.log",
+        "provenance_file": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/provenance.json"
+      },
+      "coverage_notes": [
+        "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+        "Downloaded 15 available recorded step screenshots: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15.",
+        "The archive recording.mp4 was not downloaded.",
+        "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+        "No human-authored failure diagnosis or recovery annotation is included."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Click the column header \"C\" to select the entire \"Spent ($)\" column\npyautogui.click(x=270, y=174, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_1_20250728@123327.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Click the small \"X\" close button of the Function Wizard dialog to dismiss it\npyautogui.click(x=959, y=209, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_2_20250728@123352.png",
+          "evidence_refs": [
+            "event_2",
+            "frame_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the \"Cancel\" button at bottom of the Function Wizard to close the dialog\npyautogui.click(x=876, y=627, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_3_20250728@123413.png",
+          "evidence_refs": [
+            "event_3",
+            "frame_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the \"X\" close button at the top-right of the Function Wizard dialog to dismiss it\npyautogui.click(x=967, y=209, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_4_20250728@123433.png",
+          "evidence_refs": [
+            "event_4",
+            "frame_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the \"Cancel\" button in the Function Wizard to close the dialog\npyautogui.click(x=886, y=627, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_5_20250728@123502.png",
+          "evidence_refs": [
+            "event_5",
+            "frame_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click the “X” close button in the Function Wizard title bar to dismiss the dialog\npyautogui.click(x=965, y=209, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_6_20250728@123523.png",
+          "evidence_refs": [
+            "event_6",
+            "frame_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Press the Escape key to close the open \"Function Wizard\" dialog\npyautogui.press('esc')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_7_20250728@123555.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Press Alt+F4 to close the obstructing \"Function Wizard\" dialog\npyautogui.hotkey('alt', 'f4')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_8_20250728@123611.png",
+          "evidence_refs": [
+            "event_8",
+            "frame_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "pyautogui.click(x=865, y=627, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_9_20250728@123702.png",
+          "evidence_refs": [
+            "event_9",
+            "frame_9"
+          ]
+        },
+        {
+          "step_id": "10",
+          "intent": null,
+          "action": "# Click the small \"X\" close button in the top-right corner of the Function Wizard dialog to dismiss it\npyautogui.click(x=958, y=208, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_10_20250728@123727.png",
+          "evidence_refs": [
+            "event_10",
+            "frame_10"
+          ]
+        },
+        {
+          "step_id": "11",
+          "intent": null,
+          "action": "# Click the small \"X\" close button in the Function Wizard title bar (around x≈795, y≈208) to dismiss the dialog\npyautogui.click(x=795, y=208, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_11_20250728@123753.png",
+          "evidence_refs": [
+            "event_11",
+            "frame_11"
+          ]
+        },
+        {
+          "step_id": "12",
+          "intent": null,
+          "action": "# Click the small \"X\" close icon in the top-right corner of the Function Wizard dialog to dismiss it\npyautogui.click(x=962, y=209, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_12_20250728@123824.png",
+          "evidence_refs": [
+            "event_12",
+            "frame_12"
+          ]
+        },
+        {
+          "step_id": "13",
+          "intent": null,
+          "action": "# Click the \"Cancel\" button (bottom-right of Function Wizard) to close the dialog\npyautogui.click(x=865, y=629, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_13_20250728@123942.png",
+          "evidence_refs": [
+            "event_13",
+            "frame_13"
+          ]
+        },
+        {
+          "step_id": "14",
+          "intent": null,
+          "action": "# Click the \"X\" close icon in the Function Wizard title bar (approx. right edge of the dialog) to dismiss the blocking dialog\npyautogui.click(x=846, y=209, duration=0.2)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_14_20250728@124009.png",
+          "evidence_refs": [
+            "event_14",
+            "frame_14"
+          ]
+        },
+        {
+          "step_id": "15",
+          "intent": null,
+          "action": "# Click the small \"X\" icon at the top-right corner of the Function Wizard dialog to close it\npyautogui.click(x=810, y=209, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_15_20250728@124033.png",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+      "title": "Add page number for every page at the bottom left",
+      "instruction": "Add page number for every page at the bottom left",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+        "application": "libreoffice_writer",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/task.json",
+        "trajectory": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/traj.jsonl",
+        "score_file": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/result.txt",
+        "runtime_log": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/runtime.log",
+        "provenance_file": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/provenance.json"
+      },
+      "coverage_notes": [
+        "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+        "Three selected screenshots are retained for source steps 1, 7, 15.",
+        "The archive recording.mp4 and all other step screenshots were not downloaded.",
+        "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+        "No human-authored failure diagnosis or recovery annotation is included.",
+        "No selected source screenshot for recorded steps: 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Open the \"Insert\" menu in LibreOffice Writer's menubar\npyautogui.click(x=200, y=50, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_1_20250728@131045.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Click the \"Insert\" menu in the top menubar to open its dropdown\npyautogui.click(x=148, y=54, duration=0.5)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the \"Insert\" menu label on the top menubar to open its dropdown\npyautogui.click(x=118, y=53, duration=0.5)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the \"Insert\" menu in the menubar to open its dropdown\npyautogui.click(x=165, y=52, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Click the \"Insert\" menubar item (center of its label) to open its dropdown menu\npyautogui.click(x=175, y=52, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Open the \"Insert\" menu using its keyboard shortcut (Alt+I)\npyautogui.hotkey('alt', 'i')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Click \"Header and Footer\" option (near bottom of open Insert menu) to show its submenu\npyautogui.click(x=210, y=485, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_7_20250728@131349.png",
+          "evidence_refs": [
+            "event_7",
+            "frame_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Click the \"Close\" button on the bottom-right of the open Bookmark dialog to dismiss it\npyautogui.click(x=865, y=528, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "# Dismiss the unexpected \"Bookmark\" dialog by pressing Escape\npyautogui.press('esc')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_9"
+          ]
+        },
+        {
+          "step_id": "10",
+          "intent": null,
+          "action": "# Open the \"Insert\" menu using its keyboard shortcut\npyautogui.hotkey('alt', 'i')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_10"
+          ]
+        },
+        {
+          "step_id": "11",
+          "intent": null,
+          "action": "# Click the \"Header and Footer\" option (third from bottom of the current Insert menu) to open its submenu\npyautogui.click(x=215, y=515, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_11"
+          ]
+        },
+        {
+          "step_id": "12",
+          "intent": null,
+          "action": "# Close the unexpected \"Fields\" dialog with Escape so we can proceed\npyautogui.press('esc')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_12"
+          ]
+        },
+        {
+          "step_id": "13",
+          "intent": null,
+          "action": "# Open the \"Insert\" menu dropdown to access footer options\npyautogui.hotkey('alt', 'i')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_13"
+          ]
+        },
+        {
+          "step_id": "14",
+          "intent": null,
+          "action": "# Click the \"Header and Footer\" entry (one row below \"Field\") in the open Insert menu to open its submenu\npyautogui.click(x=225, y=535, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_14"
+          ]
+        },
+        {
+          "step_id": "15",
+          "intent": null,
+          "action": "# Close the open \"Special Characters\" dialog with Escape\npyautogui.press('esc')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/0e47de2a-32e0-456c-a366-8c607ef7a9d2/step_15_20250728@131917.png",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "title": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?",
+      "instruction": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?",
+      "outcome": "failed",
+      "score": 0.0,
+      "source": {
+        "dataset": "OSWorld-Verified",
+        "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+        "application": "libreoffice_writer",
+        "agent_model": "o3",
+        "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+        "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+        "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+        "task_definition": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/task.json",
+        "trajectory": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/traj.jsonl",
+        "score_file": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/result.txt",
+        "runtime_log": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/runtime.log",
+        "provenance_file": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/provenance.json"
+      },
+      "coverage_notes": [
+        "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+        "Three selected screenshots are retained for source steps 1, 13, 15.",
+        "The archive recording.mp4 and all other step screenshots were not downloaded.",
+        "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+        "No human-authored failure diagnosis or recovery annotation is included.",
+        "No selected source screenshot for recorded steps: 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14."
+      ],
+      "steps": [
+        {
+          "step_id": "1",
+          "intent": null,
+          "action": "# Click the \"Table\" menu in LibreOffice Writer’s top menu bar to open its dropdown\npyautogui.click(x=420, y=72, duration=0.5)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/step_1_20250728@131301.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        },
+        {
+          "step_id": "2",
+          "intent": null,
+          "action": "# Click the \"Insert Table...\" option (first item) in the open Table menu to open the Insert Table dialog\npyautogui.click(x=310, y=87, duration=0.5)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_2"
+          ]
+        },
+        {
+          "step_id": "3",
+          "intent": null,
+          "action": "# Click the \"Table\" menu in the top menu bar to show its dropdown\npyautogui.click(x=305, y=52, duration=0.5)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_3"
+          ]
+        },
+        {
+          "step_id": "4",
+          "intent": null,
+          "action": "# Click the \"Table\" menu in the top menu bar to open its dropdown\npyautogui.click(x=285, y=52, duration=0.5)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_4"
+          ]
+        },
+        {
+          "step_id": "5",
+          "intent": null,
+          "action": "# Press Ctrl+F12 to open LibreOffice Writer’s “Insert Table” dialog\npyautogui.hotkey('ctrl', 'f12')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_5"
+          ]
+        },
+        {
+          "step_id": "6",
+          "intent": null,
+          "action": "# Click into the \"Columns\" value field (showing '2') in the Insert Table dialog to activate it for editing\npyautogui.click(x=589, y=282, duration=0.5)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_6"
+          ]
+        },
+        {
+          "step_id": "7",
+          "intent": null,
+          "action": "# Click inside the \"Columns\" spin box (currently showing '2') to give it focus for editing\npyautogui.click(x=620, y=282, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_7"
+          ]
+        },
+        {
+          "step_id": "8",
+          "intent": null,
+          "action": "# Click inside the \"Columns\" numeric field (currently displaying '2') in the Insert Table dialog to set focus\npyautogui.click(x=579, y=282, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_8"
+          ]
+        },
+        {
+          "step_id": "9",
+          "intent": null,
+          "action": "# Click inside the \"Columns\" numeric field (showing '2') in the Insert Table dialog to give it focus for editing\npyautogui.click(x=610, y=282, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_9"
+          ]
+        },
+        {
+          "step_id": "10",
+          "intent": null,
+          "action": "# Press Tab to move focus from the \"Name\" field to the \"Columns\" numeric field in the Insert Table dialog\npyautogui.press('tab')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_10"
+          ]
+        },
+        {
+          "step_id": "11",
+          "intent": null,
+          "action": "# Type \"7\" in the highlighted \"Columns\" field of the Insert Table dialog to set columns to 7\npyautogui.typewrite('7')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_11"
+          ]
+        },
+        {
+          "step_id": "12",
+          "intent": null,
+          "action": "# Click inside the \"Rows\" numeric field (currently showing '2') in the Insert Table dialog to focus it for editing\npyautogui.click(x=780, y=282, duration=0.3)",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_12"
+          ]
+        },
+        {
+          "step_id": "13",
+          "intent": null,
+          "action": "# Type \"5\" in the highlighted \"Rows\" numeric field of the Insert Table dialog to set rows to 5\npyautogui.typewrite('5')",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/step_13_20250728@131733.png",
+          "evidence_refs": [
+            "event_13",
+            "frame_13"
+          ]
+        },
+        {
+          "step_id": "14",
+          "intent": null,
+          "action": "# Press Backspace once in the Columns field to change the value from \"75\" to \"7\"\npyautogui.press('backspace')",
+          "observation": null,
+          "screenshot": null,
+          "evidence_refs": [
+            "event_14"
+          ]
+        },
+        {
+          "step_id": "15",
+          "intent": null,
+          "action": "# Click inside the \"Rows\" numeric field (currently showing '2') in the Insert Table dialog to focus it for editing\npyautogui.click(x=780, y=276, duration=0.3)",
+          "observation": null,
+          "screenshot": "data/source/osworld-verified/66399b0d-8fda-4618-95c4-bfc6191617e9/step_15_20250728@131805.png",
+          "evidence_refs": [
+            "event_15",
+            "frame_15"
+          ]
+        }
+      ]
+    }
+  ]
+}

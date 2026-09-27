@@ -1,0 +1,5 @@
+{"type":"thread.started","thread_id":"01a0dec3-9ebc-7bc3-917a-6258c8fa35a5"}
+{"type":"item.completed","item":{"id":"item_0","type":"error","message":"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/navpreetsinghdevpuri/.codex/config.toml."}}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_1","type":"agent_message","text":"{\"status\":\"ready\"}"}}
+{"type":"turn.completed","usage":{"input_tokens":4002,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":15,"reasoning_output_tokens":0}}

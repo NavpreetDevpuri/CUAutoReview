@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>CU Auto Review · experiment viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="notice" role="note">
+      <span class="notice-mark" aria-hidden="true">!</span>
+      <span><strong>POC only.</strong> Single-batch experiment. The collaborative platform described in README/specs is not implemented.</span>
+      <a id="readme-link" href="../../README.md">Read the project README <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="CU Auto Review home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="brand-copy"><strong>CU Auto Review</strong><small>experiment viewer</small></span>
+      </a>
+      <div class="run-identity">
+        <span class="eyebrow">CURRENT BATCH</span>
+        <strong id="run-id">Loading batch…</strong>
+        <span id="run-status" class="status-chip">loading</span>
+      </div>
+      <nav class="top-tabs" aria-label="Viewer sections">
+        <button class="top-tab active" type="button" data-section="run">Trajectories</button>
+        <button class="top-tab" type="button" data-section="taxonomy">Shared labels <span id="proposal-count" class="tab-count">0</span></button>
+      </nav>
+      <button id="reload-snapshot" class="small-button reload-button" type="button" title="Reload the latest saved run snapshot">↻ Reload snapshot</button>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme">◐</button>
+    </header>
+
+    <section class="overview-strip" aria-label="Batch overview">
+      <div class="overview-title"><span class="eyebrow">BATCH SNAPSHOT</span><span id="batch-dates">Loading...</span></div>
+      <details class="usage-details">
+        <summary>Usage, cost and limits</summary>
+        <div class="overview-metrics">
+          <div class="metric"><span>Model</span><strong id="model-name">Not available</strong></div>
+          <div class="metric"><span>Tasks</span><strong id="task-count">Not available</strong></div>
+          <div class="metric"><span>Input tokens</span><strong id="input-tokens">Not available</strong></div>
+          <div class="metric"><span>Cached input</span><strong id="cached-tokens">Not available</strong></div>
+          <div class="metric"><span>Output tokens</span><strong id="output-tokens">Not available</strong></div>
+          <div class="metric metric-cost"><span>Estimated cost</span><strong id="estimated-cost">Not available</strong><small id="pricing-note"></small></div>
+          <div class="metric"><span>Estimated credits</span><strong id="estimated-credits">Not available</strong><small id="estimated-credit-note"></small></div>
+        </div>
+        <div id="limits-row" class="limits-row"></div>
+      </details>
+    </section>
+
+    <main id="run-section" class="workspace">
+      <aside id="review-sidebar" class="review-sidebar" aria-label="Tasks and steps">
+        <div class="sidebar-heading">
+          <strong class="sidebar-expanded">Tasks & steps</strong>
+          <button id="sidebar-toggle" class="small-button" type="button" aria-expanded="true" aria-controls="sidebar-content" aria-label="Collapse task and step sidebar" title="Collapse sidebar">«</button>
+        </div>
+        <div id="sidebar-content" class="sidebar-content">
+          <div class="task-picker">
+            <button id="task-picker-open" class="task-picker-trigger" type="button" aria-haspopup="dialog" aria-controls="task-dialog" aria-expanded="false" aria-label="Choose a task">
+              <span class="task-picker-current"><span class="eyebrow">SELECTED TASK</span><span id="sidebar-task-title" class="sidebar-task-title">Loading tasks…</span></span>
+              <span class="task-picker-action" aria-hidden="true">Change <span>⌄</span></span>
+            </button>
+            <span id="task-picker-position" class="task-picker-position"></span>
+            <span id="task-picker-status" class="task-picker-status">Read-only batch snapshot</span>
+          </div>
+          <div id="sidebar-steps" class="sidebar-steps"></div>
+        </div>
+      </aside>
+      <section id="task-workspace" class="task-workspace" aria-live="polite"></section>
+    </main>
+
+    <main id="taxonomy-section" class="taxonomy-workspace" hidden>
+      <div id="taxonomy-content"></div>
+    </main>
+
+    <dialog id="task-dialog" class="task-dialog" aria-labelledby="task-dialog-title">
+      <div class="task-dialog-shell">
+        <header class="task-dialog-header">
+          <div>
+            <span class="eyebrow">BATCH TASKS</span>
+            <h2 id="task-dialog-title">Choose a task</h2>
+            <p>Evaluator outcome and saved review data are shown separately. Step links use recorded problem, recovery, and related-step references.</p>
+          </div>
+          <button id="task-dialog-close" class="small-button task-dialog-close" type="button" aria-label="Close task picker">×</button>
+        </header>
+        <div class="task-dialog-search-row">
+          <label for="task-search">Search tasks</label>
+          <input id="task-search" type="search" autocomplete="off" placeholder="Search title, task ID, label, or outcome" />
+          <span id="task-search-count" role="status" aria-live="polite"></span>
+        </div>
+        <div id="task-dialog-list" class="task-dialog-list"></div>
+        <p id="task-dialog-empty" class="task-dialog-empty" hidden>No tasks match this search.</p>
+      </div>
+    </dialog>
+
+    <div id="load-state" class="load-state" role="status" hidden></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "format": "cuautoreview",
+  "tasks": [
+    {
+      "task_id": "example-task-1",
+      "title": "Import template: replace with your task",
+      "instruction": "This is a synthetic import example. Replace the task and its placeholder screenshot with recorded evidence.",
+      "outcome": "unknown",
+      "source": {
+        "dataset": "import-template",
+        "synthetic": true
+      },
+      "steps": [
+        {
+          "step_id": "1",
+          "action": "Example action: open the application.",
+          "observation": "The included PNG is only a placeholder, not a real computer-use observation.",
+          "screenshot": "assets/example-task-1/step-1.png",
+          "evidence_refs": [
+            "event_1",
+            "frame_1"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+review_kind: pass_recovery
+summary: The task passed after six unsuccessful click attempts; keyboard creation
+  and naming were ultimately reflected in the final layer list.
+result: issues_observed
+coverage_notes:
+- Only steps 1, 5, and 9 have attached frames.
+- Immediate effects of steps 2–4 and 6–8 are not directly visible.
+- The historical evaluator match is unverified.
+steps:
+- step_id: '1'
+  review_status: reviewed
+  intent:
+    kind: inferred
+    text: Open the new-layer dialog.
+  action: Clicked a supposed Layers-panel plus control.
+  observed_ui: GIMP still shows only the background layer and no dialog.
+  effect: The intended dialog did not appear.
+  assessment: Initial click missed or targeted the wrong control.
+  evidence_refs:
+  - event_1
+  - frame_1
+  episode_refs:
+  - ep1
+- step_id: '2'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Retry opening the new-layer dialog.
+  action: Clicked another supposed plus-control location.
+  observed_ui: No attached frame is available.
+  effect: Immediate effect is unknown.
+  assessment: A retry occurred, but its individual result is unverified.
+  evidence_refs:
+  - event_2
+  episode_refs:
+  - ep1
+- step_id: '3'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Find and activate the new-layer control.
+  action: Clicked a supposed blank-page icon.
+  observed_ui: No attached frame is available.
+  effect: Immediate effect is unknown.
+  assessment: Continued coordinate searching suggests the dialog remained unopened.
+  evidence_refs:
+  - event_3
+  episode_refs:
+  - ep1
+- step_id: '4'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Retry the new-layer control.
+  action: Clicked another presumed blank-sheet location.
+  observed_ui: No attached frame is available.
+  effect: Immediate effect is unknown.
+  assessment: Another location-based retry occurred without direct visual confirmation.
+  evidence_refs:
+  - event_4
+  episode_refs:
+  - ep1
+- step_id: '5'
+  review_status: reviewed
+  intent:
+    kind: inferred
+    text: Open the new-layer dialog from the dock.
+  action: Clicked another presumed sheet-icon location.
+  observed_ui: Only the background layer remains visible; no dialog appears.
+  effect: The repeated clicks had not opened the dialog by this frame.
+  assessment: Confirms the coordinate-click sequence was ineffective through step
+    5.
+  evidence_refs:
+  - event_5
+  - frame_5
+  episode_refs:
+  - ep1
+- step_id: '6'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Make another new-layer control attempt.
+  action: Clicked a further presumed blank-sheet location.
+  observed_ui: No attached frame is available.
+  effect: Immediate effect is unknown.
+  assessment: Final coordinate retry before switching interaction method.
+  evidence_refs:
+  - event_6
+  episode_refs:
+  - ep1
+- step_id: '7'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Open the new-layer dialog by keyboard.
+  action: Pressed Ctrl+Shift+N.
+  observed_ui: No attached frame is available.
+  effect: The dialog opening is not directly shown.
+  assessment: Method changed from uncertain clicks to a keyboard shortcut.
+  evidence_refs:
+  - event_7
+  episode_refs:
+  - ep1
+- step_id: '8'
+  review_status: insufficient_evidence
+  intent:
+    kind: inferred
+    text: Name the new layer Square and confirm.
+  action: Selected text, typed Square, and pressed Enter.
+  observed_ui: No attached frame is available.
+  effect: Immediate creation is not directly shown.
+  assessment: The later final frame supports successful completion of this naming
+    sequence.
+  evidence_refs:
+  - event_8
+  episode_refs:
+  - ep1
+- step_id: '9'
+  review_status: reviewed
+  intent:
+    kind: inferred
+    text: Finish after creating the requested layer.
+  action: Declared completion.
+  observed_ui: The Layers panel shows two visible layers, including a top layer named
+    Square.
+  effect: The requested named layer is visibly present.
+  assessment: Observed restoration establishes recovery and preserves the passed outcome.
+  evidence_refs:
+  - event_9
+  - frame_9
+  episode_refs:
+  - ep1
+episodes:
+- episode_id: ep1
+  mechanism: Repeated clicks at changing coordinates did not activate the intended
+    new-layer control before switching to keyboard interaction.
+  onset_step_ids:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  recovery:
+    status: recovered
+    step_ids:
+    - '7'
+    - '8'
+    - '9'
+    evidence_refs:
+    - event_7
+    - event_8
+    - event_9
+    - frame_9
+    rationale: After the keyboard and naming actions, the final frame visibly shows
+      a second layer named Square.
+  outcome_contribution: not_applicable
+  label_id: p001
+  label_name: Repeated mis-targeted UI activation
+  evidence_refs:
+  - event_1
+  - frame_1
+  - event_2
+  - event_3
+  - event_4
+  - event_5
+  - frame_5
+  - event_6
+  - event_7
+  - event_8
+  - event_9
+  - frame_9
+  uncertainty: Sparse frames prevent confirming each retry's immediate effect or precisely
+    locating the mis-targeted controls.

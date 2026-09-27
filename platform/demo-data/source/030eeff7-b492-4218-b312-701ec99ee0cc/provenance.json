@@ -1,0 +1,165 @@
+{
+  "task_id": "030eeff7-b492-4218-b312-701ec99ee0cc",
+  "acquired_at_utc": "2026-09-27T03:48:29.166992+00:00",
+  "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+  "archive_bytes": 3408011289,
+  "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+  "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+  "full_archive_checksum_verified_locally": false,
+  "acquisition": "Bounded HTTP ranges; selected members verified with ZIP CRC32, length and SHA256.",
+  "files": {
+    "step_7_20250728@114216.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_7_20250728@114216.png",
+      "data_http_range": "bytes=3237570479-3237764726",
+      "compressed_bytes": 194248,
+      "uncompressed_bytes": 200607,
+      "zip_crc32": "e903125b",
+      "zip_crc_verified": true,
+      "sha256": "017d59cea50289f4bfe5215c8a141e6ba915af0a531688fd6a60b92c19f7a9ed"
+    },
+    "step_9_20250728@114318.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_9_20250728@114318.png",
+      "data_http_range": "bytes=3240841063-3241035502",
+      "compressed_bytes": 194440,
+      "uncompressed_bytes": 200951,
+      "zip_crc32": "d6db1b88",
+      "zip_crc_verified": true,
+      "sha256": "5cea6fe0f4b157b941854fd1cf0d7fb2fae2fb82f3ad565eaf8334cb2ba31085"
+    },
+    "step_12_20250728@114425.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_12_20250728@114425.png",
+      "data_http_range": "bytes=3241035643-3241230209",
+      "compressed_bytes": 194567,
+      "uncompressed_bytes": 201180,
+      "zip_crc32": "6ca17d53",
+      "zip_crc_verified": true,
+      "sha256": "0b977a2021a1fd4a49130321b4a0dfeafbcc4df2ecb3d66b4761bb0b9fd244cb"
+    },
+    "step_6_20250728@114148.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_6_20250728@114148.png",
+      "data_http_range": "bytes=3241230349-3241424367",
+      "compressed_bytes": 194019,
+      "uncompressed_bytes": 200610,
+      "zip_crc32": "6c312e95",
+      "zip_crc_verified": true,
+      "sha256": "82b424b166da5d16552b1db143f8953c3294c170f5f02fe5f011c88852d8f395"
+    },
+    "step_10_20250728@114338.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_10_20250728@114338.png",
+      "data_http_range": "bytes=3241424508-3241619557",
+      "compressed_bytes": 195050,
+      "uncompressed_bytes": 201359,
+      "zip_crc32": "4a399e90",
+      "zip_crc_verified": true,
+      "sha256": "5536b81c4e46dd97bca525169827630a9ad45d04768d61e2540afbb843cc5d68"
+    },
+    "result.txt": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/result.txt",
+      "data_http_range": "bytes=3241619681-3241619684",
+      "compressed_bytes": 4,
+      "uncompressed_bytes": 4,
+      "zip_crc32": "dc2f93ba",
+      "zip_crc_verified": true,
+      "sha256": "51ff0d2f0d3a5d61edec31785532ea0d570f8c348d58b15b94ff9c2ca6e926a4"
+    },
+    "step_4_20250728@114114.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_4_20250728@114114.png",
+      "data_http_range": "bytes=3241622562-3241732442",
+      "compressed_bytes": 109881,
+      "uncompressed_bytes": 116050,
+      "zip_crc32": "cae1f45b",
+      "zip_crc_verified": true,
+      "sha256": "b386269b8274257e9d0c5cd712c3b1f687e88cc1450be173edd0f52360d7cbb9"
+    },
+    "traj.jsonl": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/traj.jsonl",
+      "data_http_range": "bytes=3241732566-3241733603",
+      "compressed_bytes": 1038,
+      "uncompressed_bytes": 4896,
+      "zip_crc32": "79b57b26",
+      "zip_crc_verified": true,
+      "sha256": "db20ce0261e98c0a9d2bc1549b577082e7f35c9e543db5bb2c7ed8e5bfc22481"
+    },
+    "step_2_20250728@114005.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_2_20250728@114005.png",
+      "data_http_range": "bytes=3241733743-3241847826",
+      "compressed_bytes": 114084,
+      "uncompressed_bytes": 120192,
+      "zip_crc32": "3e3a6f79",
+      "zip_crc_verified": true,
+      "sha256": "b427fd357f3a1237d84fd6ca94ab8bdb2f80f21f4643b3ef4ab5f034b83e4a2e"
+    },
+    "step_11_20250728@114402.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_11_20250728@114402.png",
+      "data_http_range": "bytes=3241847967-3242042065",
+      "compressed_bytes": 194099,
+      "uncompressed_bytes": 200591,
+      "zip_crc32": "4a91ef07",
+      "zip_crc_verified": true,
+      "sha256": "6824dddfd66afbed838b195cea32095d8d21dcda64bedcff7228de26ee2c2c5f"
+    },
+    "step_8_20250728@114249.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_8_20250728@114249.png",
+      "data_http_range": "bytes=3242042205-3242236408",
+      "compressed_bytes": 194204,
+      "uncompressed_bytes": 200623,
+      "zip_crc32": "0bdf391f",
+      "zip_crc_verified": true,
+      "sha256": "0d78af2aafedc9902c948ffb776f3591724d12c2db089eaf7b76f7ee3ba7a327"
+    },
+    "step_13_20250728@114444.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_13_20250728@114444.png",
+      "data_http_range": "bytes=3242236549-3242431578",
+      "compressed_bytes": 195030,
+      "uncompressed_bytes": 201348,
+      "zip_crc32": "ebad3910",
+      "zip_crc_verified": true,
+      "sha256": "3021e30908f072aa8932cceb20fbee389a6a100d745602b057c47f88a7e85131"
+    },
+    "step_5_20250728@114127.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_5_20250728@114127.png",
+      "data_http_range": "bytes=3242431718-3242626947",
+      "compressed_bytes": 195230,
+      "uncompressed_bytes": 201931,
+      "zip_crc32": "15249d73",
+      "zip_crc_verified": true,
+      "sha256": "80e4ad9fd34fa885815d9f298e07afb84ec84406f477dad4c2a4b17ecea37c5f"
+    },
+    "step_14_20250728@114815.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_14_20250728@114815.png",
+      "data_http_range": "bytes=3242627088-3242821393",
+      "compressed_bytes": 194306,
+      "uncompressed_bytes": 200700,
+      "zip_crc32": "f0f9d270",
+      "zip_crc_verified": true,
+      "sha256": "6ea209b2fd649b960f73ba6de65417163be48e25faf4fbc0bae53e45efc6b0bd"
+    },
+    "step_15_20250728@114840.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_15_20250728@114840.png",
+      "data_http_range": "bytes=3242821534-3243015606",
+      "compressed_bytes": 194073,
+      "uncompressed_bytes": 200599,
+      "zip_crc32": "1827320f",
+      "zip_crc_verified": true,
+      "sha256": "dba6607911740a1406040f94fd776c9d1bbbe25b87066066341c9fb9e65513e5"
+    },
+    "step_3_20250728@114035.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_3_20250728@114035.png",
+      "data_http_range": "bytes=3243015746-3243117342",
+      "compressed_bytes": 101597,
+      "uncompressed_bytes": 108017,
+      "zip_crc32": "6fb98ed0",
+      "zip_crc_verified": true,
+      "sha256": "02717fcb638a7a5672f75e6c9794934517b5a90c0dbec392c96930bb128fc49e"
+    },
+    "step_1_20250728@113944.png": {
+      "archive_member": "o3_15steps/chrome/030eeff7-b492-4218-b312-701ec99ee0cc/step_1_20250728@113944.png",
+      "data_http_range": "bytes=3243117482-3243231387",
+      "compressed_bytes": 113906,
+      "uncompressed_bytes": 120047,
+      "zip_crc32": "7ac1be4b",
+      "zip_crc_verified": true,
+      "sha256": "e2387dbc285481e5b54022763c23eb897f7676fa99e140e148061e1bb85c04de"
+    }
+  }
+}

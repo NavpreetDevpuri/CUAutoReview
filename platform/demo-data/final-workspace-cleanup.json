@@ -1,0 +1,21 @@
+{
+  "archived_failed_setup_runs": [
+    "f0697bd8-f718-4a01-ad31-e2c8f876f950",
+    "ef9db3db-eec7-4abe-aefa-d88991d594a7",
+    "0836f8b1-5be4-4d85-9e9e-dc2820ce484c",
+    "c24799d5-3d65-4703-82c3-bb4fad233158",
+    "46b296df-730e-4e5c-a4c7-af4c8b3c1780",
+    "4cf09a04-d076-447e-b858-ce679519c711"
+  ],
+  "created_presets": [
+    {
+      "id": "e3294f84-4767-490d-a812-25a3f4413da3",
+      "name": "Gemini 3.8 Flash quick text review"
+    },
+    {
+      "id": "3aca29c3-f6de-4751-9755-2c0d75fdbd40",
+      "name": "GPT-6 Sol text review"
+    }
+  ],
+  "inference_calls": 0
+}

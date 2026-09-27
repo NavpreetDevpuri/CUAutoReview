@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-09-27T05:14:01.391798+00:00",
+  "job": {
+    "attempt_count": 2,
+    "cumulative_estimated_cost_usd": 0.04714725,
+    "generation": 2,
+    "id": "b24950d9-c720-4da9-a6d7-2282ab9cba64",
+    "max_attempts": 4,
+    "member_id": "6fe8c2bc-0c9b-4d09-95b2-46a274060190",
+    "per_attempt_budget_usd": 0.1,
+    "status": "completed",
+    "task_id": "06fe7178-4491-4589-810f-2e2bc9502122"
+  },
+  "original_attempt": {
+    "cost_usd": 0.02373675,
+    "error": "Infrastructure artifact-persistence failure after model response; 19,644 input tokens and estimated cost $0.02373675 reconciled from the redacted worker log. No ReviewResult was saved.",
+    "generation": 1,
+    "id": "84a066d2-7750-47f5-ae0f-daab9adc37aa",
+    "number": 1,
+    "review_result_saved": false,
+    "status": "lease_expired",
+    "usage": {
+      "estimated_usd": 0.02373675,
+      "failure_category": "infrastructure/artifact_persistence",
+      "input_tokens": 19644,
+      "kind": "estimated",
+      "output_tokens": null,
+      "reconciliation_source": "redacted worker log",
+      "review_error_category": "artifact_persistence_failed",
+      "review_error_message": "Artifact persistence failed after the model response; no review result was saved."
+    }
+  },
+  "original_task_outcome": {
+    "outcome": "failed",
+    "score": 0.0
+  },
+  "report_type": "recovered_canary",
+  "retry_attempt": {
+    "automatic_retries": 0,
+    "cost_usd": 0.0234105,
+    "error": null,
+    "generation": 2,
+    "id": "f0ca3f9a-32e9-4b1e-b497-6cbeb1c89541",
+    "number": 2,
+    "status": "completed",
+    "usage": {
+      "automatic_retries": 0,
+      "billed": true,
+      "budget_enforced": false,
+      "budget_kind": "estimate_only",
+      "budget_usd": 0.1,
+      "cached_input_tokens": 0,
+      "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+      "estimated_usd": 0.0234105,
+      "input_tokens": 19644,
+      "invocations": 1,
+      "kind": "provider_reported_tokens",
+      "max_output_tokens": 4096,
+      "output_token_limit_enforced": false,
+      "output_token_limit_setting_configured": true,
+      "output_tokens": 2314,
+      "reasoning_output_tokens": 0,
+      "retry_policy_scope": "adapter_attempt",
+      "timeout_enforced": true,
+      "timeout_seconds": 120
+    }
+  },
+  "review": {
+    "episode_count": 2,
+    "episodes": [
+      {
+        "label": "Excessive tab restoration beyond requested scope",
+        "label_id": "new:excessive_tab_restoration",
+        "onset_step_count": 3,
+        "recovery_step_count": 0
+      },
+      {
+        "label": "Repeated mis-targeted UI activation",
+        "label_id": "p001",
+        "onset_step_count": 3,
+        "recovery_step_count": 1
+      }
+    ],
+    "evidence": {
+      "image_attachments_supplied": 9,
+      "image_step_ids_cited": 9,
+      "mode": "images_and_text",
+      "provenance_note": "Adapter provenance records image attachments/citations; it is not independent proof of visual inspection.",
+      "source_step_count": 9,
+      "task_artifact_records": 10
+    },
+    "schema_version": "2",
+    "summary": "Model flagged excess tab restoration and repeated mis-targeted UI activation; one episode includes a later recovery step. These are model findings and have not been independently adjudicated."
+  },
+  "run": {
+    "id": "da34e827-008c-463b-aeb1-040e01ab065c",
+    "status": "completed"
+  },
+  "storage_health_check": {
+    "backend": "s3",
+    "bytes": 35,
+    "operation": "put_get",
+    "retained_object_key": "diagnostics/storage-health/20260927/58be96085c4e41ac859b7182198ce129.txt",
+    "sha256_match": true
+  }
+}

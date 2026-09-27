@@ -1,0 +1,253 @@
+review_kind: failure_analysis
+summary: The browser encountered a proxy error, then the attempt switched to terminal
+  retrieval; final evidence does not prove the requested monthly result was completed.
+result: issues_observed
+coverage_notes:
+- Only steps 1, 8, and 15 have attached screenshots; other steps rely on recorded
+  actions.
+- The historical evaluator match is unverified.
+steps:
+- step_id: '1'
+  review_status: reviewed
+  intent:
+    kind: inferred
+    text: Focus the browser address bar.
+  action: Clicked the address bar.
+  observed_ui: 'Chrome shows an AccuWeather proxy error: ERR_PROXY_AUTH_UNSUPPORTED.'
+  effect: No accessible weather page is shown.
+  assessment: Supported access failure; cause beyond the visible proxy error is uncertain.
+  evidence_refs:
+  - event_1
+  - frame_1
+  episode_refs:
+  - ep2
+- step_id: '2'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Navigate to weather.com.
+  action: Typed weather.com and submitted.
+  observed_ui: No attached screenshot.
+  effect: Navigation result unknown.
+  assessment: Potential recovery attempt, but no visible restoration is available.
+  evidence_refs:
+  - event_2
+  episode_refs:
+  - ep2
+- step_id: '3'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open applications overview.
+  action: Clicked the applications icon.
+  observed_ui: No attached screenshot.
+  effect: Effect unknown.
+  assessment: No supported task progress is visible.
+  evidence_refs:
+  - event_3
+  episode_refs: []
+- step_id: '4'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open applications overview.
+  action: Clicked the applications icon again.
+  observed_ui: No attached screenshot.
+  effect: Effect unknown.
+  assessment: Repeated navigation detour; UI result is unobserved.
+  evidence_refs:
+  - event_4
+  episode_refs:
+  - ep1
+- step_id: '5'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Terminal.
+  action: Clicked the Terminal dock icon.
+  observed_ui: No attached screenshot.
+  effect: Effect unknown.
+  assessment: Begins an alternative retrieval path; success is not evidenced here.
+  evidence_refs:
+  - event_5
+  episode_refs:
+  - ep1
+- step_id: '6'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Terminal.
+  action: Clicked the Terminal dock icon again.
+  observed_ui: No attached screenshot.
+  effect: Effect unknown.
+  assessment: Repeated attempt adds time without visible proof of progress.
+  evidence_refs:
+  - event_6
+  episode_refs:
+  - ep1
+- step_id: '7'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Open Terminal.
+  action: Clicked the Terminal dock icon.
+  observed_ui: No attached screenshot.
+  effect: Effect unknown.
+  assessment: Further detour; terminal state is unobserved.
+  evidence_refs:
+  - event_7
+  episode_refs:
+  - ep1
+- step_id: '8'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Open Terminal.
+  action: Clicked the Terminal dock icon.
+  observed_ui: Terminal is visible over GIMP with an empty prompt.
+  effect: Terminal is available.
+  assessment: This enables an off-target retrieval route rather than demonstrating
+    browser task completion.
+  evidence_refs:
+  - event_8
+  - frame_8
+  episode_refs:
+  - ep1
+- step_id: '9'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Fetch Manchester weather.
+  action: Typed a curl wttr.in command.
+  observed_ui: No attached screenshot.
+  effect: Command result unknown.
+  assessment: Uses an alternative site and does not prove the requested result.
+  evidence_refs:
+  - event_9
+  episode_refs:
+  - ep1
+- step_id: '10'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Fetch monthly Manchester forecast.
+  action: Typed a wget wttr.in command.
+  observed_ui: No attached screenshot.
+  effect: Command result unknown.
+  assessment: Another retrieval attempt; monthly output is not evidenced here.
+  evidence_refs:
+  - event_10
+  episode_refs:
+  - ep1
+- step_id: '11'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Clear the command line.
+  action: Pressed Ctrl+U.
+  observed_ui: No attached screenshot.
+  effect: Clearing effect unknown.
+  assessment: Repair action is plausible but restoration is not visible.
+  evidence_refs:
+  - event_11
+  episode_refs:
+  - ep1
+- step_id: '12'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Fetch monthly Manchester forecast.
+  action: Typed an HTTPS wget command.
+  observed_ui: No attached screenshot.
+  effect: Command result unknown.
+  assessment: Continues the alternative path; no verified result is shown.
+  evidence_refs:
+  - event_12
+  episode_refs:
+  - ep1
+- step_id: '13'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Wait for output.
+  action: Waited.
+  observed_ui: No attached screenshot.
+  effect: Effect unknown.
+  assessment: Waiting does not establish successful retrieval.
+  evidence_refs:
+  - event_13
+  episode_refs:
+  - ep1
+- step_id: '14'
+  review_status: insufficient_evidence
+  intent:
+    kind: declared
+    text: Retry monthly forecast retrieval.
+  action: Cleared and typed another wget command.
+  observed_ui: No attached screenshot.
+  effect: Command result unknown.
+  assessment: Repeated repair attempt, with no visible confirmation of the requested
+    outcome.
+  evidence_refs:
+  - event_14
+  episode_refs:
+  - ep1
+- step_id: '15'
+  review_status: reviewed
+  intent:
+    kind: declared
+    text: Fetch monthly Manchester forecast without proxy.
+  action: Typed a no-proxy wget command.
+  observed_ui: Terminal visibly shows Manchester weather output and a shell prompt.
+  effect: Some weather data was displayed.
+  assessment: Partial alternative-path output, but monthly scope and task completion
+    are not proven.
+  evidence_refs:
+  - event_15
+  - frame_15
+  episode_refs:
+  - ep1
+  - ep2
+episodes:
+- episode_id: ep1
+  mechanism: off-target retrieval path
+  onset_step_ids:
+  - '5'
+  - '8'
+  - '9'
+  recovery:
+    status: partial
+    step_ids:
+    - '15'
+    evidence_refs:
+    - frame_15
+    rationale: Terminal weather output is visible, but it does not prove the requested
+      monthly result or browser completion.
+  outcome_contribution: contributing
+  label_id: p002
+  label_name: off-target retrieval path
+  evidence_refs:
+  - event_9
+  - event_10
+  - event_15
+  - frame_15
+  uncertainty: The alternative output may contain useful forecast data, but its monthly
+    interpretation is not established.
+- episode_id: ep2
+  mechanism: proxy access failure
+  onset_step_ids:
+  - '1'
+  recovery:
+    status: none_observed
+    step_ids: []
+    evidence_refs: []
+    rationale: No later browser restoration is visible; terminal output is an alternative
+      path, not browser recovery.
+  outcome_contribution: contributing
+  label_id: p003
+  label_name: proxy access failure
+  evidence_refs:
+  - frame_1
+  - event_15
+  uncertainty: The visible proxy error is supported; whether it caused all later retrieval
+    problems is uncertain.

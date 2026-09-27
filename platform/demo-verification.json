@@ -1,0 +1,38 @@
+{
+  "verified_at": "2026-09-27T03:16:03.213685+00:00",
+  "checks": [
+    {
+      "check": "All five demo accounts authenticate with their intended active role",
+      "status": "passed"
+    },
+    {
+      "check": "All demo roles can open the five-task example batch",
+      "status": "passed"
+    },
+    {
+      "check": "Admin user management, manager datasets and restricted roles respect access boundaries",
+      "status": "passed"
+    },
+    {
+      "check": "Reviewer and viewer see evidence/exports; viewer feedback is denied",
+      "status": "passed"
+    },
+    {
+      "check": "Three populated teams have their intended batch-scoped grants",
+      "status": "passed"
+    },
+    {
+      "check": "Repeating the seed preserves passwords, identities, memberships, grants and job count",
+      "status": "passed"
+    },
+    {
+      "check": "Generated login files are owner-only and private directory permissions are set",
+      "status": "passed"
+    }
+  ],
+  "demo_users": 5,
+  "demo_teams": 3,
+  "example_tasks": 5,
+  "new_model_jobs": 0,
+  "provider_calls": 0
+}

@@ -1,0 +1,410 @@
+{
+  "created_at": "2026-09-27T04:35:06.476035+00:00",
+  "pricing_source": {
+    "url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "checked_at": "2026-09-27T04:35:06.476040+00:00",
+    "tier_assumption": "paid standard tier",
+    "rates_usd_per_million_tokens": {
+      "input": 0.75,
+      "output_including_thinking": 3.75
+    },
+    "rate_period": "through 2026-12-31",
+    "actual_invoice_cost_verified": false
+  },
+  "run": {
+    "id": "f955f0b2-b9ac-4066-83c2-dd4c66093ca3",
+    "name": "Gemini 3.8 Flash multi-dataset review 20260927T043506Z",
+    "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e"
+  },
+  "budget": {
+    "per_task_usd": 0.1,
+    "task_count": 7,
+    "planning_allowance_total_usd": 0.7,
+    "kind": "estimate_only",
+    "budget_enforced": false,
+    "note": "The application budget is a planning estimate, not a hard provider spend cap."
+  },
+  "execution": {
+    "backend": "gemini_cli",
+    "model": "gemini-3.8-flash",
+    "reasoning": "low",
+    "workflow_revision_id": "trajectory_review@1",
+    "configuration": {
+      "timeout_seconds": 120,
+      "max_output_tokens": 4096,
+      "max_images": 0
+    },
+    "one_cli_invocation_per_task": true,
+    "automatic_retries": 0,
+    "retry_policy_scope": "application"
+  },
+  "tasks": [
+    {
+      "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+      "task_definition_id": "d79c4076-d6fa-4e15-b244-738381bf3b78",
+      "title": "Add page number for every page at the bottom left",
+      "outcome": "failed"
+    },
+    {
+      "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "task_definition_id": "dafff7db-3c12-4ae1-9685-da5be339af0b",
+      "title": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?",
+      "outcome": "failed"
+    },
+    {
+      "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "task_definition_id": "4ff4f092-4aec-4e38-b307-ac5ae106d92d",
+      "title": "Help me format column \"spent\" by keeping two decimal points. ",
+      "outcome": "failed"
+    },
+    {
+      "dataset_id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+      "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+      "task_definition_id": "c8059bc1-4920-4e84-b9de-37c655d7c5cc",
+      "title": "Find the Monthly forecast for Manchester, GB for this month",
+      "outcome": "failed"
+    },
+    {
+      "dataset_id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+      "task_id": "030eeff7-b492-4218-b312-701ec99ee0cc",
+      "task_definition_id": "4827e3f3-57ac-4e32-aa39-f2372bdf68d1",
+      "title": "Can you enable the 'Do Not Track' feature in Chrome to enhance my online privacy?",
+      "outcome": "failed"
+    },
+    {
+      "dataset_id": "23af58f4-6d77-4e2f-9835-1fe3fe008915",
+      "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+      "task_definition_id": "ecfda09f-ceaf-4491-9e0d-92a0053d672f",
+      "title": "Could you assist me in adding a new layer and naming it 'Square'?",
+      "outcome": "passed"
+    },
+    {
+      "dataset_id": "23af58f4-6d77-4e2f-9835-1fe3fe008915",
+      "task_id": "045bf3ff-9077-4b86-b483-a1040a949cff",
+      "task_definition_id": "579157f6-53bc-4b2e-b58a-3fb6851c3f43",
+      "title": "Could you turn my image into CYMK mode within GIMP ?",
+      "outcome": "failed"
+    }
+  ],
+  "results": [
+    {
+      "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "task_id": "0e47de2a-32e0-456c-a366-8c607ef7a9d2",
+      "task_definition_id": "d79c4076-d6fa-4e15-b244-738381bf3b78",
+      "title": "Add page number for every page at the bottom left",
+      "outcome": "failed",
+      "job_id": "318e532e-8649-44da-8912-f13a7a858b07",
+      "status": "completed",
+      "attempt_count": 1,
+      "error": null,
+      "usage": {
+        "input_tokens": 9323,
+        "cached_input_tokens": 0,
+        "output_tokens": 2368,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_tokens",
+        "estimated_usd": 0.01587225,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "max_output_tokens": 4096,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": true,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application"
+      },
+      "official_paid_standard_estimate_usd": 0.01587225,
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "result": "issues_observed",
+        "steps": 15,
+        "episodes": 2,
+        "label_ids": [
+          "new:repeated_menu_item_misselection",
+          "p001"
+        ]
+      }
+    },
+    {
+      "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "task_id": "66399b0d-8fda-4618-95c4-bfc6191617e9",
+      "task_definition_id": "dafff7db-3c12-4ae1-9685-da5be339af0b",
+      "title": "Could you help me insert a 7(columns)*5(rows) empty table at the point of cursor?",
+      "outcome": "failed",
+      "job_id": "e18c33de-421f-4856-8cff-a0f1e6cc1d6d",
+      "status": "failed",
+      "attempt_count": 1,
+      "error": "ReviewBackendError: Gemini CLI returned invalid structured output. No application retry was made.",
+      "usage": {
+        "input_tokens": 9637,
+        "cached_input_tokens": 0,
+        "output_tokens": 2621,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_or_unknown",
+        "estimated_usd": 0.0170565,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "cli_diagnostic_category": "model_response_invalid_json",
+        "cli_diagnostic_status": null,
+        "cli_diagnostic_message": "Model response was not valid JSON at line 1, column 7091: nsertion.\", \"evidence_refs\": [\"event_15\"], \"episode_refs\": [\"ep_3\"]}, \"episodes\": [{\"episode_id\": \"ep_1\", \"problem_number\": 1, \"first_observed_step_id\": \"1\", \"mechanism\": \"Repeated mouse clicks at shi",
+        "cli_response_length": 9418,
+        "cli_response_excerpt": "{\"schema_version\": \"2\", \"review_kind\": \"failure_analysis\", \"summary\": \"The agent attempted to insert a 7x5 table in LibreOffice Writer. Multiple clicks to open the Table menu or focus fields in the Insert Table dialog failed or required alt",
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application",
+        "duration_ms": 24966
+      },
+      "official_paid_standard_estimate_usd": 0.0170565,
+      "review": {
+        "schema_version": null,
+        "review_kind": null,
+        "result": null,
+        "steps": 0,
+        "episodes": 0,
+        "label_ids": []
+      }
+    },
+    {
+      "dataset_id": "99f788d5-a4fc-4b54-9cde-d15a4da9947e",
+      "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+      "task_definition_id": "4ff4f092-4aec-4e38-b307-ac5ae106d92d",
+      "title": "Help me format column \"spent\" by keeping two decimal points. ",
+      "outcome": "failed",
+      "job_id": "0e971ac5-8663-44ec-a04c-20399a4e1368",
+      "status": "completed",
+      "attempt_count": 1,
+      "error": null,
+      "usage": {
+        "input_tokens": 9624,
+        "cached_input_tokens": 0,
+        "output_tokens": 2399,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_tokens",
+        "estimated_usd": 0.01621425,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "max_output_tokens": 4096,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": true,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application"
+      },
+      "official_paid_standard_estimate_usd": 0.01621425,
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "result": "issues_observed",
+        "steps": 15,
+        "episodes": 2,
+        "label_ids": [
+          "p002",
+          "p003"
+        ]
+      }
+    },
+    {
+      "dataset_id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+      "task_id": "368d9ba4-203c-40c1-9fa3-da2f1430ce63",
+      "task_definition_id": "c8059bc1-4920-4e84-b9de-37c655d7c5cc",
+      "title": "Find the Monthly forecast for Manchester, GB for this month",
+      "outcome": "failed",
+      "job_id": "129a076d-3999-4f4f-b34a-1c8ba65be5b5",
+      "status": "failed",
+      "attempt_count": 1,
+      "error": "ReviewBackendError: Gemini CLI returned invalid structured output. No application retry was made.",
+      "usage": {
+        "input_tokens": 9705,
+        "cached_input_tokens": 0,
+        "output_tokens": 2418,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_or_unknown",
+        "estimated_usd": 0.01634625,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "cli_diagnostic_category": "model_response_invalid_json",
+        "cli_diagnostic_status": null,
+        "cli_diagnostic_message": "Model response was not valid JSON at line 1, column 5493: or failed.\", \"evidence_refs\": [\"event_11\"], \"episode_refs\": [\"ep_cmd_entry\"]}, {\"step_id\": \"12\", \"review_status\": \"insufficient_evidence\", \"intent\": {\"kind\": \"inferred\", \"text\": \"Type and execute wge",
+        "cli_response_length": 9028,
+        "cli_response_excerpt": "{\"schema_version\": \"2\", \"review_kind\": \"failure_analysis\", \"summary\": \"The agent attempted to find a monthly weather forecast for Manchester, GB. After attempting to navigate to weather.com, it repeatedly clicked different dock coordinates",
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application",
+        "duration_ms": 21946
+      },
+      "official_paid_standard_estimate_usd": 0.01634625,
+      "review": {
+        "schema_version": null,
+        "review_kind": null,
+        "result": null,
+        "steps": 0,
+        "episodes": 0,
+        "label_ids": []
+      }
+    },
+    {
+      "dataset_id": "7878c36d-88c6-44b8-9114-894c6e86b948",
+      "task_id": "030eeff7-b492-4218-b312-701ec99ee0cc",
+      "task_definition_id": "4827e3f3-57ac-4e32-aa39-f2372bdf68d1",
+      "title": "Can you enable the 'Do Not Track' feature in Chrome to enhance my online privacy?",
+      "outcome": "failed",
+      "job_id": "751b64dd-f488-4a4e-ba1c-ef9753e6c36b",
+      "status": "completed",
+      "attempt_count": 1,
+      "error": null,
+      "usage": {
+        "input_tokens": 9681,
+        "cached_input_tokens": 0,
+        "output_tokens": 2402,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_tokens",
+        "estimated_usd": 0.01626825,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "max_output_tokens": 4096,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": true,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application"
+      },
+      "official_paid_standard_estimate_usd": 0.01626825,
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "result": "inconclusive",
+        "steps": 15,
+        "episodes": 0,
+        "label_ids": []
+      }
+    },
+    {
+      "dataset_id": "23af58f4-6d77-4e2f-9835-1fe3fe008915",
+      "task_id": "b148e375-fe0b-4bec-90e7-38632b0d73c2",
+      "task_definition_id": "ecfda09f-ceaf-4491-9e0d-92a0053d672f",
+      "title": "Could you assist me in adding a new layer and naming it 'Square'?",
+      "outcome": "passed",
+      "job_id": "e21b725f-9a00-44f6-af80-3178644c61c5",
+      "status": "completed",
+      "attempt_count": 1,
+      "error": null,
+      "usage": {
+        "input_tokens": 9150,
+        "cached_input_tokens": 0,
+        "output_tokens": 1708,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_tokens",
+        "estimated_usd": 0.0132675,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "max_output_tokens": 4096,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": true,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application"
+      },
+      "official_paid_standard_estimate_usd": 0.0132675,
+      "review": {
+        "schema_version": "2",
+        "review_kind": "pass_recovery",
+        "result": "issues_observed",
+        "steps": 9,
+        "episodes": 1,
+        "label_ids": [
+          "p001"
+        ]
+      }
+    },
+    {
+      "dataset_id": "23af58f4-6d77-4e2f-9835-1fe3fe008915",
+      "task_id": "045bf3ff-9077-4b86-b483-a1040a949cff",
+      "task_definition_id": "579157f6-53bc-4b2e-b58a-3fb6851c3f43",
+      "title": "Could you turn my image into CYMK mode within GIMP ?",
+      "outcome": "failed",
+      "job_id": "d0457e07-2d4b-4181-87f4-cc135b0c44ca",
+      "status": "completed",
+      "attempt_count": 1,
+      "error": null,
+      "usage": {
+        "input_tokens": 9592,
+        "cached_input_tokens": 0,
+        "output_tokens": 2091,
+        "reasoning_output_tokens": 0,
+        "kind": "provider_reported_tokens",
+        "estimated_usd": 0.01503525,
+        "estimated_cost_assumption": "all input tokens priced at the uncached input rate; cached-token discounts omitted",
+        "billed": true,
+        "budget_usd": 0.1,
+        "budget_kind": "estimate_only",
+        "budget_enforced": false,
+        "timeout_seconds": 120,
+        "timeout_enforced": true,
+        "max_output_tokens": 4096,
+        "output_token_limit_enforced": false,
+        "output_token_limit_setting_configured": true,
+        "invocations": 1,
+        "automatic_retries": 0,
+        "retry_policy_scope": "application"
+      },
+      "official_paid_standard_estimate_usd": 0.01503525,
+      "review": {
+        "schema_version": "2",
+        "review_kind": "failure_analysis",
+        "result": "inconclusive",
+        "steps": 15,
+        "episodes": 0,
+        "label_ids": []
+      }
+    }
+  ],
+  "start": {
+    "jobs_added": 7,
+    "started_at": "2026-09-27T04:35:06.576627+00:00"
+  },
+  "progress": {
+    "updated_at": "2026-09-27T04:37:46.420650+00:00",
+    "terminal_tasks": 7,
+    "total_tasks": 7,
+    "statuses": {
+      "030eeff7-b492-4218-b312-701ec99ee0cc": "completed",
+      "045bf3ff-9077-4b86-b483-a1040a949cff": "completed",
+      "0e47de2a-32e0-456c-a366-8c607ef7a9d2": "completed",
+      "368d9ba4-203c-40c1-9fa3-da2f1430ce63": "failed",
+      "66399b0d-8fda-4618-95c4-bfc6191617e9": "failed",
+      "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5": "completed",
+      "b148e375-fe0b-4bec-90e7-38632b0d73c2": "completed"
+    }
+  },
+  "finished_at": "2026-09-27T04:37:46.573217+00:00",
+  "status": "finished_with_failures",
+  "total_official_paid_standard_estimate_usd": 0.11006025
+}

@@ -1,0 +1,188 @@
+{
+  "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+  "title": "Help me format column \"spent\" by keeping two decimal points. ",
+  "instruction": "Help me format column \"spent\" by keeping two decimal points. ",
+  "outcome": "failed",
+  "score": 0.0,
+  "source": {
+    "dataset": "OSWorld-Verified",
+    "task_id": "6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5",
+    "application": "libreoffice_calc",
+    "agent_model": "o3",
+    "archive": "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/5473c39e42a538a187a9b2c2b499db59d560fd8c/o3_15steps.zip",
+    "dataset_commit": "5473c39e42a538a187a9b2c2b499db59d560fd8c",
+    "task_source_commit": "b138d348256078fa634fc3b73567a7337c793e6b",
+    "task_definition": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/task.json",
+    "trajectory": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/traj.jsonl",
+    "score_file": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/result.txt",
+    "runtime_log": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/runtime.log",
+    "provenance_file": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/provenance.json"
+  },
+  "coverage_notes": [
+    "Archive label is 15steps; source traj.jsonl contains 15 recorded actions.",
+    "Downloaded 15 available recorded step screenshots: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15.",
+    "The archive recording.mp4 was not downloaded.",
+    "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
+    "No human-authored failure diagnosis or recovery annotation is included."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "intent": null,
+      "action": "# Click the column header \"C\" to select the entire \"Spent ($)\" column\npyautogui.click(x=270, y=174, duration=0.5)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_1_20250728@123327.png",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ]
+    },
+    {
+      "step_id": "2",
+      "intent": null,
+      "action": "# Click the small \"X\" close button of the Function Wizard dialog to dismiss it\npyautogui.click(x=959, y=209, duration=0.5)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_2_20250728@123352.png",
+      "evidence_refs": [
+        "event_2"
+      ]
+    },
+    {
+      "step_id": "3",
+      "intent": null,
+      "action": "# Click the \"Cancel\" button at bottom of the Function Wizard to close the dialog\npyautogui.click(x=876, y=627, duration=0.5)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_3_20250728@123413.png",
+      "evidence_refs": [
+        "event_3"
+      ]
+    },
+    {
+      "step_id": "4",
+      "intent": null,
+      "action": "# Click the \"X\" close button at the top-right of the Function Wizard dialog to dismiss it\npyautogui.click(x=967, y=209, duration=0.5)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_4_20250728@123433.png",
+      "evidence_refs": [
+        "event_4"
+      ]
+    },
+    {
+      "step_id": "5",
+      "intent": null,
+      "action": "# Click the \"Cancel\" button in the Function Wizard to close the dialog\npyautogui.click(x=886, y=627, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_5_20250728@123502.png",
+      "evidence_refs": [
+        "event_5"
+      ]
+    },
+    {
+      "step_id": "6",
+      "intent": null,
+      "action": "# Click the “X” close button in the Function Wizard title bar to dismiss the dialog\npyautogui.click(x=965, y=209, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_6_20250728@123523.png",
+      "evidence_refs": [
+        "event_6"
+      ]
+    },
+    {
+      "step_id": "7",
+      "intent": null,
+      "action": "# Press the Escape key to close the open \"Function Wizard\" dialog\npyautogui.press('esc')",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_7_20250728@123555.png",
+      "evidence_refs": [
+        "event_7"
+      ]
+    },
+    {
+      "step_id": "8",
+      "intent": null,
+      "action": "# Press Alt+F4 to close the obstructing \"Function Wizard\" dialog\npyautogui.hotkey('alt', 'f4')",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_8_20250728@123611.png",
+      "evidence_refs": [
+        "event_8",
+        "frame_8"
+      ]
+    },
+    {
+      "step_id": "9",
+      "intent": null,
+      "action": "pyautogui.click(x=865, y=627, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_9_20250728@123702.png",
+      "evidence_refs": [
+        "event_9"
+      ]
+    },
+    {
+      "step_id": "10",
+      "intent": null,
+      "action": "# Click the small \"X\" close button in the top-right corner of the Function Wizard dialog to dismiss it\npyautogui.click(x=958, y=208, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_10_20250728@123727.png",
+      "evidence_refs": [
+        "event_10"
+      ]
+    },
+    {
+      "step_id": "11",
+      "intent": null,
+      "action": "# Click the small \"X\" close button in the Function Wizard title bar (around x≈795, y≈208) to dismiss the dialog\npyautogui.click(x=795, y=208, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_11_20250728@123753.png",
+      "evidence_refs": [
+        "event_11"
+      ]
+    },
+    {
+      "step_id": "12",
+      "intent": null,
+      "action": "# Click the small \"X\" close icon in the top-right corner of the Function Wizard dialog to dismiss it\npyautogui.click(x=962, y=209, duration=0.2)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_12_20250728@123824.png",
+      "evidence_refs": [
+        "event_12"
+      ]
+    },
+    {
+      "step_id": "13",
+      "intent": null,
+      "action": "# Click the \"Cancel\" button (bottom-right of Function Wizard) to close the dialog\npyautogui.click(x=865, y=629, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_13_20250728@123942.png",
+      "evidence_refs": [
+        "event_13"
+      ]
+    },
+    {
+      "step_id": "14",
+      "intent": null,
+      "action": "# Click the \"X\" close icon in the Function Wizard title bar (approx. right edge of the dialog) to dismiss the blocking dialog\npyautogui.click(x=846, y=209, duration=0.2)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_14_20250728@124009.png",
+      "evidence_refs": [
+        "event_14"
+      ]
+    },
+    {
+      "step_id": "15",
+      "intent": null,
+      "action": "# Click the small \"X\" icon at the top-right corner of the Function Wizard dialog to close it\npyautogui.click(x=810, y=209, duration=0.3)",
+      "observation": null,
+      "screenshot": "data/source/osworld-verified/6e99a1ad-07d2-4b66-a1ce-ece6d99c20a5/step_15_20250728@124033.png",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ]
+    }
+  ],
+  "attached_frame_steps": [
+    "1",
+    "8",
+    "15"
+  ]
+}

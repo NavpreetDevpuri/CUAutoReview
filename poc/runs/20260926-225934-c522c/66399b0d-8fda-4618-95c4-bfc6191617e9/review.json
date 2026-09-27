@@ -1,0 +1,365 @@
+{
+  "review_kind": "failure_analysis",
+  "summary": "The dialog ended open with 7 columns but only 2 rows. Earlier targeting errors were repaired or bypassed; insertion remained incomplete.",
+  "result": "issues_observed",
+  "coverage_notes": [
+    "Screenshots are available only for steps 1, 13, and 15.",
+    "Effects of steps without screenshots remain uncertain.",
+    "The current checker is not proven to match the historical rollout evaluator."
+  ],
+  "steps": [
+    {
+      "step_id": "1",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Table menu."
+      },
+      "action": "Clicked Table on the menu bar.",
+      "observed_ui": "The Table menu opened, showing Insert Table.",
+      "effect": "The intended menu opened.",
+      "assessment": "Successful setup step.",
+      "evidence_refs": [
+        "event_1",
+        "frame_1"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "2",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Insert Table dialog."
+      },
+      "action": "Clicked at x310, y87.",
+      "observed_ui": "No screenshot retained after the click.",
+      "effect": "Unknown; the coordinate lies outside the menu visible in frame 1.",
+      "assessment": "Likely mis-targeted, but immediate effect is unobserved.",
+      "evidence_refs": [
+        "event_2",
+        "frame_1"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "3",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Table menu."
+      },
+      "action": "Clicked at x305, y52.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Coordinate appears nearer Format than Table in frame 1; mis-targeting is likely.",
+      "evidence_refs": [
+        "event_3",
+        "frame_1"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "4",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open the Table menu."
+      },
+      "action": "Clicked at x285, y52.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Coordinate appears nearer Format than Table in frame 1; repeated mis-targeting is likely.",
+      "evidence_refs": [
+        "event_4",
+        "frame_1"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "5",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Open Insert Table using the keyboard shortcut."
+      },
+      "action": "Pressed Ctrl+F12.",
+      "observed_ui": "No immediate screenshot; the dialog is visible by frame 13.",
+      "effect": "The shortcut likely bypassed the menu-click problem.",
+      "assessment": "Later evidence supports recovery, though the immediate transition is unseen.",
+      "evidence_refs": [
+        "event_5",
+        "frame_13"
+      ],
+      "episode_refs": [
+        "ep1"
+      ]
+    },
+    {
+      "step_id": "6",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Focus the Columns field."
+      },
+      "action": "Clicked at x589, y282.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "The requested focus change cannot be verified.",
+      "evidence_refs": [
+        "event_6"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "7",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Focus the Columns field."
+      },
+      "action": "Clicked at x620, y282.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Repeated focus attempt; outcome is unverified.",
+      "evidence_refs": [
+        "event_7"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "8",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Focus the Columns field."
+      },
+      "action": "Clicked at x579, y282.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Repeated focus attempt; outcome is unverified.",
+      "evidence_refs": [
+        "event_8"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "9",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Focus the Columns field."
+      },
+      "action": "Clicked at x610, y282.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Repeated focus attempt; outcome is unverified.",
+      "evidence_refs": [
+        "event_9"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "10",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Move focus to Columns."
+      },
+      "action": "Pressed Tab.",
+      "observed_ui": "No screenshot retained.",
+      "effect": "Unknown.",
+      "assessment": "Focus destination cannot be verified.",
+      "evidence_refs": [
+        "event_10"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "11",
+      "review_status": "insufficient_evidence",
+      "intent": {
+        "kind": "declared",
+        "text": "Set Columns to 7."
+      },
+      "action": "Typed 7.",
+      "observed_ui": "No immediate screenshot retained.",
+      "effect": "Frame 13 later shows Columns as 75.",
+      "assessment": "The immediate entry behavior and selection state are unknown.",
+      "evidence_refs": [
+        "event_11",
+        "frame_13"
+      ],
+      "episode_refs": []
+    },
+    {
+      "step_id": "12",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Focus the Rows field."
+      },
+      "action": "Clicked at x780, y282.",
+      "observed_ui": "No immediate screenshot retained.",
+      "effect": "The next typed value remained in Columns, as frame 13 shows.",
+      "assessment": "Later evidence supports a failed focus change.",
+      "evidence_refs": [
+        "event_12",
+        "frame_13"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "13",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Set Rows to 5."
+      },
+      "action": "Typed 5.",
+      "observed_ui": "Columns shows 75, Rows shows 2, and a large-table warning appears.",
+      "effect": "The 5 appended to Columns instead of changing Rows.",
+      "assessment": "Supported wrong-field entry; required dimensions were not achieved.",
+      "evidence_refs": [
+        "event_13",
+        "frame_13"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "14",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Repair Columns from 75 to 7."
+      },
+      "action": "Pressed Backspace.",
+      "observed_ui": "Frame 15 shows Columns 7 and Rows 2.",
+      "effect": "The erroneous appended 5 was removed from Columns.",
+      "assessment": "Observed repair of the wrong-field entry, but Rows remained incorrect.",
+      "evidence_refs": [
+        "event_14",
+        "frame_15"
+      ],
+      "episode_refs": [
+        "ep2"
+      ]
+    },
+    {
+      "step_id": "15",
+      "review_status": "reviewed",
+      "intent": {
+        "kind": "declared",
+        "text": "Focus the Rows field."
+      },
+      "action": "Clicked at x780, y276.",
+      "observed_ui": "Dialog remains open with Columns 7, Rows 2, and Insert unactivated.",
+      "effect": "No requested 7-by-5 table was visibly inserted.",
+      "assessment": "Final state is incomplete; the Rows value and confirmation remain outstanding.",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ],
+      "episode_refs": [
+        "ep3"
+      ]
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "ep1",
+      "mechanism": "Repeated menu clicks appear mis-targeted before a keyboard shortcut likely opens the dialog.",
+      "onset_step_ids": [
+        "2",
+        "3",
+        "4"
+      ],
+      "recovery": {
+        "status": "recovered",
+        "step_ids": [
+          "5"
+        ],
+        "evidence_refs": [
+          "event_5",
+          "frame_13"
+        ],
+        "rationale": "The dialog is visible later, consistent with the shortcut succeeding; the immediate transition was not captured."
+      },
+      "outcome_contribution": "noncontributing",
+      "label_id": "p001",
+      "label_name": "Repeated mis-targeted UI activation",
+      "evidence_refs": [
+        "frame_1",
+        "event_2",
+        "event_3",
+        "event_4",
+        "event_5",
+        "frame_13"
+      ],
+      "uncertainty": "Intermediate screens are absent, so individual click effects and any time impact are unknown."
+    },
+    {
+      "episode_id": "ep2",
+      "mechanism": "The intended Rows value was appended to Columns because focus did not move as intended.",
+      "onset_step_ids": [
+        "12",
+        "13"
+      ],
+      "recovery": {
+        "status": "recovered",
+        "step_ids": [
+          "14"
+        ],
+        "evidence_refs": [
+          "event_14",
+          "frame_15"
+        ],
+        "rationale": "Columns visibly returned from 75 to 7."
+      },
+      "outcome_contribution": "noncontributing",
+      "label_id": "p007",
+      "label_name": "Numeric entry appended in wrong field",
+      "evidence_refs": [
+        "event_12",
+        "event_13",
+        "frame_13",
+        "event_14",
+        "frame_15"
+      ],
+      "uncertainty": "The exact reason focus remained in Columns is not directly visible."
+    },
+    {
+      "episode_id": "ep3",
+      "mechanism": "The attempt ended with Rows still 2 and the insertion dialog unconfirmed.",
+      "onset_step_ids": [
+        "15"
+      ],
+      "recovery": {
+        "status": "none_observed",
+        "step_ids": [],
+        "evidence_refs": [
+          "frame_15"
+        ],
+        "rationale": "No later evidence shows correction or insertion."
+      },
+      "outcome_contribution": "contributing",
+      "label_id": "p008",
+      "label_name": "Required dialog action left incomplete",
+      "evidence_refs": [
+        "event_15",
+        "frame_15"
+      ],
+      "uncertainty": "No final document screenshot exists, but the last retained frame still shows the unconfirmed incorrect dialog."
+    }
+  ]
+}

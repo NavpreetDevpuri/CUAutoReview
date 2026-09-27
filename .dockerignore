@@ -1,0 +1,17 @@
+**/.env
+**/.env.*
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.DS_Store
+platform/web/dist
+platform/backend/var
+platform/.local
+poc/runs/*
+!poc/runs/latest
+!poc/runs/20260926-225934-c522c
+poc/screenshots
+reference
+reviews
+.git
