@@ -54,12 +54,12 @@ services:
       timeout: 3s
       retries: 30
   app:
-    image: cuautoreview-local:dev
+    image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
     build:
       context: ..
       dockerfile: platform/Dockerfile
     environment: *app-env
-    ports: [127.0.0.1:8000:8000]
+    ports: ["127.0.0.1:${CUAUTOREVIEW_PORT:-8000}:8000"]
     depends_on:
       postgres: {condition: service_healthy}
       rabbitmq: {condition: service_healthy}
@@ -71,7 +71,7 @@ services:
       timeout: 3s
       retries: 30
   worker:
-    image: cuautoreview-local:dev
+    image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
     environment:
       <<: *app-env
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
@@ -91,7 +91,7 @@ services:
     command: [celery, -A, app.queue:celery_app, worker, --loglevel=INFO, --concurrency=2, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.reviews]
     stop_grace_period: 180s
   cli-worker:
-    image: cuautoreview-local:dev
+    image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
     environment:
       <<: *app-env
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -110,7 +110,21 @@ services:
       app: {condition: service_healthy}
     command: [celery, -A, app.queue:celery_app, worker, --loglevel=INFO, --concurrency=1, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.cli]
     stop_grace_period: 150s
+  seed:
+    image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
+    profiles: [tools]
+    user: "10001:10001"
+    environment:
+      CUAUTOREVIEW_URL: http://app:8000
+      CUAUTOREVIEW_PUBLIC_URL: http://127.0.0.1:${CUAUTOREVIEW_PORT:-8000}
+      CUAUTOREVIEW_LOCAL_DIR: /workspace/platform/.local
+    volumes: [demo-seed-data:/workspace/platform/.local]
+    depends_on:
+      app: {condition: service_healthy}
+    entrypoint: [python, /workspace/platform/scripts/seed_workspace.py]
+    command: []
 volumes:
   postgres-data:
   rabbitmq-data:
   storage-data:
+  demo-seed-data:

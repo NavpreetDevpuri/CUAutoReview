@@ -34,8 +34,11 @@ COPY poc/schemas.py /workspace/poc/schemas.py
 COPY poc/data/ /workspace/poc/data/
 COPY poc/runs/latest/ /workspace/poc/runs/latest/
 COPY poc/runs/20260926-225934-c522c/proposals.json /workspace/poc/runs/20260926-225934-c522c/proposals.json
+COPY platform/scripts/ /workspace/platform/scripts/
+COPY platform/demo-data/*.zip platform/demo-data/manifest.json /workspace/platform/demo-data/
 COPY --from=web /build/dist /workspace/platform/web/dist
-RUN useradd --uid 10001 --create-home app && mkdir -p var && chown -R app:app var \
+RUN useradd --uid 10001 --create-home app && mkdir -p var /workspace/platform/.local \
+    && chown -R app:app var /workspace/platform/.local \
     && chmod 0444 /etc/cuautoreview/gemini-deny-all.toml
 USER app
 EXPOSE 8000

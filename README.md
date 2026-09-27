@@ -6,14 +6,32 @@ A **rollout** records one attempt: task, actions, screenshots, visible reasoning
 
 [Benchmark attribution and third-party notices](THIRD_PARTY_NOTICES.md).
 
+**For reviewers:** [submission summary](docs/SUBMISSION.md) covers the main decisions, assumptions, trade-offs, validation and limitations.
+
 - **Open:** [local platform](http://127.0.0.1:8000) · [setup and implementation status](platform/README.md).
-- **Demo sign-ins:** [seed accounts and teams](platform/README.md#seed-demo-accounts) after starting a fresh clone. The seed creates five users and three teams; admin email: `admin@cuautoreview.test`. Generated passwords stay in local `platform/.local/demo-accounts.md`, outside the repository.
+- **Demo sign-ins:** the Docker quickstart below creates five users, three teams and eight distinct tasks. Admin email: `admin@cuautoreview.test`; passwords are generated locally and never committed.
 - **Implemented:** Dataset → Task → Reviews, multi-dataset Runs, explicit workflow/harness/model setup, searchable user/team sharing, JSON/ZIP imports, filtered analytics, same-revision comparison, archive/restore, trajectory evidence, taxonomy approval, light/dark appearance and in-app Markdown guides.
 - **Verified:** 95 automated tests, five ZIP-import checks and four batch-completion checks; earlier evidence includes 11 real-service scenarios and four broker lifecycle checks. Five saved trajectories passed through PostgreSQL, RabbitMQ and SeaweedFS's S3-compatible storage. [Test evidence](platform/TEST-RESULTS.md). Earlier acceptance checks use saved replay. Live comparison evidence is tracked separately in the platform guide.
 - **Interface:** compact responsive layouts, aligned problem/relationship/label/review/model fields, mobile step picker, and whole-card native links. Checkboxes, disclosures and job actions work independently.
 - **Preserved:** [POC](poc/README.md), original Luna/Sol results and measured costs. [Latest findings](poc/RESULTS-SOL.md).
 - **Live models:** All eight tasks have completed screenshot-enabled Gemini 3.8 Flash reviews; a matched GPT-6 Sol review also completed. The 11 new attempts cost an estimated **$0.3671**, including one automatic retry and one storage-recovery retry. [Results, costs and limits](platform/LIVE-RESULTS.md).
 - **Pending:** human adjudication of model diagnoses, broader accuracy evaluation and production hardening. Supplying screenshots fixes missing delivery, not every evidence gap: two Writer sources retain only 3 screenshots for 15 steps. Claude’s independent review remains blocked by a missing API key. [Review status](reviews/README.md).
+
+## Run locally with Docker
+
+Download or clone this repository and open its root folder. Requires **Docker with Compose v2**; no host Python, Node.js or model API key. The first build downloads dependencies.
+
+```sh
+docker compose -f platform/compose.yaml up --build -d --wait
+docker compose -f platform/compose.yaml run --rm seed
+docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins
+```
+
+- Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** and sign in using the generated admin or reviewer credentials.
+- Seeding imports bundled example tasks and saved POC evidence without model calls. Repeating it preserves account identities and passwords; new model reviews are opt-in.
+- Database, evidence and Docker seed credentials stay in local named volumes. Stop with `docker compose -f platform/compose.yaml down`; omit `-v` to retain them.
+- [Dockerfile](platform/Dockerfile) · [Compose services](platform/compose.yaml) · [setup, roles and provider configuration](platform/README.md).
+- [Fresh Docker verification](platform/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
 
 ![CUAutoReview platform overview with workspace totals and recent runs.](platform/screenshots/platform-overview-fullscreen-20260927.png)
 

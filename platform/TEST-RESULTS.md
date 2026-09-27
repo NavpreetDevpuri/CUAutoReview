@@ -41,6 +41,14 @@ This pass changes the frontend only. `npm run build` passed; the existing large-
 
 Captures: [desktop flags](screenshots/desktop-aligned-flags-20260927.png), [mobile steps](screenshots/mobile-step-picker-final-20260927.png), [mobile evidence](screenshots/mobile-evidence-20260927.png). [Measurements and interaction record](responsive-ui-verification-20260927.json). These are responsive browser checks, not physical-device or exhaustive accessibility certification.
 
+## Docker-only quickstart, 27 September 2026
+
+- Built the documented multi-stage Dockerfile and started Compose with `up --build -d --wait` on Linux ARM64. Used a separate project, empty volumes and port 18000; the existing workspace stayed healthy.
+- Ran the Docker `seed` service twice. Both checks passed: five logins/roles, three teams, three example datasets with eight distinct tasks, eight admin screenshot reads, three viewer screenshot reads and anonymous access denial. The separate saved POC dataset remained available.
+- The second seed preserved passwords, user/team/task IDs and task revisions. `--show-logins` rendered all five generated accounts; credentials are absent from published evidence. No analysis jobs or provider calls occurred.
+- [Machine-readable results](docker-quickstart-verification.json) and [portable verifier](scripts/verify_docker_quickstart.py) record the checks. Temporary test containers and volumes were removed after success. This pass checks setup/seeding, not model quality or queue execution; earlier queue tests remain separate. AMD64 image execution remains unverified.
+- Environment fixes: added Docker Desktop's installed credential-helper directory to the build command's PATH, then cleared 13.64 GB of unused build cache after an image export exhausted Docker disk space. No existing data volumes or global account settings were changed.
+
 ## ZIP and batch-status regression checks
 
 - `python3 platform/scripts/check_zip_import.py`: five real-service checks passed. Preview saves no tasks; repeated import is unchanged; invalid multi-task archives commit no task revisions; viewer access is rejected; changed image bytes create a revision with distinct, preserved screenshot links. Batch sync carries those images into member-scoped S3 access. [Results](zip-import-verification.json).

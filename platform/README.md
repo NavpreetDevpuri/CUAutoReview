@@ -7,10 +7,18 @@ This directory contains the local workspace implementation, separate from the or
 From the repository root:
 
 ```sh
-docker compose -f platform/compose.yaml up --build
+docker compose -f platform/compose.yaml up --build -d --wait
+docker compose -f platform/compose.yaml run --rm seed
+docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins
 ```
 
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000). A fresh clone has no accounts or database state: run the demo seed below, or create the first account manually to initialize a new workspace admin. First signup seeds the retained POC examples without making model calls. Stop the stack with `docker compose -f platform/compose.yaml down`; named volumes keep database, broker and object data. Add `-v` only when you intend to remove those local volumes.
+Requires Docker with Compose v2, with no host Python, Node.js or API key. The first build downloads dependencies. Open [http://127.0.0.1:8000](http://127.0.0.1:8000) and sign in with the displayed credentials. The optional `seed` tool creates five accounts, three teams and imports eight distinct bundled tasks without model calls. First signup also preserves the saved POC examples. Alternatively, skip the seed and create the first account manually to initialize an empty workspace admin.
+
+Stop with `docker compose -f platform/compose.yaml down`; named volumes retain database, broker, object data and generated demo credentials. Add `-v` only to discard those volumes. [Dockerfile](Dockerfile) builds the frontend, backend and reviewer CLIs, including the matching ARM64 or AMD64 Codex binary. [Compose](compose.yaml) handles service readiness; `seed` is an explicit one-off tool, not a service started automatically.
+
+If Docker reports `no space left on device` during a build, free unused build cache in Docker Desktop and retry. This occurred during local validation; the application data volumes were retained.
+
+Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. AMD64 package selection is supported but was not executed in this check.
 
 The Compose stack runs FastAPI and the built React-admin/MUI UI, a Celery worker, PostgreSQL, RabbitMQ and SeaweedFS with its S3-compatible API. Compose binds the application to loopback. The retained POC has its own run instructions and uses port 8765: [POC README](../poc/README.md).
 
@@ -26,11 +34,11 @@ The Compose stack runs FastAPI and the built React-admin/MUI UI, a Celery worker
 | `reviewer2@cuautoreview.test` | Reviewer | Demo Reviewers; second collaborator |
 | `viewer@cuautoreview.test` | Viewer | Demo Observers; read and export the example batch |
 
-- After seeding, open local `platform/.local/demo-accounts.md` for generated login details. In the [app](http://127.0.0.1:8000), **Sign out** if needed, then **Sign in**. Do not select **Create account** for an existing demo user.
-- Passwords are randomly generated once in ignored, owner-only `.local/demo-accounts.json` and `.local/demo-accounts.md`. These files are excluded from Docker builds and appear only after seeding.
+- Docker users: run `docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins`. This reads existing credentials without reseeding. In the [app](http://127.0.0.1:8000), **Sign out** if needed, then **Sign in**; do not create the same account again.
+- Passwords are generated once and stored with owner-only permissions in the `demo-seed-data` Docker volume. Host Python seeding instead uses ignored `platform/.local/demo-accounts.json` and `.md`. These are separate credential stores; reuse the original store when reseeding an existing database.
 - The existing tasks, preset and draft taxonomy are reused. Acceptance fixtures and saved reviews stay intact; seeding starts no model jobs.
 
-To create or restore demo data after Compose starts, run from the repository root:
+Optional host Python alternative for an existing locally seeded workspace, from the repository root:
 
 ```sh
 python3 platform/scripts/seed_demo.py
@@ -74,7 +82,7 @@ To reproduce the distinct demo after seeding accounts:
 python3 platform/scripts/seed_distinct_demo.py
 ```
 
-Bundled ZIPs allow import without downloading the benchmark. This imports Office 3, Web 3 and Graphics 2 tasks, verifies no repeated task IDs, and archives only named old demo/test fixtures. It makes no model calls. To regenerate the ZIPs, run `python3 platform/scripts/prepare_distinct_demo.py`; it downloads bounded public ZIP ranges, not the full 3.4 GB archive. [Source manifest](demo-data/manifest.json) · [import evidence](demo-data/import-report.json).
+The Docker `seed` command already performs this import. Bundled ZIPs provide Office 3, Web 3 and Graphics 2 tasks without downloading the benchmark or making model calls. Repeating the import verifies eight distinct task IDs and preserves existing grants. Archiving named old fixtures requires explicit `--archive-fixtures`. To regenerate the ZIPs, run `python3 platform/scripts/prepare_distinct_demo.py`; it downloads bounded public ZIP ranges, not the full 3.4 GB archive. [Source manifest](demo-data/manifest.json) · [recorded import evidence](demo-data/import-report.json).
 
 ## Import tasks
 

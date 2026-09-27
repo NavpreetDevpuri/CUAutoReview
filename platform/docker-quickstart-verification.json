@@ -1,0 +1,78 @@
+{
+  "date": "2026-09-27",
+  "status": "passed",
+  "isolation": "Fresh separate Compose project and volumes, loopback port 18000; original local workspace preserved",
+  "build": "Documented Dockerfile built from source on linux/arm64",
+  "provider_calls": 0,
+  "first_seed": {
+    "status": "passed",
+    "demo_logins_verified": 5,
+    "roles_verified": 5,
+    "teams_verified": 3,
+    "distinct_demo_datasets": 3,
+    "distinct_demo_tasks": 8,
+    "other_preserved_datasets": 1,
+    "admin_screenshot_reads": 8,
+    "viewer_screenshot_reads": 3,
+    "anonymous_screenshot_denied": true,
+    "analysis_jobs": 0,
+    "provider_backed_jobs": 0,
+    "verification_model_calls": 0,
+    "repeat_seed_identity_password_revision_stability": "baseline saved",
+    "scope": "Seed, authentication, shared dataset access and retained screenshot storage; no queue execution test"
+  },
+  "repeat_seed": {
+    "status": "passed",
+    "demo_logins_verified": 5,
+    "roles_verified": 5,
+    "teams_verified": 3,
+    "distinct_demo_datasets": 3,
+    "distinct_demo_tasks": 8,
+    "other_preserved_datasets": 1,
+    "admin_screenshot_reads": 8,
+    "viewer_screenshot_reads": 3,
+    "anonymous_screenshot_denied": true,
+    "analysis_jobs": 0,
+    "provider_backed_jobs": 0,
+    "verification_model_calls": 0,
+    "repeat_seed_identity_password_revision_stability": "verified",
+    "scope": "Seed, authentication, shared dataset access and retained screenshot storage; no queue execution test"
+  },
+  "generated_login_guide": "All five accounts rendered successfully; passwords omitted from this report",
+  "services": [
+    {
+      "Service": "app",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "cli-worker",
+      "State": "running",
+      "Health": ""
+    },
+    {
+      "Service": "postgres",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "rabbitmq",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "storage",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "worker",
+      "State": "running",
+      "Health": ""
+    }
+  ],
+  "limits": [
+    "AMD64 package selection checked, but AMD64 image not executed",
+    "No queue execution or load test in this seed-specific check; earlier queue evidence is separate"
+  ]
+}

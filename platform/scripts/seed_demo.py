@@ -14,7 +14,7 @@ import urllib.request
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
-LOCAL = ROOT / "platform/.local"
+LOCAL = Path(os.environ.get("CUAUTOREVIEW_LOCAL_DIR", str(ROOT / "platform/.local"))).expanduser()
 MANIFEST = LOCAL / "demo-accounts.json"
 GUIDE = LOCAL / "demo-accounts.md"
 PEOPLE = [
@@ -60,7 +60,8 @@ class Client:
     def items(self, path):
         items, page = [], 1
         while True:
-            result = self.call("GET", f"{path}?page={page}&per_page=200")
+            separator = "&" if "?" in path else "?"
+            result = self.call("GET", f"{path}{separator}page={page}&per_page=200")
             items.extend(result["items"])
             if len(items) >= result["total"] or not result["items"]:
                 return items
@@ -105,16 +106,34 @@ def provision_person(base, person):
     return user, client
 
 
-def seed(base, admin_credentials=None):
+def seed_origin(value, *, allow_compose=True):
+    """Permit loopback, plus the exact internal Compose service origin."""
+    base = value.rstrip("/")
+    url = urlsplit(base)
+    local = url.scheme in ("http", "https") and url.hostname in ("localhost", "127.0.0.1", "::1")
+    compose = allow_compose and url.scheme == "http" and url.hostname == "app" and url.port == 8000
+    if not (local or compose) or url.username or url.password or url.path or url.query or url.fragment:
+        raise ValueError("Demo seeding requires a loopback origin or http://app:8000 inside Compose.")
+    return base
+
+
+def public_origin(base, value=None):
+    default = "http://127.0.0.1:8000" if urlsplit(base).hostname == "app" else base
+    return seed_origin(value or os.environ.get("CUAUTOREVIEW_PUBLIC_URL") or default, allow_compose=False)
+
+
+def seed(base, admin_credentials=None, public_base=None):
+    base = seed_origin(base)
+    public_base = public_origin(base, public_base)
     if MANIFEST.exists():
         manifest = json.loads(MANIFEST.read_text())
-        if manifest.get("base_url") != base or manifest.get("seed_version") != 1:
+        if manifest.get("base_url") != public_base or manifest.get("seed_version") != 1:
             raise RuntimeError("Existing demo manifest belongs to a different seed version or local URL.")
         expected = {name + "@cuautoreview.test" for name, _, _ in PEOPLE}
         if {p["email"] for p in manifest["accounts"]} != expected:
             raise RuntimeError("Demo account manifest has unexpected identities; no changes made.")
     else:
-        manifest = {"seed_version": 1, "base_url": base, "accounts": [
+        manifest = {"seed_version": 1, "base_url": public_base, "accounts": [
             {"key": key, "name": name, "email": key + "@cuautoreview.test",
              "role": role, "password": secrets.token_urlsafe(18)}
             for key, name, role in PEOPLE]}
@@ -161,7 +180,7 @@ def seed(base, admin_credentials=None):
         team_records.append({"id": team["id"], "name": name, "role": role, "members": members})
     manifest["teams"] = team_records
 
-    batch = next((b for b in admin.items("/batches") if b["name"] == "Retained POC replay"), None)
+    batch = next((b for b in admin.items("/batches?include_archived=true") if b["name"] == "Retained POC replay"), None)
     if not batch:
         save_manifest(manifest)
         raise RuntimeError("Demo users and teams exist, but Retained POC replay is missing. "
@@ -171,19 +190,21 @@ def seed(base, admin_credentials=None):
             admin.call("POST", f"/batches/{batch['id']}/grants", {"team_id": team["id"], "role": team["role"]})
     manifest["batch"] = {"id": batch["id"], "name": batch["name"]}
     save_manifest(manifest)
-    lines = ["# Local demo login details", "", f"Open [{base}]({base}), sign out if needed, then choose **Sign in**.", "",
+    lines = ["# Local demo login details", "", f"Open [{public_base}]({public_base}), sign out if needed, then choose **Sign in**.", "",
              "Generated for this local workspace only. This file is ignored by Git and excluded from Docker builds.", "",
              "| Name | Email | Password | Workspace role |", "|---|---|---|---|"]
     for person in manifest["accounts"]:
         lines.append(f"| {person['name']} | `{person['email']}` | `{person['password']}` | {person['role']} |")
-    lines += ["", f"Open the [five-task example batch]({base}/#/batches/{batch['id']}) after signing in.", "",
+    lines += ["", f"Open the [five-task example batch]({public_base}/#/batches/{batch['id']}?include_archived=true) after signing in.", "",
               "| Team | Members | Access to the example batch |", "|---|---|---|"]
     for team in team_records:
         lines.append(f"| {team['name']} | {', '.join(people[k]['name'] for k in team['members'])} | {team['role']} |")
+    reseed_command = ("docker compose -f platform/compose.yaml run --rm seed"
+                      if urlsplit(base).hostname == "app" else "python3 platform/scripts/seed_demo.py")
     lines += ["", "Admin manages users and taxonomy publication. Manager manages datasets and batches. "
               "Reviewers inspect trajectories, add feedback and propose labels. Viewer reads and exports. "
               "Reviewer/viewer batch access comes from their team grants.", "",
-              "Reseed with `python3 platform/scripts/seed_demo.py`. Existing passwords and saved reviews are retained; "
+              f"Reseed with `{reseed_command}`. Existing passwords and saved reviews are retained; "
               "missing demo team memberships and batch grants are restored. No model jobs are started.", ""]
     private_write(GUIDE, "\n".join(lines))
     print(f"Ready: {len(people)} demo users, {len(team_records)} teams, {batch['name']}.")
@@ -193,15 +214,12 @@ def seed(base, admin_credentials=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base-url", default="http://127.0.0.1:8000")
+    parser.add_argument("--base-url", default=os.environ.get("CUAUTOREVIEW_URL", "http://127.0.0.1:8000"))
+    parser.add_argument("--public-url", default=os.environ.get("CUAUTOREVIEW_PUBLIC_URL"))
     parser.add_argument("--admin-credentials", type=Path)
     args = parser.parse_args()
-    base = args.base_url.rstrip("/")
-    url = urlsplit(base)
-    if url.scheme not in ("http", "https") or url.hostname not in ("localhost", "127.0.0.1", "::1") or url.username or url.password or url.path or url.query or url.fragment:
-        parser.error("Demo seeding is restricted to a local loopback origin.")
     try:
-        seed(base, args.admin_credentials)
+        seed(args.base_url, args.admin_credentials, args.public_url)
     except (RuntimeError, OSError, ValueError, KeyError) as exc:
         parser.exit(1, f"Demo seed stopped: {exc}\n")
 
