@@ -1,0 +1,115 @@
+{
+  "requested_model": "claude-opus-5-5",
+  "scope": "submission",
+  "effort": "medium",
+  "cli_budget_usd": 0.5,
+  "max_output_tokens": 5000,
+  "timeout_seconds": 240,
+  "timestamp": "2026-09-27T07:00:18.228310+00:00",
+  "source_commit": "dc152fe38c8aaf83f19288c61c52bf7d4be762e7",
+  "claude_version": "2.1.282 (Claude Code)",
+  "inputs": [
+    {
+      "path": "docs/SUBMISSION.md",
+      "bytes": 7295,
+      "sha256": "599a2ca9b0174b000afb85b5df41135841435d46fd567dd780e4f77d888c9a62"
+    },
+    {
+      "path": "reference/SWE-Assignment.md",
+      "bytes": 4516,
+      "sha256": "7cde267039bfd18d3185e8daefdc5767f85d88cfe121ee3c50db4f16edd273b0"
+    },
+    {
+      "path": "specs/01-system-design.md",
+      "bytes": 24942,
+      "sha256": "e7f92099b62725b615b4c6b0b509a91107809f4314e64f11d82324f493a4dbe0"
+    },
+    {
+      "path": "specs/02-data-and-contracts.md",
+      "bytes": 25441,
+      "sha256": "9efe6be0a4c69e4f34fc1d88f4f713bf329c1415372d3de907141c36380d34d0"
+    },
+    {
+      "path": "specs/03-decisions-and-tradeoffs.md",
+      "bytes": 9503,
+      "sha256": "83cb2ac036b61d88bfbc3ad43dabf0f93cd505497683120c59a27ab5c2134725"
+    },
+    {
+      "path": "specs/04-evaluation-and-delivery.md",
+      "bytes": 19325,
+      "sha256": "cfe66692b3043231b12e8ba68f650bba4fe75346eea8a56b8b06dff80d4dcc0e"
+    },
+    {
+      "path": "platform/CONTRACT.md",
+      "bytes": 12019,
+      "sha256": "675797f4a0bba0ee20e9862d5a0ef0f91b2db79d8de885bc5b352a7be2b023c1"
+    },
+    {
+      "path": "platform/README.md",
+      "bytes": 18656,
+      "sha256": "2f2aa9c880bf5cb002e73f6a65d1edc1ffba079a8ca122fb45fe13397c02f3f7"
+    }
+  ],
+  "tools_enabled": false,
+  "script_retries": 0,
+  "limitations": [
+    "Eight supplied documents only; no screenshots or runtime code.",
+    "No interactive browser, backend code audit, load test or human accuracy adjudication."
+  ],
+  "total_cost_usd": 0.29645299999999997,
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 44133,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 3789,
+    "output_tokens_details": {
+      "thinking_tokens": 1944
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 44133
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 3789,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 44133,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 44133,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "model_usage": {
+    "claude-opus-5-5": {
+      "inputTokens": 2,
+      "outputTokens": 3789,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 44133,
+      "webSearchRequests": 0,
+      "costUSD": 0.29645299999999997,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 1944,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "response_models": [
+    "claude-opus-5-5"
+  ],
+  "duration_ms": 40851,
+  "num_turns": 1,
+  "capture_mode": "all_visible_assistant_text"
+}

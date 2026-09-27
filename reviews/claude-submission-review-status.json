@@ -1,0 +1,12 @@
+{
+  "status": "completed",
+  "requested_model": "claude-opus-5-5",
+  "response_models": [
+    "claude-opus-5-5"
+  ],
+  "timestamp": "2026-09-27T07:00:18.228310+00:00",
+  "total_cost_usd": 0.29645299999999997,
+  "num_turns": 1,
+  "report": "claude-opus-5.5-submission-feedback.md",
+  "metadata": "claude-opus-5.5-submission-usage.json"
+}

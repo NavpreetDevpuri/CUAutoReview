@@ -2,42 +2,51 @@
 
 [Repository](https://github.com/NavpreetDevpuri/CUAutoReview) · [Full design](../README.md) · [Run locally](../platform/README.md)
 
-**Explain where computer-use agents make mistakes, whether they recover, and which failure patterns recur.** System-design submission, supported by a preserved [five-task POC](../poc/README.md) and local platform; production readiness remains unproven.
+**Explain where computer-use agents make mistakes, whether they recover, and which failure patterns recur.** [System-design submission](../reference/SWE-Assignment.md), supported by a preserved [five-task POC](../poc/README.md) and local platform; production readiness remains unproven.
 
 ## How it fits together
 
 ```mermaid
-flowchart LR
-    A["S3 / input adapters"] --> B["Queued trajectory review"]
-    B --> C["Versioned findings + research UI"]
-    B --> D["Shared label proposals"]
-    C -->|feedback| D
-    D --> E["Dedup + human approval"]
-    E --> F["Taxonomy release"]
-    F -->|explicit assignment| C
+flowchart TB
+    A["S3 evidence + ready manifest"] --> B["PostgreSQL registration + outbox"]
+    B --> C["Queue + outcome routing"]
+    C -->|failed| D["Failure analysis"]
+    C -->|passed| E["Recovery review"]
+    D --> F["Numbered episodes + step evidence"]
+    E --> F
+    F --> G["Assign against pinned taxonomy"]
+    G --> H["Research UI + reports"]
+    F -->|findings visible; labels may be pending| H
+    F -->|new or edited labels| I["Shared label proposals"]
+    H -->|feedback| I
+    I --> J["Consolidation agent + human approval"]
+    J --> K["New immutable taxonomy release"]
+    K -->|adopt in successor run| G
 ```
 
-Target architecture; current boundaries below. [Component contracts](../specs/02-data-and-contracts.md).
+Target architecture; unknown or error outcomes wait for resolution. Current boundaries below. [Component contracts](../specs/02-data-and-contracts.md).
 
 | Replaceable component | Contract and reason |
 |---|---|
-| **Input adapter + evaluator** | Normalize trajectories into indexed steps/evidence; interpret scores with pinned evaluators. **OSWorld-Verified first** supplies public scored desktop traces, not an assignment requirement. Other formats need adapters. Historical evaluator versions may be unknown; grades are not diagnoses. |
-| **Workflow + execution backend** | Version prompts/routing independently of harness, model, reasoning, evidence limits and budget. API/LiteLLM and native CLIs share typed step/episode/output contracts. New workflows/backends require schema, capability and conformance checks, not just configuration. |
-| **YAML artifacts** | Human-, model- and code-readable indexes, presets, step reviews and taxonomy proposals/releases. Safe parsing/schema validation preserve typed contracts; retain native JSON/JSONL/logs/images through references. Readability improves; token savings are not assumed. |
+| **Input adapter + evaluator** | Normalize trajectories into indexed steps and evidence; interpret scores with pinned evaluators. **OSWorld-Verified first** supplies public scored desktop traces, our assumption rather than an assignment requirement. Other formats need adapters. Historical evaluator versions may be unknown; grades are not diagnoses. |
+| **Workflow + execution backend** | Version prompts and routing independently of harness, model, reasoning, evidence limits and budget. Model APIs, LiteLLM and native CLIs share typed output contracts. New workflows and backends require schema, capability and conformance checks. |
+| **YAML artifacts** | Human-, model- and code-readable indexes, presets, step reviews, taxonomy proposals and releases. Safe parsing and schema validation preserve typed contracts; references retain native JSON, JSONL, logs and images. Readability improves; token savings are not assumed. |
 
 ## Decisions and trade-offs
 
-- **Explain before classifying.** One logical reviewer follows requirement → visible intent → action → UI effect → outcome across the trajectory. Annotate every step with evidence references; link numbered problems to related/recovery steps. Distinguish wrong plans, action mismatches and tool/environment failures.
-  - Separate failure and passing-recovery prompts; unknown/error outcomes wait. Passing does not mean mistake-free. Recovery, severity and outcome contribution remain independent of labels.
-  - Separate source/supplied/cited screenshots. Missing evidence permits inconclusive results; comments/citations/grades prove neither visual effects nor recovery. Planned shared compact/render helpers retain expandable originals and omissions.
-- **Let taxonomy emerge.** Cluster mechanisms, retrieve similar labels, check definitions/examples/boundaries; retain unmatched episodes. Parallel reviewers share drafts; a separate curator deduplicates new/edited labels.
-  - Human approval binds the exact candidate. New/rename/merge/split/deprecate operations retain immutable releases/lineage; old results stay pinned. Explicit reclassification preserves comparisons at reviewer/backfill cost.
-- **Separate evidence, state and delivery.** Validate ready manifests, register inputs and reconcile missed arrivals. S3 holds large artifacts; PostgreSQL indexes task/rollout/source revisions, run membership, steps, episodes, assignments and review attempts. Query task/domain/agent/mode/analysis/taxonomy versions; trace aggregates to evidence.
-  - RabbitMQ/Celery deliver jobs; PostgreSQL retains authority through transactional outbox, idempotent claims, leases and fenced completion. Retryable failures get up to 3 retries after the initial attempt; preserve errors/costs. PostgreSQL queues remain a simpler small-scale alternative; broker operations cost more. Crashes can repeat inference charges.
-- **Reuse infrastructure; specialize review UX.** Reuse FastAPI, React-admin/MUI, LiteLLM, native Codex/Gemini CLIs and SeaweedFS to focus custom code on evidence and approvals. [Reuse choices](../specs/09-open-source-reuse.md). Custom responsive UI adds aligned steps/screenshots, numbered problems, inline definitions and comparisons.
-  - Admin/manager/reviewer/viewer roles, teams and individual grants support shared datasets/runs, feedback and approval; server permissions are authoritative. Docker supplies local services; S3 endpoints are configurable. AWS requires IAM, migration and compatibility checks.
+- **Explain before classifying.** One logical reviewer follows requirement → visible intent → action → UI effect → outcome. Annotate every step with evidence; link numbered problems to related and recovery steps. Distinguish wrong plans, action mismatches and tool or environment failures.
+  - Separate failure and passing-recovery prompts. Passing does not mean mistake-free. Recovery, severity and outcome contribution remain independent of labels.
+  - Distinguish source, supplied and cited screenshots. Comments, citations and grades prove neither visual effects nor recovery. Evidence gaps permit inconclusive reviews; preserve competing explanations and contradictory evidence. Causes remain hypotheses until replay or intervention. Planned compact/render helpers retain expandable originals and omissions.
+- **Let taxonomy emerge.** Cluster mechanisms; keep application and domain as separate attributes. Assignment checks evidence against pinned label definitions, examples and boundaries. Similarity retrieves candidates; it never suffices to assign. Preserve `assigned`, `ambiguous`, `unclassified` and `insufficient_evidence` results.
+  - Parallel reviewers share drafts; a separate curator deduplicates new or edited labels. Human approval binds the exact candidate. New labels, renames, merges, splits and deprecations preserve immutable releases and lineage; old results stay pinned.
+  - Successor runs adopt releases explicitly. Splits leave history unresolved under the new taxonomy until reclassified, never guessed. Taxonomy-only changes usually reuse episodes; new distinctions may require re-extraction. Analysis changes rerun review and dependent stages. This preserves comparisons at reviewer and backfill cost.
+- **Separate evidence, state and delivery.** Validate ready manifests, register inputs and reconcile missed arrivals. S3 holds artifacts; PostgreSQL indexes task and source revisions, rollouts, run membership, steps, episodes, assignments and attempts.
+  - Query by task, domain, agent, mode and analysis/taxonomy version. Trace report → run → assignment → episode → step evidence. Report failure prevalence separately from passing recovery; disclose coverage and task-balanced counts so repeated rollouts cannot dominate.
+  - RabbitMQ and Celery isolate delivery and backpressure from database authority. A transactional outbox, idempotent claims, leases and fenced completion tolerate duplicate delivery. PostgreSQL queues are a simpler small-scale alternative; a broker adds operations. Up to three retries follow the initial attempt, preserving errors and costs. Crashes can repeat inference charges; local per-attempt allowances are estimates, not hard billing caps.
+- **Reuse infrastructure; specialize review UX.** FastAPI, React-admin/MUI, LiteLLM, native Codex/Gemini CLIs and SeaweedFS supply web, admin, provider and storage components. Custom code focuses on collaborative evidence review: responsive aligned steps/screenshots, numbered problems, inline definitions, comparisons and approvals. [Reuse choices](../specs/09-open-source-reuse.md).
+  - Admin, manager, reviewer and viewer roles, teams and individual grants govern shared datasets and runs; server permissions are authoritative. Docker supplies local services with configurable S3 endpoints. AWS still requires IAM, migration and compatibility checks.
 - **Treat evidence as untrusted.** Restrict read/render helpers, isolate runners, keep credentials outside prompts and redact sensitive inputs before hosted inference.
-- **Scale trajectories, not individual steps.** Bounded concurrency/frame selection trades latency/cost against missed evidence. Planned quotas, fair live/backfill scheduling, reconciliation and staged query/storage scaling target an illustrative 10k trajectories/day, not measured throughput. Separate failure prevalence/passing recovery; show coverage/task-balanced counts so repeated rollouts cannot dominate. [Alternatives and rationale](../specs/03-decisions-and-tradeoffs.md).
+- **Scale within provider limits.** Parallelize trajectories; bounded concurrency and frame selection trade latency and cost against missed evidence. Provider rate and spend limits are the expected bottleneck. Planned central quotas, fair live/backfill scheduling, reconciliation and staged database/storage scaling target an illustrative 10k trajectories/day, not measured throughput. [Alternatives and rationale](../specs/03-decisions-and-tradeoffs.md).
 
 ## What exists and what is proven
 
@@ -45,12 +54,12 @@ Target architecture; current boundaries below. [Component contracts](../specs/02
 
 | Area | Evidence and limits |
 |---|---|
-| **Local platform + POC** | Workspace/review features above, ZIP validation, history/analytics, bounded requests, shared drafts and explicit curation. POC tested parallel review/final consolidation. Saved replay makes no model calls. |
-| **Functional checks** | Baseline: 95 tests + 2 follow-ups; real PostgreSQL/RabbitMQ/S3-compatible checks. Frontend build, 3 grouping/evidence tests; browser checks at 320/390/768/1280px. Not load or exhaustive security tests. |
+| **Local platform + POC** | Access controls, validated imports, runs, trajectory viewer, history, analytics, shared drafts and explicit curation. One bounded request per trajectory with up to 32 selected screenshots and recorded coverage. POC tested parallel review and final consolidation. Saved replay makes no model calls. |
+| **Functional checks** | 95 backend tests passed; two existing tests rerun after job-detail changes checked pinned harness/model and known/unknown costs. Real PostgreSQL, RabbitMQ and S3-compatible checks; frontend build; three frontend tests for problem grouping and evidence display; browser widths 320, 390, 768 and 1280px. No load or exhaustive security tests. |
 | **Docker-only setup** | Fresh ARM64 stack: 5 logins, 3 teams, 8 distinct tasks, screenshot access, stable repeat seeding; no model calls. AMD64 execution unverified. [Results](../platform/docker-quickstart-verification.json). |
 | **Live reviews + cost** | 8 Gemini 3.8 Flash visual reviews + 1 matched GPT-6 Sol review across 8 trajectories/11 attempts: **$0.36706550 estimated**, failed attempts included. Valid saved output is not diagnosis accuracy; invoices/total historical spend unknown. [Evidence](../platform/LIVE-RESULTS.md). |
 | **Scale arithmetic** | $0.040785/saved review; **$407.85 for 10k equivalent reviews**, both routes included. Tiny mixed sample, not a forecast/load test; excludes infrastructure, classification/curation and humans. [Assumptions and staffing](../specs/04-evaluation-and-delivery.md#capacity-and-cost). |
 
 **Boundaries:** local Task records each hold one rollout; parent-task grouping of K attempts remains planned. Only `trajectory_review@1` is available; custom workflow authoring, additional adapters/ACP, continuous S3 discovery, helper-agent loops, automatic post-run curation, production HA/security hardening and load testing remain targets. Shared drafts are snapshotted when jobs start, not continuously refreshed.
 
-**Next validation:** two Writer sources retain 3 screenshots/15 steps each. Independently adjudicate task-separated examples for explanation accuracy/recovery precision; measure cost, quality and capacity. [Human-review worksheet](../reviews/HUMAN-VALIDATION.md) · [Opus audit and follow-up](../reviews/claude-audit-actions.md).
+**Next validation:** two Writer tasks have only three screenshots for fifteen steps each, limiting visual claims. Independently adjudicate task-separated examples for explanation accuracy and recovery precision; measure cost, quality and capacity. [Human-review worksheet](../reviews/HUMAN-VALIDATION.md) · [Opus reviews and follow-up](../reviews/README.md).
