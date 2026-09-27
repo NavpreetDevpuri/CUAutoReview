@@ -2,6 +2,18 @@
 
 Verified on 27 September 2026 using the local Docker Compose stack. Regression and service checks use saved replay or isolated fixtures and make no provider calls. Live CLI attempts are reported separately; replay retains the original uncertainty and provenance.
 
+## Opus audit follow-up: 27 September 2026
+
+- **Independent review:** one host Claude Code session, `claude-opus-5-5`, medium effort, 16 text inputs and four actual screenshots, tools disabled. CLI-reported **$0.5249934**, two turns including automatic continuation, within a $1.50 session limit. [Report, capture limitation and actions](../reviews/README.md). This is not human adjudication or a platform adapter test.
+- **Frontend build:** `npm --prefix platform/web run build` passed. Existing bundle advisory remains, approximately 1.38 MB before gzip.
+- **Focused regression checks:** `npm --prefix platform/web test`, **3 passed**. Exact display grouping preserves review-local problem IDs and every occurrence; different relationships stay separate; source presence or citations never imply frame delivery; explicit legacy text-only metadata is handled.
+- **Browser:** checked the 390px mobile step picker and 1280px desktop viewer, review-name disclosure, single/all-review filters, next/previous navigation and recovery/related groups. Overview displays actual runtime configuration and repeat-selection count scope. Dataset cards distinguish episodes/steps/reviews and render `1 label` correctly. Temporary viewport override reset.
+- **Audit runner:** local checks preserve visible text across a simulated CLI continuation and exclude reasoning blocks. No additional provider call was made to retest capture.
+- **Scope:** source/UI/docs changes only; the built frontend was copied into the existing local app. Backend/provider settings and stored reviews were preserved. The earlier backend/Docker results below were not rerun for these changes.
+- Actual captures: [desktop flags](screenshots/audit-grouped-flags-20260927.jpg), [mobile flags](screenshots/audit-mobile-flags-20260927.jpg), [overview](screenshots/audit-overview-20260927.jpg).
+
+## Recorded backend and service baseline
+
 | Check | Evidence | Result |
 |---|---|---|
 | Backend behavior and provider boundaries | `docker compose -f platform/compose.yaml exec -T app env TMPDIR=/dev/shm PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -p no:cacheprovider --disable-warnings --basetemp=/dev/shm/pytest-of-final` | 95 passed; 6 warnings; 13.79 seconds; followed by the focused serialization check below |
@@ -116,6 +128,6 @@ The matched Gemini 3.8 Flash / GPT-6 Sol pair completed with valid nine-step out
 ## Limits
 
 - These are functional checks, not model accuracy, load/HA, backup/restore, adversarial security or cloud-provider certification.
-- Earlier Gemini 3.8 Flash and GPT-6 Sol runs produced text-only reviews. New visual checks are recorded in LIVE-RESULTS.md. See the platform guide for tokens, estimates and failed setup attempts. These calls do not establish diagnosis accuracy. Claude's requested independent review is blocked by the missing key; Jev's free-credit check returned 403. No review text was invented.
+- Earlier Gemini 3.8 Flash and GPT-6 Sol runs produced text-only reviews. New visual checks are recorded in LIVE-RESULTS.md. See the platform guide for tokens, estimates and failed setup attempts. These calls do not establish diagnosis accuracy. The separate [Opus 5.5 design/UI audit](../reviews/README.md) subsequently completed; it is not a trajectory-accuracy test. Jev's free-credit check returned 403.
 - Test accounts/data are labeled as local acceptance fixtures. The local test administrator credentials are in ignored `platform/.local/test-account.json`; they are not embedded in source or reports.
 - Retained POC screenshots remain bundled, read-only evidence. Imported ZIP screenshots and new review YAML use S3. Additional benchmark adapters remain future work.

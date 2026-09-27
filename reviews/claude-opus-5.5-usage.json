@@ -1,0 +1,177 @@
+{
+  "requested_model": "claude-opus-5-5",
+  "effort": "medium",
+  "cli_budget_usd": 1.5,
+  "max_output_tokens": 3500,
+  "timeout_seconds": 240,
+  "timestamp": "2026-09-27T06:17:02.441575+00:00",
+  "source_commit": "6e6b3b7b7f3038a67506d44231baaf7a3922a21e",
+  "claude_version": "2.1.282 (Claude Code)",
+  "inputs": [
+    {
+      "path": "reference/SWE-Assignment.md",
+      "bytes": 4516,
+      "sha256": "7cde267039bfd18d3185e8daefdc5767f85d88cfe121ee3c50db4f16edd273b0"
+    },
+    {
+      "path": "docs/SUBMISSION.md",
+      "bytes": 4981,
+      "sha256": "a301792f13d71fb75f1ef1ee306f112868e3c864b0ee21a843f89b49870f7b13"
+    },
+    {
+      "path": "README.md",
+      "bytes": 21785,
+      "sha256": "a21fbc9de9e08cbb432346ea64041a2b624bf9db159291bd260fdcacf9c6092b"
+    },
+    {
+      "path": "specs/01-system-design.md",
+      "bytes": 24433,
+      "sha256": "cb7d4c4af1b134255ee449f57891e131751e78f35217f520ef6297f28e62fab7"
+    },
+    {
+      "path": "specs/02-data-and-contracts.md",
+      "bytes": 25269,
+      "sha256": "0c70068ba969d9fce704ddade1ba316356a94546a9bf11e65f3092c1b16bf65b"
+    },
+    {
+      "path": "specs/03-decisions-and-tradeoffs.md",
+      "bytes": 9503,
+      "sha256": "83cb2ac036b61d88bfbc3ad43dabf0f93cd505497683120c59a27ab5c2134725"
+    },
+    {
+      "path": "specs/04-evaluation-and-delivery.md",
+      "bytes": 17601,
+      "sha256": "40b826b4702435b7e6051fe40caf91489507365f273572c2250bbaa930743925"
+    },
+    {
+      "path": "specs/08-local-deployment-and-queue.md",
+      "bytes": 14687,
+      "sha256": "7da6d72c13d32a28cd4cd2ef1f8e3dedb54b269c974790d37226950c4fcda477"
+    },
+    {
+      "path": "specs/11-runs-navigation-and-comparison.md",
+      "bytes": 7365,
+      "sha256": "894310bb0481c0c6c6db9467461b496bb05980860896141440eeb057659e768e"
+    },
+    {
+      "path": "platform/CONTRACT.md",
+      "bytes": 11634,
+      "sha256": "3ae8396f87cfbfd1a217d36dbb2c7f4711ac2bc7964f098abcb76eac4587e477"
+    },
+    {
+      "path": "platform/README.md",
+      "bytes": 18234,
+      "sha256": "e55bee92f01446c036533bd44a9df3f2f74dcc548f768831c696ba52fdb0cd98"
+    },
+    {
+      "path": "platform/LIVE-RESULTS.md",
+      "bytes": 8752,
+      "sha256": "4ebff48b1e03f79190e8e6e9e643fa5b8b3bc41bdeb74f50b65dd72081b30831"
+    },
+    {
+      "path": "platform/UX-FEEDBACK.md",
+      "bytes": 8896,
+      "sha256": "3ca6470ee40d2cd93af47e0d7fa41d1a53f4c0974ef838da9271b88ceb548405"
+    },
+    {
+      "path": "platform/web/src/StepFlag.tsx",
+      "bytes": 1874,
+      "sha256": "ed90535bffbd5e41fef854a86df4b2bb6447c509e8c9e5eea6ad037002f14541"
+    },
+    {
+      "path": "platform/web/src/theme.tsx",
+      "bytes": 6628,
+      "sha256": "807d04c5584c855f8f5594c5e77e2e8adaf7b50ed54d25fddc96bcbd656b3089"
+    },
+    {
+      "path": "platform/web/src/ModelPicker.tsx",
+      "bytes": 3088,
+      "sha256": "ce8d14705e1c879a6fb4f68a2bca2a4aa3221f4ee1d74049ee5fc2767d790e98"
+    },
+    {
+      "path": "platform/screenshots/platform-overview-fullscreen-20260927.png",
+      "bytes": 335657,
+      "sha256": "952001360dce1959fdacac22e7210ddd6bc4ced2f5619aeb50da97832b153422"
+    },
+    {
+      "path": "platform/screenshots/platform-dataset-fullscreen-20260927.png",
+      "bytes": 285694,
+      "sha256": "4f6682a16fbc6204f545b6d82b162f00c88282c4185519e774b9093a63eac7ca"
+    },
+    {
+      "path": "platform/screenshots/platform-trajectory-fullscreen-20260927.png",
+      "bytes": 299742,
+      "sha256": "517ab219b14cb357b9fe64fd8a1fa45525395d5d6bea719b65674ff35077cdda"
+    },
+    {
+      "path": "platform/screenshots/mobile-step-picker-final-20260927.png",
+      "bytes": 53963,
+      "sha256": "08a68746138de96b642c0c5316e0ad3ff34490b032634a453458d10f332ccec4"
+    }
+  ],
+  "tools_enabled": false,
+  "script_retries": 0,
+  "limitations": [
+    "Static documents, three UI source files and four saved screenshots only.",
+    "No interactive browser, backend code audit, load test or human accuracy adjudication."
+  ],
+  "total_cost_usd": 0.5249934,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 77512,
+    "cache_read_input_tokens": 73947,
+    "output_tokens": 6131,
+    "output_tokens_details": {
+      "thinking_tokens": 3269
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 77512
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 4,
+        "output_tokens": 2631,
+        "cache_read_input_tokens": 73947,
+        "cache_creation_input_tokens": 3565,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 3565,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "model_usage": {
+    "claude-opus-5-5": {
+      "inputTokens": 6,
+      "outputTokens": 6131,
+      "cacheReadInputTokens": 73947,
+      "cacheCreationInputTokens": 77512,
+      "webSearchRequests": 0,
+      "costUSD": 0.5249934,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 3269,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "response_models": [
+    "claude-opus-5-5"
+  ],
+  "duration_ms": 67643,
+  "num_turns": 2,
+  "capture_mode": "final_cli_result_only",
+  "capture_limitations": [
+    "The CLI continued once after its per-response output limit. The saved final result starts mid-overview; the findings table and recommendations are retained. Missing opening text was not reconstructed. The runner now preserves all visible response parts; no further paid call was made."
+  ]
+}

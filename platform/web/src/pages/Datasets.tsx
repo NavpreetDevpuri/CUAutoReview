@@ -27,6 +27,9 @@ const cardLinkSx = {
 const independentControlSx = { position: "relative", zIndex: 2 } as const;
 
 function normalizeId(row: Record<string, unknown>) { return String(row.id || row.dataset_id || ""); }
+function quantity(count: number | undefined, singular: string, plural = `${singular}s`) {
+  return `${count ?? "Not recorded"} ${count === 1 ? singular : plural}`;
+}
 
 export function DatasetsPage() {
   const [showArchived, setShowArchived] = useState(false);
@@ -72,7 +75,7 @@ export function DatasetsPage() {
             <StatusTag value={row.archived || row.archived_at ? "archived" : row.source_adapter || "Local"} />
           </Stack>
           <Typography color="text.secondary" sx={{ mt: 1.5, minHeight: 42, lineHeight: 1.5 }}>{row.description || "No description recorded."}</Typography>
-          <Stack direction="row" gap={2} flexWrap="wrap" sx={{ mt: 2 }}><Typography sx={{ fontWeight: 750 }}>{String(row.task_count ?? 0)} tasks</Typography><Typography color="text.secondary">{String(row.run_count ?? row.batch_count ?? 0)} runs</Typography><Typography color="text.secondary">{coverageLabel}</Typography></Stack>
+          <Stack direction="row" gap={2} flexWrap="wrap" sx={{ mt: 2 }}><Typography sx={{ fontWeight: 750 }}>{quantity(Number(row.task_count ?? 0), "task")}</Typography><Typography color="text.secondary">{quantity(Number(row.run_count ?? row.batch_count ?? 0), "run")}</Typography><Typography color="text.secondary">{coverageLabel}</Typography></Stack>
           <Typography color="text.secondary" sx={{ mt: .7, fontSize: 12.5 }}>Created {formatDate(row.created_at)}</Typography>
           <Typography color="primary.main" sx={{ mt: "auto", pt: 1.4, fontWeight: 600, fontSize: 12.5 }}>Open dataset →</Typography>
         </Paper>
@@ -145,11 +148,11 @@ function TaskReviewBreakdown({ datasetId, taskId, includeArchived, summary }: { 
   const runs = detail.data?.runs || [];
   const modelRows = summary?.models || detail.data?.summary?.models || [];
   return <Box sx={{ p: 1.4, bgcolor: "action.hover", borderRadius: 2 }}>
-    <SectionTitle title="Review breakdown" subtitle="Counts use each run’s latest saved result. Image counts are unique source steps across these reviews; each run below shows its own evidence." />
+    <SectionTitle title="Review breakdown" subtitle="Problem counts use the latest saved review per run. Image counts combine source step IDs across current and superseded reviews; each run below shows its own evidence." />
     {!!modelRows.length && <Stack gap={.7} sx={{ mb: 1.2 }}>
       {modelRows.map((model, index) => <Paper key={`${model.backend || ""}-${model.model || index}`} variant="outlined" sx={{ p: 1, bgcolor: "background.paper", borderRadius: 1.5 }}>
         <Typography sx={{ fontWeight: 700, fontSize: 13 }}>{displayValue(model.model, "Model not recorded")} · {displayValue(model.backend, "Harness not recorded")}</Typography>
-        <Typography color="text.secondary" sx={{ mt: .3, fontSize: 12.5 }}>{Number(model.current_review_count || 0)} latest saved result{Number(model.current_review_count || 0) === 1 ? "" : "s"} (one per run) · {Number(model.current_problem_count || 0)} problem flags · {Number(model.current_flagged_step_count || 0)} flagged steps · {model.current_flagged_labels?.length || 0} labels{Number(model.historical_review_count || 0) ? ` · ${model.historical_review_count} superseded review revisions` : ""}</Typography>
+        <Typography color="text.secondary" sx={{ mt: .3, fontSize: 12.5 }}>{quantity(Number(model.current_review_count || 0), "saved review")} (latest per run) · {quantity(Number(model.current_problem_count || 0), "problem episode")} · {quantity(Number(model.current_flagged_step_count || 0), "explicitly flagged step")} · {quantity(model.current_flagged_labels?.length || 0, "label")}{Number(model.historical_review_count || 0) ? ` · ${quantity(Number(model.historical_review_count), "superseded review revision")}` : ""}</Typography>
         {modelEvidenceSummary(model) && <Typography color="text.secondary" sx={{ mt: .25, fontSize: 12 }}>Evidence: {modelEvidenceSummary(model)}</Typography>}
       </Paper>)}
     </Stack>}
@@ -167,7 +170,7 @@ function TaskReviewBreakdown({ datasetId, taskId, includeArchived, summary }: { 
         return <Paper key={runId || index} variant="outlined" sx={{ ...linkedCardSx, p: 1.25, bgcolor: "background.paper" }}>
           <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ sm: "center" }} justifyContent="space-between" gap={.6}>
             <Typography component={RouterLink} to={`/runs/${encodeURIComponent(runId)}`} sx={{ ...cardLinkSx, fontSize: 13 }}>{displayValue(run.run_name || run.name, `Run ${index + 1}`)}</Typography>
-            <Stack direction="row" gap={.5} flexWrap="wrap"><StatusTag value={`Review processing: ${processingStatus}`} /><StatusTag value={`Review assessment: ${metrics.assessment}`} /><Typography color="text.secondary" sx={{ alignSelf: "center", fontSize: 12 }}>{metrics.revisionCount} saved review revisions · {metrics.problemCount ?? "Not recorded"} problem flags · {metrics.flaggedStepCount ?? "Not recorded"} flagged steps · {metrics.labelCount ?? "Not recorded"} labels</Typography></Stack>
+            <Stack direction="row" gap={.5} flexWrap="wrap"><StatusTag value={`Review processing: ${processingStatus}`} /><StatusTag value={`Review assessment: ${metrics.assessment}`} /><Typography color="text.secondary" sx={{ alignSelf: "center", fontSize: 12 }}>{quantity(metrics.revisionCount, "saved review revision")} · Latest: {quantity(metrics.problemCount, "problem episode")} · {quantity(metrics.flaggedStepCount, "explicitly flagged step")} · {quantity(metrics.labelCount, "label")}</Typography></Stack>
           </Stack>
           <BenchmarkResult task={run} compact />
           {!!reviews.length && <Typography color="text.secondary" sx={{ mt: .6, fontSize: 12.5 }}>{reviews.map(review => `${displayValue(review.model, "Model not recorded")} (${displayValue(review.backend, "harness not recorded")})`).join(" · ")}</Typography>}
@@ -193,8 +196,8 @@ function TaskReviewCounts({ summary }: { summary?: DatasetTaskSummary }) {
   const runs = Number(summary.run_count || 0);
   const missing = Number(summary.missing_review_count ?? Math.max(0, runs - reviews));
   return <Stack gap={.25}>
-    <Typography sx={{ fontSize: 12.5, fontWeight: 650 }}>{runs} {runs === 1 ? "run" : "runs"} · {reviews} latest saved {reviews === 1 ? "assessment" : "assessments"}{revisions !== reviews ? ` · ${revisions} saved review revisions total` : ""}</Typography>
-    {reviews ? <Typography color="text.secondary" sx={{ fontSize: 12.5 }}>{Number(summary.problem_count || 0)} problem flags · {Number(summary.flagged_step_count || 0)} flagged steps · {summary.flagged_labels?.length || 0} labels{missing ? ` · ${missing} ${missing === 1 ? "run" : "runs"} without an assessment` : ""}{historical ? ` · ${historical} superseded review revisions` : ""}</Typography> : <Typography color="text.secondary" sx={{ fontSize: 12.5 }}>No review assessment has been saved for these runs.</Typography>}
+    <Typography sx={{ fontSize: 12.5, fontWeight: 650 }}>{quantity(runs, "run")} · {quantity(reviews, "saved review")} (latest per run){revisions !== reviews ? ` · ${quantity(revisions, "saved review revision")} total` : ""}</Typography>
+    {reviews ? <Typography color="text.secondary" sx={{ fontSize: 12.5 }}>{quantity(Number(summary.problem_count || 0), "problem episode")} · {quantity(Number(summary.flagged_step_count || 0), "explicitly flagged step")} · {quantity(summary.flagged_labels?.length || 0, "label")}{missing ? ` · ${quantity(missing, "run")} without an assessment` : ""}{historical ? ` · ${quantity(historical, "superseded review revision")}` : ""}</Typography> : <Typography color="text.secondary" sx={{ fontSize: 12.5 }}>No review assessment has been saved for these runs.</Typography>}
   </Stack>;
 }
 
@@ -265,7 +268,7 @@ export function DatasetDetailPage() {
       <Grid size={{ xs: 12, md: 4 }}><Panel><SectionTitle title="Sync new revisions" /><Typography color="text.secondary" sx={{ fontSize: 14, mb: 1.4 }}>Preview additions and changed source revisions before syncing an appendable run.</Typography><Button variant="outlined" startIcon={<SyncRounded />} onClick={previewSync} disabled={working}>Preview sync</Button>{syncPreview !== null && <Box component="pre" sx={{ mt: 1.5, mb: 0, maxHeight: 230, overflow: "auto", p: 1.4, bgcolor: "action.hover", borderRadius: 2, fontSize: 12 }}>{JSON.stringify(syncPreview, null, 2)}</Box>}</Panel></Grid>
     </Grid>
     <Grid container spacing={2} alignItems="flex-start" sx={{ minWidth: 0 }}>
-      <Grid size={{ xs: 12, lg: 7.5 }} sx={{ minWidth: 0 }}><Panel sx={{ minWidth: 0 }}><SectionTitle title="Tasks in this dataset" subtitle="Task revisions are retained as source records." action={<Button size="small" startIcon={<ArchiveRounded />} onClick={() => setShowArchivedTasks(value => !value)}>{showArchivedTasks ? "Hide archived tasks" : "Show archived tasks"}</Button>} />
+      <Grid size={{ xs: 12, lg: 7.5 }} sx={{ minWidth: 0 }}><Panel sx={{ minWidth: 0 }}><SectionTitle title="Tasks in this dataset" subtitle="One model-reported problem may flag several steps. Step counts use distinct IDs across the latest review per run; related and recovery links are separate." action={<Button size="small" startIcon={<ArchiveRounded />} onClick={() => setShowArchivedTasks(value => !value)}>{showArchivedTasks ? "Hide archived tasks" : "Show archived tasks"}</Button>} />
         {!tasks.length ? <Typography color="text.secondary" sx={{ py: 3 }}>No task records have been imported. Use Import records to add a ZIP with screenshots or a JSON task file.</Typography> : <Stack gap={1.2}>{tasks.map(task => {
           const taskDefId = String(task.task_definition_id || task.id || task.task_id);
           const taskArchived = Boolean(task.archived || task.archived_at);

@@ -12,10 +12,10 @@ A **rollout** records one attempt: task, actions, screenshots, visible reasoning
 - **Demo sign-ins:** the Docker quickstart below creates five users, three teams and eight distinct tasks. Admin email: `admin@cuautoreview.test`; passwords are generated locally and never committed.
 - **Implemented:** Dataset → Task → Reviews, multi-dataset Runs, explicit workflow/harness/model setup, searchable user/team sharing, JSON/ZIP imports, filtered analytics, same-revision comparison, archive/restore, trajectory evidence, taxonomy approval, light/dark appearance and in-app Markdown guides.
 - **Verified:** 95 automated tests, five ZIP-import checks and four batch-completion checks; earlier evidence includes 11 real-service scenarios and four broker lifecycle checks. Five saved trajectories passed through PostgreSQL, RabbitMQ and SeaweedFS's S3-compatible storage. [Test evidence](platform/TEST-RESULTS.md). Earlier acceptance checks use saved replay. Live comparison evidence is tracked separately in the platform guide.
-- **Interface:** compact responsive layouts, aligned problem/relationship/label/review/model fields, mobile step picker, and whole-card native links. Checkboxes, disclosures and job actions work independently.
+- **Interface:** compact responsive layouts, mobile step picker and whole-card links. Repeated step labels group for display while preserving each review’s problem number, run, model and frame-delivery status. Grouping does not establish agreement; checkboxes and actions remain independent.
 - **Preserved:** [POC](poc/README.md), original Luna/Sol results and measured costs. [Latest findings](poc/RESULTS-SOL.md).
 - **Live models:** All eight tasks have completed screenshot-enabled Gemini 3.8 Flash reviews; a matched GPT-6 Sol review also completed. The 11 new attempts cost an estimated **$0.3671**, including one automatic retry and one storage-recovery retry. [Results, costs and limits](platform/LIVE-RESULTS.md).
-- **Pending:** human adjudication of model diagnoses, broader accuracy evaluation and production hardening. Supplying screenshots fixes missing delivery, not every evidence gap: two Writer sources retain only 3 screenshots for 15 steps. Claude’s independent review remains blocked by a missing API key. [Review status](reviews/README.md).
+- **Pending:** human adjudication of model diagnoses, broader accuracy evaluation and production hardening. Supplying screenshots fixes missing delivery, not every evidence gap: two Writer sources retain only 3 screenshots for 15 steps. [Independent Opus 5.5 audit](reviews/claude-opus-5.5-feedback.md) completed for a CLI-reported $0.525; [verified findings and changes](reviews/claude-audit-actions.md) separate applied fixes from open validation.
 
 ## Run locally with Docker
 
@@ -33,7 +33,7 @@ docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins
 - [Dockerfile](platform/Dockerfile) · [Compose services](platform/compose.yaml) · [setup, roles and provider configuration](platform/README.md).
 - [Fresh Docker verification](platform/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
 
-![CUAutoReview platform overview with workspace totals and recent runs.](platform/screenshots/platform-overview-fullscreen-20260927.png)
+![CUAutoReview platform overview with workspace totals and recent runs.](platform/screenshots/audit-overview-20260927.jpg)
 
 Actual full-viewport browser captures of the local platform. The overview connects workspace totals, recent runs and activity.
 
@@ -58,13 +58,13 @@ Filter datasets, runs and tasks to inspect recorded reviews and recurring proble
 <details>
 <summary>Trajectory evidence and review flags</summary>
 
-![Trajectory viewer with screenshot evidence and aligned problem, relationship, review and model fields.](platform/screenshots/platform-trajectory-fullscreen-20260927.png)
+![Trajectory viewer with screenshot evidence and aligned problem, relationship, review and model fields.](platform/screenshots/audit-grouped-flags-20260927.jpg)
 
 Follow source steps and screenshot evidence alongside numbered problems and their review/model attribution.
 
 </details>
 
-[Mobile steps](platform/screenshots/mobile-step-picker-final-20260927.png) · [mobile evidence](platform/screenshots/mobile-evidence-20260927.png) · [review counts](platform/screenshots/task-review-summary-20260927.png). Frontend build passed; layouts checked at 320, 390, 768 and 1280px widths. This UI update made no paid model calls; backend test evidence above comes from earlier checks. The original POC remains separate below.
+[Mobile steps](platform/screenshots/audit-mobile-flags-20260927.jpg) · [mobile evidence](platform/screenshots/mobile-evidence-20260927.png) · [review counts](platform/screenshots/task-review-summary-20260927.png). Frontend build passed; layouts checked at 320, 390, 768 and 1280px widths. This UI update made no paid model calls; backend test evidence above comes from earlier checks. The original POC remains separate below.
 
 The sections below explain the full design target. The [local implementation guide](platform/README.md) identifies what is available now.
 
@@ -224,7 +224,7 @@ The bullets in this section describe the broader platform design. For local impl
 | GPT-5.6 Luna | $0.040028 | $0.008006 | $8.01 | $80.06 |
 | GPT-5.6 Sol | $0.983911 | $0.196782 | $196.78 | $1,967.82 |
 
-These are simple same-workload, same-cache-ratio projections from five sparse tasks, not invoice, capacity or accuracy forecasts. See the [cost breakdown and method](poc/README.md#measured-cost-and-scaling-scenarios).
+These are historical same-workload, same-cache-ratio POC projections, not invoice, capacity or accuracy forecasts. The newer visual sample cost $0.36706550 for nine saved reviews over eleven attempts, roughly $0.0408 per saved review with failed attempts included. [Current cost scenarios and human-effort assumptions](specs/04-evaluation-and-delivery.md#capacity-and-cost) · [POC breakdown](poc/README.md#measured-cost-and-scaling-scenarios).
 
 - **Viewer:**
   - **Task cards:** search by task name, ID or label. Cards separate “Evaluator · Passed/Failed” (or “Outcome not recorded”) from review availability. They show recorded problems, unique explicitly flagged and recovery steps, problems by label, and labeled step links. Missing review or episode data reads “Not recorded,” not zero issues.

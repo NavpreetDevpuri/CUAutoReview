@@ -32,7 +32,7 @@ The original POC remains intact. Build a working local workspace with the docume
 
 ## UX
 
-- Distinct platform shell, readable 15-16px base text, collapsible left nav, clear status cards, deliberate empty/loading/error states.
+- Distinct platform shell, compact readable 14px body text, restrained headings, collapsible left nav, clear status cards, deliberate empty/loading/error states. Mobile layouts preserve touch targets and full-width evidence.
 - Pages: Overview, Datasets, Batches, Teams, Presets, Taxonomy, Activity, focused trajectory workspace and in-app Markdown guides at `/docs/:slug`. Light/dark appearance is persisted in browser local storage and can be changed on sign-in or from the workspace top bar.
 - Reuse React-admin MIT core and MUI; specialize trajectory viewer. Avoid a giant CRUD form as primary UX.
 - Task selector searchable card dialog: evaluator outcomes, recorded problems, label counts, flagged/recovery steps and quick links. Step sidebar includes numbered problem badges/first anchor. Full-width screenshot and details below. No hover-only meanings, no forced whole-page scroll trapping. Stable next/previous alignment.
@@ -42,6 +42,7 @@ The original POC remains intact. Build a working local workspace with the docume
 ## Verified local boundaries
 
 - The implementation uses one bounded review request per trajectory. Bounded ZIP screenshot uploads are implemented. Helper-tool loops, additional source adapters, ACP execution, source discovery and production hardening remain the broader design target.
+- The local UI's Task record contains one rollout; revisions correct that same recorded attempt. Independent attempts must use separate record IDs. Grouping K attempts under a shared task definition remains a design target; a new review run reanalyzes evidence, not a new computer-use execution.
 - New batches queue their own review even when source data includes a retained diagnosis. Saved replay retains original provenance; it is not a new diagnosis.
 - A worker snapshots the batch-pinned release plus current shared drafts when it claims a job. The exact label snapshot accompanies its result; a later retry may see newer drafts without changing earlier results.
 - Member IDs disambiguate source revisions in batch views, feedback, exports and artifact links. Dataset screenshot links pin the source revision separately. Imported screenshot URLs cannot bypass the recorded artifact endpoint.

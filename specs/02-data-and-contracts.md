@@ -139,7 +139,7 @@ expired running lease → reclaim with higher fencing token
 5. **Recover:** retry transaction writes future `available_at`/state and releases quota before ACK. Lease recovery fences old owners and increments delivery generation; all attempt-owned success/retry/failure transitions need live tokens. Reconcile stranded work without new logical jobs. Disable Celery ETA/autoretry/countdown; the outbox owns timing. Reconcile broker delivery limits/DLQ separately from application attempts/dead letters.
 
 - Relay `SKIP LOCKED` is short reservation coordination, not worker delivery. RabbitMQ owns transport; PostgreSQL owns state/publication. Cancellation/completion serialize; another batch's shared demand survives. Sweep orphan objects after grace. [Queue semantics](08-local-deployment-and-queue.md).
-- Start with **five transient attempts**, provider hints and retry-spend caps; allow **one schema repair**. Redrive requires operator decision or recipe fix, never unchanged poison loops. Checkpoints avoid repeated normalization/inference. Cache keys include input/recipe/access/redaction; no cross-permission reuse.
+- Allow **four application attempts total** (initial attempt plus up to three retries for retryable failures), honoring provider hints. The local per-attempt allowance estimates spending; hard trajectory spend caps and **one bounded schema repair** remain design targets. Redrive requires operator decision or recipe fix, never unchanged poison loops. Planned checkpoints avoid repeated normalization/inference. Cache keys include input/recipe/access/redaction; no cross-permission reuse.
 
 ## Reprocessing, releases and reproducible views
 

@@ -8,6 +8,8 @@ Open a task from its dataset or run to see its recorded instruction, outcome, st
 
 - On a phone, open **All steps** to see the full step list, then select a step to return to its evidence.
 - Flag rows separate the problem number, label, relationship to earlier steps, review and model. Each review keeps its own problem numbers.
+- In the dataset task's **All current revision reviews** sidebar, flags with the same kind, exact label and step relationship share one display group. Every occurrence shows its review, problem number and model; open **Review names** above the steps for full run names. Counts distinguish review flags from text groups; grouping does not confirm agreement or identify unique failures. Select one review or read its evidence below the screenshot for its full assessment.
+- Each flag's **Input** row shows whether that step's frame was sent, not sent, or delivery was not recorded. Citation status appears only when saved. A source screenshot or a model citation does not prove the reviewer received the image or that it supports the diagnosis.
 - Open a task or review by clicking its card. Checkboxes select reviews for comparison; other buttons retain their own action.
 
 ## Source screenshots and model evidence

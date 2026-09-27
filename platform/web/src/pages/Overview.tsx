@@ -19,7 +19,6 @@ interface OverviewData {
   recent_batches?: Record<string, unknown>[];
   activity?: Record<string, unknown>[];
   queue?: { mode?: string; connected?: boolean };
-  provider?: { default_backend?: string };
   queue_mode?: string;
   provider_mode?: string;
   storage_mode?: string;
@@ -43,19 +42,19 @@ export function OverviewPage() {
     ...raw,
     counts,
     queue: raw.queue || { mode: raw.queue_mode, connected: undefined },
-    provider: raw.provider || {},
   } : null;
   return <>
     <PageHeader eyebrow="LOCAL REVIEW WORKSPACE" title="Overview" description="A clear view of source datasets, review runs, analytics, and the work that needs attention." action={<Stack direction="row" gap={1} flexWrap="wrap"><Button component={RouterLink} to="/runs" variant="contained" startIcon={<AddRounded />}>Create a run</Button><Button component={RouterLink} to="/analytics" variant="outlined">Open analytics</Button></Stack>} />
     {state.loading && <LoadingState label="Loading workspace overview…" />}
     {state.error && <ErrorState message={state.error} onRetry={state.reload} />}
     {data && <>
-      <Grid container spacing={1.6} sx={{ mb: 3 }}>
+      <Grid container spacing={1.6} sx={{ mb: 1 }}>
         <Grid size={{ xs: 6, md: 3 }}><MetricCard label="Datasets" value={displayValue(data.counts?.datasets, "Not recorded")} icon={<StorageRounded />} tint="blue" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><MetricCard label="Runs" value={displayValue(data.counts?.runs, "Not recorded")} icon={<PlaylistPlayRounded />} tint="violet" /></Grid>
-        <Grid size={{ xs: 6, md: 3 }}><MetricCard label="Tasks" value={displayValue(data.counts?.tasks, "Not recorded")} icon={<TaskAltRounded />} tint="green" /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><MetricCard label="Task selections" value={displayValue(data.counts?.tasks, "Not recorded")} icon={<TaskAltRounded />} tint="green" detail="Across runs, including repeats" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><MetricCard label="Jobs" value={displayValue(data.counts?.jobs, "Not recorded")} icon={<WorkspacesRounded />} tint="amber" detail="Queued, active, or retained" /></Grid>
       </Grid>
+      <Typography color="text.secondary" sx={{ fontSize: 12.5, mb: 3 }}>Counts follow your access and include retained and archived records, beyond the seeded demo. A source task selected in two runs counts twice.</Typography>
       <Grid container spacing={2.2} alignItems="flex-start">
         <Grid size={{ xs: 12, lg: 7.5 }}>
           <Panel>
@@ -78,11 +77,12 @@ export function OverviewPage() {
         <Grid size={{ xs: 12, lg: 4.5 }}>
           <Stack gap={2.2}>
             <Panel>
-              <SectionTitle title="Runtime" subtitle="Current local execution settings." />
+              <SectionTitle title="Runtime configuration" subtitle="Configured services, not a live health check." />
               <Stack gap={1.2}>
-                <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Queue</Typography><Typography sx={{ fontWeight: 700 }}>{displayValue(data.queue?.mode, "Not reported")}</Typography></Stack>
-                <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Queue connection</Typography><StatusTag value={data.queue?.connected ? "connected" : data.queue?.connected === false ? "offline" : "not reported"} /></Stack>
-                <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Default backend</Typography><StatusTag value={data.provider?.default_backend || "Not reported"} /></Stack>
+                <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Queue delivery</Typography><Typography sx={{ fontWeight: 700, textAlign: "right" }}>{displayValue(data.queue?.mode, "Not reported")}</Typography></Stack>
+                <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Provider execution</Typography><Typography sx={{ fontWeight: 700, textAlign: "right" }}>{displayValue(data.provider_mode, "Not reported")}</Typography></Stack>
+                <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Object storage</Typography><Typography sx={{ fontWeight: 700, textAlign: "right" }}>{displayValue(data.storage_mode, "Not reported")}</Typography></Stack>
+                {typeof data.queue?.connected === "boolean" && <Stack direction="row" justifyContent="space-between" gap={2}><Typography color="text.secondary">Queue connection</Typography><StatusTag value={data.queue.connected ? "connected" : "offline"} /></Stack>}
               </Stack>
             </Panel>
             <Panel>

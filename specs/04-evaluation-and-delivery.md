@@ -1,8 +1,8 @@
 # 4. Evaluation and delivery
 
-**Status:** A local Compose platform implements core workspace, import, batch, queue, storage, viewer and taxonomy workflows. Bounded local checks passed: 21 automated tests, 11 real-service scenario checks and 4 broker lifecycle checks. See [platform status](../platform/README.md) and [test results](../platform/TEST-RESULTS.md). Production readiness, platform scale, live model behavior and reviewer accuracy are not established. The separate five-trajectory CLI POC remains complete; [the Luna baseline](../poc/RESULTS.md) and [Sol rerun](../poc/RESULTS-SOL.md) record historical usage, label consolidation and diagnosis limitations.
+**Status:** A local Compose platform implements core workspace, import, run, queue, storage, viewer and taxonomy workflows. [Platform status](../platform/README.md), [test results](../platform/TEST-RESULTS.md) and [live model evidence](../platform/LIVE-RESULTS.md) record completed checks and their limits. Production readiness, platform scale and diagnosis accuracy remain unestablished. The separate five-trajectory CLI POC remains complete; [the Luna baseline](../poc/RESULTS.md) and [Sol rerun](../poc/RESULTS-SOL.md) record historical usage, label consolidation and diagnosis limitations.
 
-- **Design deliverable:** system-design document/diagram, decisions and tradeoffs, compact README, ten specs and sourced examples. The narrow local POC is described in [README](../README.md#local-poc); the implemented local platform is described in [platform/README.md](../platform/README.md). Repository publication and production deployment remain separate.
+- **Design deliverable:** system-design document/diagram, decisions and tradeoffs, compact README, detailed specs and sourced examples. The narrow local POC is described in [README](../README.md#local-poc); the implemented local platform is described in [platform/README.md](../platform/README.md). Repository publication and production deployment remain separate.
 - **Experiments later:** answer specific uncertainties; do not make a full platform an accidental submission requirement.
 
 ## Evidence for design review
@@ -70,7 +70,25 @@ Assignment topics 1–4 map to the main design, 5 to data contracts, 6 to capaci
 | Trajectory reviews | **4,000 failure analyses + 6,000 passing recovery reviews = 10,000/day**, before escalation |
 | Illustrative stage jobs | 10k normalization + 10k review + up to 10k classification ≈ **up to 30k/day, 0.35/s**; classify where meaningful, exclude retries/curation/other stages |
 
-**Earlier fixed-call comparison only:** one initial call for each failed attempt, then 25% escalation. This superseded scenario excludes passing review and the selected multi-call agent workflow.
+**Observed inference cost, 27 September 2026:** the [visual check](../platform/LIVE-RESULTS.md) saved 9 reviews from 11 attempts for **$0.36706550 estimated**, including both unsuccessful attempts. It covers 8 distinct trajectories, with one reviewed by both Gemini and Sol. Provider invoices are unverified.
+
+| Arithmetic | Result and limit |
+|---|---|
+| Estimated cost / saved review | $0.36706550 ÷ 9 = **$0.040785**; retries included, heterogeneous models/evidence |
+| 10,000 saved reviews/day at exactly that sample mix | **$407.85/day inference only**, covering both outcome routes rather than only failures |
+| 1,000,000 saved reviews/day at exactly that sample mix | **$40,785.06/day inference only**; 25 TB/day raw under the separate sizing assumption |
+
+These are transparent arithmetic scenarios, **not production forecasts, confidence bounds or capacity evidence**. Eight trajectories cannot represent long traces, route mix, provider failures or future prices. The sample's one-call reviews do not measure the design's multi-call agents, classification, curation or all historical spend. Passing-review speed/cost advantages remain unmeasured.
+
+- **Production budget:** `failure_count × measured_failure_cost + pass_count × measured_pass_cost + classification + curation + retries + infrastructure + human review`. Count retries once; the sample average above already includes its failed attempts.
+  - Measure cached/uncached input, output, images/resolution, compaction, checking, rendering, latency and cache hits by stage/route. Session continuity does not make context free. Size workers from full session duration and provider concurrency from active calls.
+  - Budget derived YAML/views, retention, bulk discounts, routing and backfills. Benchmark execution/VMs are separate. More workers cannot solve provider or spending limits.
+- **Illustrative human capacity, unmeasured:** curator hours/day = deduplicated candidates/day × minutes/candidate ÷ 60. At 20 candidates × 10 minutes, that is **3.3 hours/day**. Independently inspecting 0.5% of 10k reviews at 5 minutes each adds **4.2 hours/day**, before disagreements, second reviewers and administration. Measure actual novelty, deduplication and review time before staffing; price hours at the applicable loaded rate.
+
+<details>
+<summary>Historical failed-only calculation, superseded</summary>
+
+One initial call for each failed attempt, then 25% escalation. This excludes passing review and the selected multi-call agent workflow; retain it only to explain earlier estimates.
 
 | Earlier assumption | Arithmetic |
 |---|---|
@@ -79,12 +97,9 @@ Assignment topics 1–4 map to the main design, 5 to data contracts, 6 to capaci
 | Inference subtotal | **$123/day; $147.60/day** with 20% retry/variance reserve |
 | Active model calls | (4,000 × 30 sec + 1,000 × 60 sec) / 86,400 ≈ **2.08** mean; sustained 10× peak ≈ **21 slots** before headroom |
 
-- Hypothetical prices/latencies, not vendor quotes. Excludes passing review, summarization, classification, embeddings, verification, taxonomy discovery, storage/compute, humans and taxes.
-- **Actual budget:** sum every stage's measured invocations/cost plus infrastructure/reviewer hours. Per trajectory count cached/uncached input at actual rates, outputs including step YAML, images at chosen resolution, compaction/checking/retries and rendering.
-  - Log tokens, images, latency, cache hits and dollars by stage/route. Session continuity does not make context free; size workers from complete session duration and provider concurrency from active calls. Do not reuse 2.08/21 without measurement.
-  - Budget derived YAML/views too. Passing review is intended lighter, but its speed/cost is unmeasured.
-- **At 1M/day:** 25 TB/day raw; the earlier inference portion alone scales to roughly $14.8k/day with reserve, still excluding new passing review. Runner VMs/execution/agent calls cost extra.
-  - Evidence selection, retention, bulk discounts, routing and backfill budgets become material; worker count alone cannot solve scale.
+Hypothetical prices/latencies, not vendor quotes. Excludes passing review, summarization, classification, embeddings, verification, taxonomy discovery, storage/compute, humans and taxes. Its earlier 1M/day extrapolation was roughly $14.8k/day with reserve for that limited inference portion. Do not use those costs or 2.08/21 concurrency slots for current capacity planning.
+
+</details>
 
 ## Reliability and operations
 
@@ -125,16 +140,16 @@ Assignment topics 1–4 map to the main design, 5 to data contracts, 6 to capaci
 
 ## Delivery sequence
 
-**Submit the design now:** decisions/alternatives, diagram, provenance and unmeasured assumptions. Two failed fixtures support no accuracy/performance claim and do not test passing recovery. [Reuse](09-open-source-reuse.md) and [harness contracts](10-harnesses-and-authentication.md) distinguish documented capabilities from untested integrations.
+**Submit the design:** decisions/alternatives, diagram, provenance and unmeasured assumptions. The [POC](../poc/RESULTS-SOL.md) and [live platform checks](../platform/LIVE-RESULTS.md) include failed and passing examples, but lack independent diagnosis adjudication and establish neither accuracy nor production throughput. [Reuse](09-open-source-reuse.md) and [harness contracts](10-harnesses-and-authentication.md) distinguish documented capabilities from tested integrations.
 
-| Optional later step | Gate |
+| Delivery stage, partly implemented locally | Gate |
 |---|---|
-| 0. Inspect evidence; obtain passing examples | Real tasks/scores/frames/provenance; distinguish machine grade from human cause |
+| 0. Inspect and broaden failed/passing examples | Real tasks/scores/frames/provenance; distinguish machine grade from human cause |
 | 1. Five-service foundation, fixtures, adapter, scoped API/React-admin, sync/presets | Offline persistence/provenance/access/append/outbox/confirm/ACK/crash checks |
 | 2. Both review agents, reviewed benchmark, bounded inference, queryable episodes | Measured fidelity/localization/coverage/recovery/uncertainty and total cost |
 | 3. Assignment/discovery/feedback/UI approvals, immutable releases/snapshots | Coherence, stale-draft controls and merge/split history |
 | 4. Load/quotas/live-backfill isolation/recovery/lifecycle; optional runners/adapters | Measured SLOs, compatibility and budget adherence |
 
-- Before implementation resolve manifest control, representative sizes, evaluator reliability, permitted processing/models, retention, latency/budget priorities and reviewer hours. Design defaults do not invent answers.
+- Before production resolve manifest control, representative sizes, evaluator reliability, permitted processing/models, retention, latency/budget priorities and reviewer hours. Design defaults do not invent answers.
 - Prefer narrow spikes: broker/outbox crash recovery with 1×/10×/100× bursts; API-versus-ACP conformance; blind attribution; passing-recovery detection; taxonomy redraft conflicts; one reusable trajectory/diff screen. Revisit choices using measurements; no throughput claim or experiment is required now.
 - **Viewer acceptance:** the header scrolls away; task and step share one collapsible sidebar; text is readable; screenshots fill the content width with explanations below and stay aligned during navigation; definitions are always visible inline; category chips use consistent colors and IDs; numbered problem groups preserve one number across onset, related and recovery views and show independent roles for each linked problem. Version 2 anchors use `first_observed_step_id`; legacy anchors use only the earliest explicit `onset_step_ids` in source order. Summaries and related/recovery groups jump to that exact anchor; **Screen ↑** returns to the selected screenshot. “First flagged here,” “Also flagged here,” “First observed here,” “Also observed here,” “Recovery step” and “Related step” map only to explicit records. Missing evidence stays uncertain, with no inferred intermediate mistake steps. Keep role, failure category and recovery separate, and preserve raw outputs and historical IDs. See [platform UI](05-platform-and-workflows.md) and the [viewer feedback log](../poc/VIEWER-FEEDBACK.md).

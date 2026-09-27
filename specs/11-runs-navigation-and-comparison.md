@@ -7,12 +7,13 @@ This refines the platform vocabulary and UX after the local POC. Existing record
 | Item | Meaning | User action |
 |---|---|---|
 | Dataset | A collection of source tasks and their immutable revisions | Import JSON/ZIP, share, archive, inspect coverage |
-| Task | One source trajectory and its evaluator outcome | Inspect source, view all reviews, analyze just this task |
+| Task, in the local UI | One imported rollout record and its evaluator outcome | Inspect source, view all reviews, analyze just this record |
 | Run | A bulk review of pinned tasks from one or more datasets | Select all tasks or a subset, configure, start, cancel, run again |
 | Review | One analysis result for one task revision in a run | Read step evidence, numbered problems, recovery and feedback |
 | Workflow preset | Versioned prompts and stage routing | Inspect the prompt flow before choosing execution |
 | Execution settings | Harness, model, reasoning, evidence limits and budget estimate | Pin independently for every new run |
 
+- **Local identity limit:** the assignment's task definition can have K independent rollouts; the full design keeps task, rollout and source-revision IDs separate. The local catalog currently stores one rollout per Task record, without parent-task grouping. Independent attempts need separate record IDs; revisions correct the same attempt and must not represent new attempts. Rerunning a review analyzes existing evidence and does not execute a new computer-use rollout. [Full identity contract](02-data-and-contracts.md#identify-inputs-and-choose-a-review-route).
 - UI uses **Runs**. Existing `Batch` storage and `/batches` API aliases remain compatible.
 - New runs freeze the selected task revisions. Later imports do not silently enter a running experiment.
 - Legacy appendable batches retain their explicit sync behavior. A new run is the default for new data or changed settings.

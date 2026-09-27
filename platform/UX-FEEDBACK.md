@@ -62,3 +62,18 @@ Uploads and validation never start review jobs. New taxonomy releases still need
 | Phone layout leaves too little room for evidence | Mobile navigation drawer, full-screen step picker, stacked cards and wrapping controls | Keep screenshots accessible without squeezing desktop columns |
 | Only card titles respond to clicks | Whole navigation cards use real links; selection cards toggle once; secondary actions stay independent | Support mouse, keyboard, touch and opening a new tab |
 | Focus effects hide step text | Step cards use a clear focus outline without a large ripple; collapsed navigation keeps its contents inside the rail | Preserve readable flags during keyboard navigation |
+
+## Independent audit follow-up: 27 September 2026
+
+[Opus report and verified decisions](../reviews/claude-audit-actions.md). These are audit suggestions checked against the user's earlier UX requirements, not new human feedback.
+
+| Observation | Change | Reason |
+|---|---|---|
+| Identical labels repeat for several reviews | Group exact displayed label/relationship text; keep each review's problem number, model and frame input | Reduce repetition without implying one shared diagnosis or consensus |
+| Full run names make each step too tall | Put the full review-to-run mapping in a visible **Review names** disclosure, outside step buttons | Preserve provenance without repeating timestamped names on every step |
+| Screenshot visible in UI looks like model input | Per-step **Frame sent**, **Frame not sent** or **Delivery unknown**, with explicit legacy text-only status | Source availability, delivery and citations are different facts |
+| Workspace totals look like demo or unique-task totals | Label **Task selections**, explain repeats and retained/archive scope | One source can appear in many runs |
+| Runtime shows unavailable health fields | Render the actual queue/provider/storage configuration and identify it as configuration | Do not infer broker health from configured delivery |
+| Problem, step and review counts are ambiguous | Define episodes versus explicitly flagged steps, show latest review per run and correct plurals | One episode can span several steps; repeated reviews are not unique failures |
+
+Verified with the focused grouping/evidence tests, frontend build and desktop/mobile browser checks. [Desktop](screenshots/audit-grouped-flags-20260927.jpg) · [mobile](screenshots/audit-mobile-flags-20260927.jpg). No diagnosis was regenerated or historical label renamed.

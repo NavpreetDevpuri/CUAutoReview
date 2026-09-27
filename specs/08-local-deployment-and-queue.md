@@ -1,6 +1,6 @@
 # 8. Local deployment and the dedicated queue
 
-**Implementation status:** The five-service local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. Bounded checks passed: 21 automated tests, 11 real-service scenario checks and 4 broker lifecycle checks. See [platform status](../platform/README.md) and [test results](../platform/TEST-RESULTS.md). This specification remains the broader design target. Production HA, cloud S3 behavior, model-server behavior, compatibility and performance are not established. Research references below were checked **26 September 2026**.
+**Implementation status:** The core local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. See [platform status](../platform/README.md), [test results](../platform/TEST-RESULTS.md) and [fresh Docker verification](../platform/docker-quickstart-verification.json) for completed checks and limits. This specification remains the broader design target. Production HA, cloud S3 parity and sustained capacity are unverified; bounded provider checks are recorded separately in [live results](../platform/LIVE-RESULTS.md). Research references below were checked **26 September 2026**.
 
 ## Five services
 
@@ -31,7 +31,7 @@ RabbitMQ/Celery supply transport, ACK/redelivery, routing, worker pools and back
 - **One scheduler:** outbox `available_at`; no competing Celery `autoretry`, `retry()`, ETA/countdown or Beat. Relay `SKIP LOCKED` reserves dispatch intent, not worker delivery. Index/batch due events and bound connections.
 - Queue one logical trajectory review, not a job per step. Persist validated drafts/checkpoints; resume identity/source/recipe/cursor. Checkpoints are not published complete analyses. Bound segments by broker/stage deadlines; resume through an authorized durable continuation or explicitly finalize partial coverage. Steps/helpers still obey retry/quota/spend limits.
 - Passing/full-score reviews scan all compact steps, expand unresolved evidence within `pass_recovery`, and verify mistake-to-correction links. Preserve pass grade; no assumed recovery; contribution is `not_applicable`. Zero episodes set `classification_status=not_applicable`, reason `no_episodes`, with no classifier job/assignment; partial/inconclusive/abstained reviews retain their status. Rescoring creates a new evaluation/route; old batches adopt defaults through scoped, budgeted successor runs.
-- **At-least-once execution, one authoritative publication.** A crash after inference can repeat billing. Five total transient attempts, one bounded schema repair, spend caps and operator-controlled redrive; honor provider retry hints. [Identity/cancellation/reuse/history](02-data-and-contracts.md).
+- **At-least-once execution, one authoritative publication.** A crash after inference can repeat billing. Up to four application attempts total (initial attempt plus three retries for retryable failures); honor provider retry hints. The local allowance is per attempt and estimates spending, not a hard provider cap. Per-trajectory spend enforcement and one bounded schema repair remain design targets. [Identity/cancellation/reuse/history](02-data-and-contracts.md).
 
 ## Broker settings and limitations
 
@@ -41,7 +41,7 @@ RabbitMQ/Celery supply transport, ACK/redelivery, routing, worker pools and back
 | Late ACK | `task_acks_late=True`, `task_reject_on_worker_lost=True`; commit before return/ACK. Redelivery against a live lease follows ownership/recovery rules. |
 | Exception/hard timeout | Retain/reject to DLQ or recover through lease; never silently ACK unfinished work. Test `task_acks_on_failure_or_timeout=False` and actual reject/timeout behavior. Expected retries use the transaction above. |
 | Prefetch | Start multiplier 1. Quorum disables global QoS; `--autoscale`/prefetch reduction behave differently. Scale fixed-concurrency replicas. |
-| Poison/DLQ | Finite limit; quorum default 20 deliveries differs from five application attempts. Retain/reconcile DLQ; fix/review unchanged poison before redrive. |
+| Poison/DLQ | Finite limit; quorum default 20 deliveries differs from four application attempts. Retain/reconcile DLQ; fix/review unchanged poison before redrive. |
 | Dead lettering | Opt into `dead-letter-strategy=at-least-once`, `overflow=reject-publish`, configured exchange and durable target. Default is at-most-once. |
 | ACK timeout | Default 30 minutes; configure above stage deadline plus margin. DB heartbeats do not extend it; split oversized work. |
 | Fairness | Atomic PostgreSQL quotas. Celery limits are per worker; broker priority cannot enforce workspace budgets/live-backfill allocation. |

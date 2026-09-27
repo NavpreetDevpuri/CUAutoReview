@@ -18,12 +18,16 @@ CUAutoReview explains where computer-use agents make mistakes, whether they reco
 - **Reuse existing components.** FastAPI, React-admin/MUI, LiteLLM, native Codex/Gemini CLIs and SeaweedFS reduce custom infrastructure. The local S3-compatible endpoint is configurable; switching to AWS still requires IAM, migration and compatibility checks.
 - **Scale trajectories, not individual steps.** Bounded concurrency and evidence selection control cost and latency. The design adds shared provider quotas, fair live/backfill scheduling, reconciliation and staged storage/query scaling. Its illustrative 10,000-trajectories/day scenario is not a load-test result. [Alternatives and rationale](../specs/03-decisions-and-tradeoffs.md).
 
-## What was built and checked
+## Implementation and evidence snapshot: 27 September 2026
 
-- The POC tested parallel reviewers, shared draft proposals and final consolidation before platform expansion. The local platform implements datasets/runs, team access, ZIP validation, review history, analytics/comparison, taxonomy approval and a responsive evidence viewer. Saved replay needs no model calls.
-- [Validation evidence](../platform/TEST-RESULTS.md): 95 automated tests, two focused follow-up tests, real PostgreSQL/RabbitMQ/S3-compatible checks, frontend builds and browser checks at 320, 390, 768 and 1280px.
-- [Docker-only setup](../platform/docker-quickstart-verification.json) passed on a fresh ARM64 stack: five logins, three teams, eight distinct tasks, screenshot access and repeat-seed stability, without model calls.
-- [Live checks](../platform/LIVE-RESULTS.md): eight Gemini 3.8 Flash visual reviews plus one matched GPT-6 Sol review completed across eleven attempts. Their token-based cost estimate is **$0.3671**, including failed attempts; invoices are unverified and this is not total historical spend. Completion means a valid review was saved, not a correct diagnosis.
+| Area | Implemented or checked | Boundary / evidence |
+|---|---|---|
+| Local platform | Datasets/runs, teams/access, ZIP validation, review history, analytics/comparison, taxonomy approval, responsive viewer | One imported rollout per UI Task record; grouping K attempts under a shared task remains a design target. [Status](../platform/README.md) |
+| Review workflow | Bounded trajectory requests; four attempts maximum, shared label drafts and explicit curation/approval | Automatic post-run curation and helper-agent loops remain planned. The [preserved POC](../poc/README.md) tested parallel reviewers and final consolidation; saved replay makes no model calls |
+| Recorded regression baseline | 95 automated tests plus two focused follow-up tests; real PostgreSQL/RabbitMQ/S3-compatible checks; frontend build; 320/390/768/1280px browser checks | Functional checks, not load or exhaustive security testing. [Commands/results](../platform/TEST-RESULTS.md) |
+| Docker setup | Fresh ARM64 stack: five logins, three teams, eight distinct tasks, screenshot access and stable repeat seeding, without model calls | AMD64 execution unverified. [Evidence](../platform/docker-quickstart-verification.json) |
+| Live model checks | Eight Gemini 3.8 Flash visual reviews plus one matched GPT-6 Sol review; 11 attempts; **$0.36706550 estimated**, failed attempts included | Eight distinct trajectories; valid saved output is not a correct diagnosis. Invoices and total historical spend remain unknown. [Results](../platform/LIVE-RESULTS.md) |
+| Cost/scale scenarios | Sample arithmetic: $0.040785 per saved review; **$407.85 for 10k equivalent reviews**, both routes included | Tiny heterogeneous sample, not a production forecast; excludes infrastructure, classification/curation and humans. [Assumptions and staffing formula](../specs/04-evaluation-and-delivery.md#capacity-and-cost) |
 
 ## Remaining limits
 
