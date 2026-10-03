@@ -2,17 +2,18 @@
 
 **Implementation status:** The core local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. See [platform status](../platform/README.md), [test results](../platform/TEST-RESULTS.md) and [fresh Docker verification](../platform/docker-quickstart-verification.json) for completed checks and limits. This specification remains the broader design target. Production HA, cloud S3 parity and sustained capacity are unverified; bounded provider checks are recorded separately in [live results](../platform/LIVE-RESULTS.md). Research references below were checked **26 September 2026**.
 
-## Five services
+## Six services
 
 | Service | Responsibility |
 |---|---|
 | `app` | API/built UI, permissions/evidence proxy; elected outbox/discovery/recovery loop. Production ingress; split the loop when measured load warrants. |
 | `worker` | Celery stages, targeted claims, heartbeats/fenced publication; scale fixed-concurrency replicas/pools. |
-| `postgres` | Metadata, permissions, pgvector, jobs/outbox/attempts/quotas/results; production managed PostgreSQL with extensions, backups and verified TLS. |
+| `cli-worker` | Separate Celery queue for native Codex/Gemini CLI reviews: read-only filesystem, no capabilities, memory/PID limits and one task at a time. |
+| `postgres` | Metadata, permissions, jobs/outbox/attempts/quotas/results; production managed PostgreSQL with pgvector, backups and verified TLS. The local image is plain PostgreSQL 17: embeddings and vector search are not implemented yet. |
 | `rabbitmq` | Persistent local broker/quorum queues; production three nodes/queue replicas across failure domains, requiring a majority. |
 | `storage` | Single-process SeaweedFS with persistent volume; production Amazon S3. |
 
-- App/worker share one image, different commands. One-shot initialization migrates schema, declares topology and creates buckets. Named volumes preserve database/broker/objects; localhost app only, infrastructure internal unless explicitly enabled.
+- App/worker share one image, different commands. Locally, app startup creates missing tables (`create_all`) and Compose creates the bucket; versioned schema migrations are a production prerequisite that is not implemented yet. Named volumes preserve database/broker/objects; localhost app only, infrastructure internal unless explicitly enabled.
 - Health checks, bounded reconnects and graceful shutdown cover startup/recovery. One local broker demonstrates persistence, not HA. No required Redis, Beat, Flower or Celery result backend; PostgreSQL holds progress/results.
 - Share stage/live/backfill queues across batches; Celery may add internal topology. Both `failure_analysis` and `pass_recovery` are enabled; unknown/error grades defer. Separate reviewer pools can protect capacity, never starve a route or silently omit passes. Pin each route's prompt/recipe/session/budget.
 
@@ -85,7 +86,7 @@ At **10k attempts/day, 40% failures**: 4k failure + 6k pass reviews. Normalizati
 
 ## Offline, recovery and growth gates
 
-- **Fixture profile:** five services + examples + labeled deterministic responses; would exercise UI/import/permissions/queue/persistence, not accuracy. **Local real model:** separate text/VLM endpoint with honest identity/capability limits, not Jev equivalence. **Explicit connected mode:** hosted provider/quality experiments send data outside the machine.
+- **Fixture profile:** the Compose services + examples + labeled deterministic responses; would exercise UI/import/permissions/queue/persistence, not accuracy. **Local real model:** separate text/VLM endpoint with honest identity/capability limits, not Jev equivalence. **Explicit connected mode:** hosted provider/quality experiments send data outside the machine.
   - Prefetch images/dependencies/weights; disable external connectors/hosted calls, including Jev, offline. Test blocked egress; exclude fixtures from quality claims.
 - **Required drills:** both example imports; append while processing; permissions/revocation; both scored routes and unknown/error deferral; DB/object/broker persistence and S3 operations; duplicate/obsolete generations; quota deferral/lease expiry/stale success/failure; confirm/commit/ACK crash gaps; poison/DLQ; leader failure/majority loss in a separate multi-node HA profile; immutable reports and batch correction/reuse.
 - **Observe:** outbox age/confirms; ready/unacked depth/oldest age; redelivery/DLQ; broker disk/memory/replication; DB latency/connections; stage errors/provider capacity/spend. [Alarms](https://github.com/rabbitmq/rabbitmq-website/blob/main/docs/alarms.md) block publishes; outbox absorbs outage. DB outage stops ownership/publication: stop/defer consumers without ACKing unfinished work, then reconcile.

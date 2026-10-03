@@ -8,7 +8,7 @@
   - Applied: clearer registration/routing/assignment diagram; explicit implemented features; taxonomy assignment and split history; broker rationale and provider limits; traceable reporting; expanded test and evidence shorthand. Preserved measured costs, caveats and implementation boundaries in [the submission](../docs/SUBMISSION.md).
   - Qualified: the report repeats the platform README's stale five-screenshot limit. Source verification found configurable selection capped at **32**, so both documents now use that value. The saved review remains verbatim. [Recorded verification](../platform/TEST-RESULTS.md) confirms 95 backend tests, with two existing tests rerun after job-detail changes, not 97 unique tests. This editorial pass did not rerun platform tests or measure diagnosis quality.
 
-- [Local implementation review](local-implementation-review.md): point-in-time source audit of backend authorization and taxonomy handling. The historical findings were corrected and verified by 21 automated tests plus real-service queue and storage checks. Broader adversarial security and production readiness remain unverified.
+- [Local implementation review](local-implementation-review.md): point-in-time source audit of backend authorization and taxonomy handling. The historical findings were corrected and verified by the 21 automated tests that existed at the time, plus real-service queue and storage checks. Broader adversarial security and production readiness remain unverified.
 - [Jev balance check](jev-free-credit-check.json): the free-credit request returned HTTP 403. No inference or spend occurred; Jev remains disabled.
 
 These files are internal engineering notes. They do not certify production security, model quality or platform readiness.

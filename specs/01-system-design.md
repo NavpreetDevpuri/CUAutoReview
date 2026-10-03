@@ -56,7 +56,7 @@ flowchart TD
     AD --> EP
 ```
 
-- **Local:** five Compose services, app, Celery worker, PostgreSQL/pgvector, RabbitMQ and SeaweedFS. App/worker share a Python image; storage uses the S3 API. Database boxes above are logical roles in one database.
+- **Local:** six Compose services: app, Celery worker, isolated CLI review worker, PostgreSQL, RabbitMQ and SeaweedFS. pgvector is a production target; the local stack has no embeddings yet. App/worker share a Python image; storage uses the S3 API. Database boxes above are logical roles in one database.
 - **Production:** three-node broker, independently scaled workers, managed PostgreSQL and AWS S3. The app's elected loop relays committed outbox events. [Deployment details](08-local-deployment-and-queue.md).
 - **Batches:** scoped admission/progress/grants over shared stage queues, with workspace quotas and fair scheduling. No physical queue or broker per batch. New arrivals use pinned configuration and new sync waves without resetting work.
 
@@ -114,7 +114,7 @@ episode_refs: [{episode_id: "e1", role: onset}]
 
 - Coverage is **`reviewed`, `not_reviewed`, or `insufficient_evidence`** for each step; counts equal the indexed step count. Reviewed means supplied evidence and annotation were reviewed/validated, not all modalities existed or the action succeeded. Record actual text/frames/expansions; essential missing evidence yields insufficient evidence, while limits/interruption leave reasoned not-reviewed placeholders. [Complete schema](02-data-and-contracts.md).
 - For long trajectories, use overlapping chunks and checkpoints containing validated annotations, cursor/coverage, source/recipe/session IDs, evidence-linked open hypotheses, pending checks and episode state. Resume logical review; reopen originals when later evidence changes an interpretation. Summaries aid navigation, never replace evidence. A provider restart may create a new session without preserving hidden context; retain logical identity and prevent duplicate publication.
-- Inspect images when state is visual, text insufficient or sources conflict. Illustrative failure-route starting limits remain **12k input tokens per initial context, 8 frames expandable to 24**, bounded by total rollout spend. Pin pass-route limits separately. Limits may require continuation, partial coverage or abstention. Audit broader stratified samples for compaction/frame-selection misses. Reused context does **not guarantee lower billed tokens/cost**; measure calls, repeated context, checkpoints, expansions and caching.
+- Inspect images when state is visual, text insufficient or sources conflict. Illustrative failure-route starting limits for the multi-call design remain **12k input tokens per initial context, 8 frames expandable to 24**, bounded by total rollout spend. The implemented single-request reviewer instead sends up to 32 evenly selected frames (`max_images`, 0–32). Pin pass-route limits separately. Limits may require continuation, partial coverage or abstention. Audit broader stratified samples for compaction/frame-selection misses. Reused context does **not guarantee lower billed tokens/cost**; measure calls, repeated context, checkpoints, expansions and caching.
 
 ### 3. Reconcile episodes and recovery
 

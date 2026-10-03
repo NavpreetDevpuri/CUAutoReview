@@ -1,7 +1,7 @@
 # 5. Platform, teams, datasets and workflows
 
 Current terminology and local UX: [Runs, navigation and comparison](11-runs-navigation-and-comparison.md). The UI calls bulk analysis **Runs**; historical batch storage and appendable behavior remain compatible.
-**Implementation status:** Core local workspace workflows now exist in the Compose platform. This specification still describes the design target, including production and runner behavior that is not implemented or verified. See [local platform status](../platform/README.md), [acceptance scenarios](../platform/ACCEPTANCE.md) and [test results](../platform/TEST-RESULTS.md). The [five-service Compose design](08-local-deployment-and-queue.md) uses PostgreSQL work/outbox records, shared RabbitMQ queues and Celery; batches/waves need no separate broker, queue or container.
+**Implementation status:** Core local workspace workflows now exist in the Compose platform. This specification still describes the design target, including production and runner behavior that is not implemented or verified. See [local platform status](../platform/README.md), [acceptance scenarios](../platform/ACCEPTANCE.md) and [test results](../platform/TEST-RESULTS.md). The [Compose design](08-local-deployment-and-queue.md) uses PostgreSQL work/outbox records, shared RabbitMQ queues and Celery; batches/waves need no separate broker, queue or container.
 
 ## Product model and default review routes
 

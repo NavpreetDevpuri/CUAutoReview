@@ -145,7 +145,7 @@ Hypothetical prices/latencies, not vendor quotes. Excludes passing review, summa
 | Delivery stage, partly implemented locally | Gate |
 |---|---|
 | 0. Inspect and broaden failed/passing examples | Real tasks/scores/frames/provenance; distinguish machine grade from human cause |
-| 1. Five-service foundation, fixtures, adapter, scoped API/React-admin, sync/presets | Offline persistence/provenance/access/append/outbox/confirm/ACK/crash checks |
+| 1. Compose foundation, fixtures, adapter, scoped API/React-admin, sync/presets | Offline persistence/provenance/access/append/outbox/confirm/ACK/crash checks |
 | 2. Both review agents, reviewed benchmark, bounded inference, queryable episodes | Measured fidelity/localization/coverage/recovery/uncertainty and total cost |
 | 3. Assignment/discovery/feedback/UI approvals, immutable releases/snapshots | Coherence, stale-draft controls and merge/split history |
 | 4. Load/quotas/live-backfill isolation/recovery/lifecycle; optional runners/adapters | Measured SLOs, compatibility and budget adherence |

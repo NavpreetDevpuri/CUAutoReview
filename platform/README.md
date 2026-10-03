@@ -46,7 +46,7 @@ python3 platform/scripts/seed_demo.py
 
 - Reruns reuse identities and passwords, restore missing demo memberships/grants, and remove no data. Changed account roles and unrelated email collisions stop the seed instead of being overwritten.
 - Empty workspace: creates the first admin. Existing workspace: uses the local test admin; otherwise pass `--admin-credentials /path/to/admin.json` containing an existing admin's `email` and `password`. A previously seeded demo admin can also bootstrap a rerun.
-- Verified: five logins, role boundaries, evidence/export access, team grants and repeat-run stability. [Seven seed checks](demo-verification.json) passed with zero model calls. [Populated teams in the browser](screenshots/demo-teams.png).
+- Verified: five logins, role boundaries, evidence/export access, team grants and repeat-run stability. [Seven seed checks](demo-verification.json), recorded against the earlier five-task example batch, passed with zero model calls. [Populated teams in the browser](screenshots/demo-teams.png).
 
 ## Implemented local workflows
 

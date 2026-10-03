@@ -28,4 +28,4 @@ These are not claims or prerequisites for the bounded local build. Complete and 
 
 ## Current implementation notes
 
-- This checklist is not itself a report of passing tests. [TEST-RESULTS.md](TEST-RESULTS.md) records the 21 automated tests, 11 real-service scenario checks and 4 broker lifecycle checks, with the covered behavior and remaining limits. Treat any scenario or production gate not established there as pending.
+- This checklist is not itself a report of passing tests. [TEST-RESULTS.md](TEST-RESULTS.md) records the current automated test counts, the 11 real-service scenario checks and 4 broker lifecycle checks, with the covered behavior and remaining limits. Treat any scenario or production gate not established there as pending.
