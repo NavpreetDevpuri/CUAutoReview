@@ -1,4 +1,5 @@
 """Focused contract tests for the local trajectory-review POC."""
+
 import concurrent.futures
 import copy
 import json
@@ -9,13 +10,10 @@ import threading
 import unittest
 from pathlib import Path
 
-
-POC_DIR = Path(__file__).resolve().parents[1]
-if str(POC_DIR) not in sys.path:
-    sys.path.insert(0, str(POC_DIR))
-
 import label_tools
 import run
+
+POC_DIR = Path(__file__).resolve().parents[1]
 
 
 def sample_task(outcome="failed", task_id="task-1"):
@@ -152,18 +150,14 @@ class ReviewContractTests(unittest.TestCase):
         task = sample_task()
 
         mixed_effect = sample_review()
-        mixed_effect["episodes"][0]["recovery"].update(
-            status="recovered", step_ids=["s1"], evidence_refs=["event-1"]
-        )
+        mixed_effect["episodes"][0]["recovery"].update(status="recovered", step_ids=["s1"], evidence_refs=["event-1"])
         run.validate_review(mixed_effect, task, {"proposals": []})
 
         precedes_onset = sample_review()
         precedes_onset["steps"][0]["episode_refs"] = []
         precedes_onset["steps"][1]["episode_refs"] = ["e1"]
         precedes_onset["episodes"][0].update(onset_step_ids=["s2"])
-        precedes_onset["episodes"][0]["recovery"].update(
-            status="recovered", step_ids=["s1"], evidence_refs=["event-1"]
-        )
+        precedes_onset["episodes"][0]["recovery"].update(status="recovered", step_ids=["s1"], evidence_refs=["event-1"])
         with self.assertRaisesRegex(ValueError, "Recovery step precedes episode onset"):
             run.validate_review(precedes_onset, task, {"proposals": []})
 
@@ -179,9 +173,7 @@ class ReviewContractTests(unittest.TestCase):
         review["steps"][0]["episode_refs"] = ["e1"]
         review["steps"][1]["episode_refs"] = ["e1"]
         # Deliberately reverse the onset list: trajectory order still makes 10 first.
-        review["episodes"][0].update(
-            onset_step_ids=["2", "10"], first_observed_step_id="10"
-        )
+        review["episodes"][0].update(onset_step_ids=["2", "10"], first_observed_step_id="10")
 
         run.validate_review(review, task, {"proposals": []})
 
@@ -189,9 +181,7 @@ class ReviewContractTests(unittest.TestCase):
         task = sample_task()
         review = sample_review_v2()
         first = review["episodes"][0]
-        first["recovery"].update(
-            status="recovered", step_ids=["s2"], evidence_refs=["event-2"]
-        )
+        first["recovery"].update(status="recovered", step_ids=["s2"], evidence_refs=["event-2"])
         second = copy.deepcopy(first)
         second.update(
             episode_id="e2",
@@ -211,9 +201,7 @@ class ReviewContractTests(unittest.TestCase):
         task["steps"].append({"step_id": "s3", "evidence_refs": ["event-3"]})
         review = sample_review_v2()
         first = review["episodes"][0]
-        first["recovery"].update(
-            status="recovered", step_ids=["s3"], evidence_refs=["event-3"]
-        )
+        first["recovery"].update(status="recovered", step_ids=["s3"], evidence_refs=["event-3"])
         second = copy.deepcopy(first)
         second.update(
             episode_id="e2",
@@ -222,9 +210,7 @@ class ReviewContractTests(unittest.TestCase):
             onset_step_ids=["s2"],
             evidence_refs=["event-2"],
         )
-        second["recovery"].update(
-            status="none_observed", step_ids=[], evidence_refs=[]
-        )
+        second["recovery"].update(status="none_observed", step_ids=[], evidence_refs=[])
         review["episodes"].append(second)
         review["steps"].append(
             {
@@ -413,20 +399,25 @@ class RunnerSafetyTests(unittest.TestCase):
     def test_portable_paths_hide_repo_and_home_locations(self):
         repo_path = str(run.REPO / "poc" / "prompts" / "system.txt")
         home_path = str(Path.home() / ".codex" / "config.toml")
-        self.assertEqual(run.portable(f"-c model_instructions_file={repo_path}"),
-                         "-c model_instructions_file=./poc/prompts/system.txt")
+        self.assertEqual(
+            run.portable(f"-c model_instructions_file={repo_path}"),
+            "-c model_instructions_file=./poc/prompts/system.txt",
+        )
         self.assertEqual(run.portable(f"warning in {home_path}"), "warning in ~/.codex/config.toml")
 
     def test_committed_run_artifacts_contain_no_host_home_paths(self):
         # OSWorld task text legitimately mentions VM paths such as /home/user; host paths must not leak.
-        leaked = [str(path.relative_to(POC_DIR)) for path in (POC_DIR / "runs").rglob("*")
-                  if path.is_file() and path.suffix in (".json", ".jsonl", ".yaml", ".log", ".txt")
-                  and "/Users/" in path.read_text(errors="ignore")]
+        leaked = [
+            str(path.relative_to(POC_DIR))
+            for path in (POC_DIR / "runs").rglob("*")
+            if path.is_file()
+            and path.suffix in (".json", ".jsonl", ".yaml", ".log", ".txt")
+            and "/Users/" in path.read_text(errors="ignore")
+        ]
         self.assertEqual(leaked, [])
 
     def test_terminate_children_stops_registered_process_groups(self):
-        process = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"],
-                                   start_new_session=True)
+        process = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], start_new_session=True)
         with run.CHILDREN_LOCK:
             run.CHILDREN.add(process)
         try:
@@ -451,8 +442,10 @@ class RunnerPublicationTests(unittest.TestCase):
         for prompt in (POC_DIR / "prompts").glob("*.txt"):
             (self.root / "prompts" / prompt.name).write_text(prompt.read_text())
         task = sample_task()
-        task.update(title="Sample", steps=[{"step_id": "s1", "evidence_refs": ["event-1"]},
-                                           {"step_id": "s2", "evidence_refs": ["event-2"]}])
+        task.update(
+            title="Sample",
+            steps=[{"step_id": "s1", "evidence_refs": ["event-1"]}, {"step_id": "s2", "evidence_refs": ["event-2"]}],
+        )
         self.batch = self.root / "data" / "batch.json"
         self.batch.write_text(json.dumps({"batch_id": "b1", "tasks": [task]}))
         self.saved = (run.ROOT, run.REPO, run.invoke, sys.argv)
@@ -463,8 +456,13 @@ class RunnerPublicationTests(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def main_with(self, review):
-        usage = {"input_tokens": 1, "cached_input_tokens": 0, "output_tokens": 1,
-                 "estimated_usd": 0.0, "estimated_credits": 0.0}
+        usage = {
+            "input_tokens": 1,
+            "cached_input_tokens": 0,
+            "output_tokens": 1,
+            "estimated_usd": 0.0,
+            "estimated_credits": 0.0,
+        }
         run.invoke = lambda *args, **kwargs: (copy.deepcopy(review), [], usage, None, 0.01)
         sys.argv = ["run.py", "--batch", str(self.batch), "--limit", "1"]
         try:
@@ -500,14 +498,16 @@ class RunnerPublicationTests(unittest.TestCase):
 class ViewerServerTests(unittest.TestCase):
     def test_get_and_head_share_the_allowlist(self):
         import http.client
-        import serve
         from functools import partial
         from http.server import ThreadingHTTPServer
+
+        import serve
 
         server = ThreadingHTTPServer(("127.0.0.1", 0), partial(serve.ViewerHandler, directory=str(serve.PROJECT)))
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
+
             def status(method, path):
                 connection = http.client.HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
                 try:

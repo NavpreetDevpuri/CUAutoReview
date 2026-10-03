@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
 """Import bundled demo tasks without inference or replacing existing records/access."""
+
 from __future__ import annotations
 
 import argparse
 import io
 import json
 import os
-from pathlib import Path
 import urllib.error
 import urllib.request
+from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from seed_demo import Client, LOCAL, MANIFEST, ROOT, private_write, seed_origin
+from seed_demo import LOCAL, MANIFEST, ROOT, Client, private_write, seed_origin
 
 BASE = os.environ.get("CUAUTOREVIEW_URL", "http://127.0.0.1:8000")
 REPORT = LOCAL / "demo-import-report.json"
 FIXTURE_PREFIXES = ("Acceptance ", "Acceptance ZIP ", "Unknown outcome check ", "Batch completion check ")
-RUN_PREFIXES = ("Acceptance ", "Acceptance replay ", "Fixed acceptance ", "Unknown outcome waits ", "Batch completion saved replay ")
+RUN_PREFIXES = (
+    "Acceptance ",
+    "Acceptance replay ",
+    "Fixed acceptance ",
+    "Unknown outcome waits ",
+    "Batch completion saved replay ",
+)
 
 
 def missing_task_zip(path: Path, missing: set[str]) -> bytes:
@@ -28,8 +35,9 @@ def missing_task_zip(path: Path, missing: set[str]) -> bytes:
         if {task["task_id"] for task in manifest["tasks"]} != missing:
             raise RuntimeError("The bundled ZIP does not contain the expected missing tasks.")
         archive.writestr("dataset.json", json.dumps(manifest))
-        assets = {step["screenshot"] for task in manifest["tasks"] for step in task.get("steps", [])
-                  if step.get("screenshot")}
+        assets = {
+            step["screenshot"] for task in manifest["tasks"] for step in task.get("steps", []) if step.get("screenshot")
+        }
         for name in sorted(assets):
             archive.writestr(name, source.read(name))
     return output.getvalue()
@@ -53,8 +61,10 @@ def seed_datasets(base=BASE, *, archive_old_fixtures=False):
         dataset = next((row for row in existing if row["id"] == prior_ids.get(item["slug"])), None)
         dataset = dataset or next((row for row in existing if row["name"] == item["name"]), None)
         created = dataset is None
-        description = (f"Distinct public OSWorld tasks for {item['name'].lower()}. Pinned historical "
-                       "rollouts with source scores; human failure labels are not supplied.")
+        description = (
+            f"Distinct public OSWorld tasks for {item['name'].lower()}. Pinned historical "
+            "rollouts with source scores; human failure labels are not supplied."
+        )
         if created:
             dataset = client.call("POST", "/datasets", {"name": item["name"], "description": description})
         detail = client.call("GET", f"/datasets/{dataset['id']}?include_archived=true")
@@ -64,41 +74,79 @@ def seed_datasets(base=BASE, *, archive_old_fixtures=False):
         imported = {"created": 0, "revised": 0, "unchanged": len(expected - missing)}
         if missing:
             if dataset.get("archived"):
-                raise RuntimeError(f"Demo dataset {item['name']} is archived and lacks bundled tasks. Restore it explicitly before reseeding.")
+                raise RuntimeError(
+                    f"Demo dataset {item['name']} is archived and lacks bundled tasks. "
+                    "Restore it explicitly before reseeding."
+                )
             if not created and dataset.get("description") != description:
-                raise RuntimeError(f"Dataset name {item['name']} is already in use. Its content and access were preserved.")
-            request = urllib.request.Request(base + f"/api/datasets/{dataset['id']}/import-zip",
-                data=missing_task_zip(ROOT / item["zip"], missing), method="POST",
-                headers={"Content-Type": "application/zip", "Origin": base})
+                raise RuntimeError(
+                    f"Dataset name {item['name']} is already in use. Its content and access were preserved."
+                )
+            request = urllib.request.Request(
+                base + f"/api/datasets/{dataset['id']}/import-zip",
+                data=missing_task_zip(ROOT / item["zip"], missing),
+                method="POST",
+                headers={"Content-Type": "application/zip", "Origin": base},
+            )
             try:
                 with client.opener.open(request, timeout=90) as response:
                     imported = json.load(response)
             except urllib.error.HTTPError as exc:
-                raise RuntimeError(f"Demo ZIP import failed with HTTP {exc.code}; existing records were retained.") from None
+                raise RuntimeError(
+                    f"Demo ZIP import failed with HTTP {exc.code}; existing records were retained."
+                ) from None
             tasks = client.call("GET", f"/datasets/{dataset['id']}?include_archived=true")["tasks"]
         if created:
-            client.call("PUT", f"/datasets/{dataset['id']}/shares", {
-                "workspace_shared": True, "users": [],
-                "teams": [{"target_id": team["id"], "role": "reviewer" if team["name"] == "Demo Reviewers" else "viewer"}
-                          for team in accounts["teams"]]})
+            client.call(
+                "PUT",
+                f"/datasets/{dataset['id']}/shares",
+                {
+                    "workspace_shared": True,
+                    "users": [],
+                    "teams": [
+                        {"target_id": team["id"], "role": "reviewer" if team["name"] == "Demo Reviewers" else "viewer"}
+                        for team in accounts["teams"]
+                    ],
+                },
+            )
         # Existing shares, task revisions and archive state belong to the user.
         present = {task["task_id"] for task in tasks}
         if not expected <= present or verified & expected:
             raise RuntimeError("Bundled demo task membership is incomplete or duplicated.")
         verified.update(expected)
-        report["datasets"].append({**item, "id": dataset["id"], "archived": bool(dataset.get("archived")),
-            "tasks": [{"task_id": task["task_id"], "task_definition_id": task.get("task_definition_id") or task.get("definition_id") or task["id"], "title": task.get("title")} for task in tasks],
-            "import": {key: imported.get(key) for key in ("created", "revised", "unchanged")}})
+        report["datasets"].append(
+            {
+                **item,
+                "id": dataset["id"],
+                "archived": bool(dataset.get("archived")),
+                "tasks": [
+                    {
+                        "task_id": task["task_id"],
+                        "task_definition_id": task.get("task_definition_id") or task.get("definition_id") or task["id"],
+                        "title": task.get("title"),
+                    }
+                    for task in tasks
+                ],
+                "import": {key: imported.get(key) for key in ("created", "revised", "unchanged")},
+            }
+        )
         private_write(REPORT, json.dumps(report, indent=2) + "\n")
         suffix = " (archived state preserved)" if dataset.get("archived") else ""
         print(f"{item['name']}: {len(expected)} bundled tasks ready{suffix}", flush=True)
     if archive_old_fixtures:
         for dataset in existing:
-            if not dataset.get("archived") and (dataset["name"].startswith(FIXTURE_PREFIXES) or dataset["name"] in ("Saved POC examples", "Example ZIP walkthrough")):
+            if not dataset.get("archived") and (
+                dataset["name"].startswith(FIXTURE_PREFIXES)
+                or dataset["name"] in ("Saved POC examples", "Example ZIP walkthrough")
+            ):
                 client.call("POST", f"/datasets/{dataset['id']}/archive")
                 report["archived_dataset_ids"].append(dataset["id"])
         for run in client.items("/runs?include_archived=true"):
-            if not run.get("archived") and (run["name"].startswith(RUN_PREFIXES) or run["name"] == "Retained POC replay") and run["status"] not in ("running", "queued"):
+            if (
+                not run.get("archived")
+                and (run["name"].startswith(RUN_PREFIXES) or run["name"] == "Retained POC replay")
+                and run["status"] not in ("running", "queued")
+            ):
                 client.call("POST", f"/runs/{run['id']}/archive")
                 report["archived_run_ids"].append(run["id"])
     if len(verified) != 8:
@@ -113,7 +161,13 @@ def seed_datasets(base=BASE, *, archive_old_fixtures=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default=BASE)
-    parser.add_argument("--archive-fixtures", "--archive-old-fixtures", dest="archive_old_fixtures", action="store_true", help="Explicitly soft-archive named old test fixtures; default preserves their visibility.")
+    parser.add_argument(
+        "--archive-fixtures",
+        "--archive-old-fixtures",
+        dest="archive_old_fixtures",
+        action="store_true",
+        help="Explicitly soft-archive named old test fixtures; default preserves their visibility.",
+    )
     args = parser.parse_args()
     try:
         seed_datasets(args.base_url, archive_old_fixtures=args.archive_old_fixtures)

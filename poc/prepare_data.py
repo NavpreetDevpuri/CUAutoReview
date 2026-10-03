@@ -7,6 +7,7 @@ It does not download the 3.4 GB archive or the per-task MP4 recordings.
 
 from __future__ import annotations
 
+import argparse
 import concurrent.futures
 import hashlib
 import json
@@ -15,20 +16,18 @@ import struct
 import subprocess
 import tempfile
 import zlib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
 
 POC_ROOT = Path(__file__).resolve().parent
 DATA_ROOT = POC_ROOT / "data"
 SOURCE_ROOT = DATA_ROOT / "source" / "osworld-verified"
-EXISTING_ROOT = POC_ROOT.parent / "reference" / "examples" / "osworld-verified"
+EXISTING_ROOT = POC_ROOT.parent / "docs" / "reference" / "examples" / "osworld-verified"
 
 DATASET_COMMIT = "5473c39e42a538a187a9b2c2b499db59d560fd8c"
 TASK_COMMIT = "b138d348256078fa634fc3b73567a7337c793e6b"
 ARCHIVE_URL = (
-    "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/"
-    f"{DATASET_COMMIT}/o3_15steps.zip"
+    f"https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/resolve/{DATASET_COMMIT}/o3_15steps.zip"
 )
 ARCHIVE_BYTES = 3_408_011_289
 ARCHIVE_SHA256 = "976c2028235156cd767ebf723c5b301761ae7c951afb9c507f1ac1ef9b014b2b"
@@ -124,9 +123,23 @@ def parse_central_directory(directory: bytes, eocd: bytes) -> list[dict]:
         if values[0] != b"PK\x01\x02":
             raise RuntimeError(f"Bad central-directory signature at byte {offset}")
         (
-            _, made_by, needed, flags, method, mtime, mdate, crc, compressed_size,
-            uncompressed_size, name_len, extra_len, comment_len, disk_start,
-            internal_attr, external_attr, local_header_offset,
+            _,
+            made_by,
+            needed,
+            flags,
+            method,
+            mtime,
+            mdate,
+            crc,
+            compressed_size,
+            uncompressed_size,
+            name_len,
+            extra_len,
+            comment_len,
+            disk_start,
+            internal_attr,
+            external_attr,
+            local_header_offset,
         ) = values
         name_bytes = directory[offset + 46 : offset + 46 + name_len]
         name = name_bytes.decode("utf-8")
@@ -158,7 +171,8 @@ def selected_entries(entries: list[dict]) -> dict[str, list[dict]]:
             entry
             for entry in members
             if entry["name"].endswith(("/traj.jsonl", "/result.txt", "/runtime.log"))
-            or "/step_" in entry["name"] and entry["name"].endswith(".png")
+            or "/step_" in entry["name"]
+            and entry["name"].endswith(".png")
         ]
         if not any(item["name"].endswith("/traj.jsonl") for item in required):
             raise RuntimeError(f"No trajectory in source directory {prefix}")
@@ -258,14 +272,13 @@ def main():
     # Fetch member headers and bodies in two stages. Each request is a bounded range.
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
         extracted = list(pool.map(extract_member, all_entries))
-    for entry, (file_metadata, data) in zip(all_entries, extracted):
+    for entry, (file_metadata, data) in zip(all_entries, extracted, strict=True):
         member_bytes[entry["name"]] = (file_metadata, data)
 
     batch_tasks = []
-    acquired_at = datetime.now(timezone.utc).isoformat()
+    acquired_at = datetime.now(UTC).isoformat()
     dataset_card_url = (
-        "https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/"
-        f"{DATASET_COMMIT}/README.md"
+        f"https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs/raw/{DATASET_COMMIT}/README.md"
     )
     task_license_url = f"https://raw.githubusercontent.com/xlang-ai/OSWorld/{TASK_COMMIT}/LICENSE"
     # These byte-identical shared references were already retrieved with the two local examples.
@@ -338,7 +351,6 @@ def main():
                 }
             )
 
-        archive_task_members = [entry["name"] for entry in selected[task_id]]
         found_frame_steps = sorted(screenshots_by_step)
         source_action_steps = [int(step["step_id"]) for step in steps]
         instruction = task.get("instruction") or task.get("task_instruction") or ""
@@ -355,7 +367,10 @@ def main():
                 "archive_bytes": ARCHIVE_BYTES,
                 "archive_sha256_as_declared_by_huggingface_lfs": ARCHIVE_SHA256,
                 "full_archive_checksum_verified_locally": False,
-                "acquisition_method": "HTTP Range reads of ZIP central directory, local headers, and selected members; ZIP CRC32 and uncompressed length checked. Full archive and recording.mp4 not downloaded.",
+                "acquisition_method": (
+                    "HTTP Range reads of ZIP central directory, local headers, and selected members; ZIP CRC32 and "
+                    "uncompressed length checked. Full archive and recording.mp4 not downloaded."
+                ),
                 "central_directory_range": f"bytes={CD_START}-{CD_END}",
                 "end_of_central_directory_range": f"bytes={EOCD_START}-{EOCD_END}",
             },
@@ -366,20 +381,27 @@ def main():
                 "recorded_final_score_text": score_text,
                 "recorded_final_score": score,
                 "score_source": "result.txt",
-                "human_failure_annotations": "absent from selected task directory; no human failure labels supplied by this example",
+                "human_failure_annotations": (
+                    "absent from selected task directory; no human failure labels supplied by this example"
+                ),
             },
             "task_definition": {
                 "source_url": task_url,
                 "source_commit": TASK_COMMIT,
                 "matches_rollout_task_id": task.get("id") == task_id or task.get("task_id") == task_id,
                 "exact_historical_match_verified": False,
-                "limitation": "This is the pinned current public task definition, not proven to be the exact definition or evaluator used for the July 2025 rollout.",
+                "limitation": (
+                    "This is the pinned current public task definition, not proven to be the exact definition or "
+                    "evaluator used for the July 2025 rollout."
+                ),
             },
             "screenshot_coverage": {
                 "recorded_action_steps": source_action_steps,
                 "screenshots_available_in_selected_archive_members": found_frame_steps,
                 "screenshots_downloaded": found_frame_steps,
-                "screenshots_missing_or_not_present_in_archive": sorted(set(source_action_steps) - set(found_frame_steps)),
+                "screenshots_missing_or_not_present_in_archive": sorted(
+                    set(source_action_steps) - set(found_frame_steps)
+                ),
                 "recording_mp4_downloaded": False,
             },
             "licensing": {
@@ -395,7 +417,8 @@ def main():
 
         coverage_notes = [
             f"Archive label is 15steps; source traj.jsonl contains {len(trajectory)} recorded actions.",
-            f"Downloaded {len(found_frame_steps)} available recorded step screenshots: {', '.join(map(str, found_frame_steps))}.",
+            f"Downloaded {len(found_frame_steps)} available recorded step screenshots: "
+            f"{', '.join(map(str, found_frame_steps))}.",
             "The archive recording.mp4 was not downloaded.",
             "Current task definition/evaluator pin is not proven to match the historical rollout environment.",
             "No human-authored failure diagnosis or recovery annotation is included.",
@@ -442,10 +465,7 @@ def main():
         score_text = (source_dir / "result.txt").read_text(encoding="utf-8").strip()
         score = float(score_text)
         trajectory = parse_jsonl((source_dir / "traj.jsonl").read_bytes())
-        selected_shots = {
-            int(path.name.split("_", 2)[1]): path.name
-            for path in source_dir.glob("step_*.png")
-        }
+        selected_shots = {int(path.name.split("_", 2)[1]): path.name for path in source_dir.glob("step_*.png")}
         steps = []
         for index, record in enumerate(trajectory, start=1):
             step_num = record.get("step_num", record.get("step", index))
@@ -510,24 +530,52 @@ def main():
 
     batch_tasks.sort(key=lambda item: (item["source"]["application"], item["task_id"]))
     notes = [
-        "Five distinct OSWorld-Verified task IDs from public o3_15steps rollouts. Source task, trace, score, runtime log where selected, and provenance are retained under data/source/osworld-verified/.",
-        "The score in each result.txt is the recorded terminal grade. Per-step reward/done values are not substituted for that grade.",
+        (
+            "Five distinct OSWorld-Verified task IDs from public o3_15steps rollouts. Source task, trace, score, "
+            "runtime log where selected, and provenance are retained under data/source/osworld-verified/."
+        ),
+        (
+            "The score in each result.txt is the recorded terminal grade. Per-step reward/done values are not "
+            "substituted for that grade."
+        ),
         "Outcome categories are derived only from source result.txt values 0/0.0 or 1/1.0; other values are unknown.",
-        "These are source-scored examples, not human-adjudicated labels. No human gold annotation is included or inferred.",
-        "Dataset revision is pinned at 5473c39e42a538a187a9b2c2b499db59d560fd8c. Task definitions are from OSWorld commit b138d348256078fa634fc3b73567a7337c793e6b and are not verified historical evaluator matches.",
-        "The 3.4 GB archive was not downloaded. ZIP Range reads fetched the central directory plus selected trajectory, score, runtime, and step screenshot members; MP4 recordings were omitted.",
-        "Selected screenshots are linked per step. Screenshot coverage notes list missing or unselected frames, including the two pre-existing failures with sparse frames.",
-        "The dataset card declares MIT, and OSWorld task source declares Apache-2.0. The dataset card does not itemize third-party document or screenshot rights.",
+        (
+            "These are source-scored examples, not human-adjudicated labels. No human gold annotation is included "
+            "or inferred."
+        ),
+        (
+            "Dataset revision is pinned at 5473c39e42a538a187a9b2c2b499db59d560fd8c. Task definitions are from "
+            "OSWorld commit b138d348256078fa634fc3b73567a7337c793e6b and are not verified historical evaluator "
+            "matches."
+        ),
+        (
+            "The 3.4 GB archive was not downloaded. ZIP Range reads fetched the central directory plus selected "
+            "trajectory, score, runtime, and step screenshot members; MP4 recordings were omitted."
+        ),
+        (
+            "Selected screenshots are linked per step. Screenshot coverage notes list missing or unselected "
+            "frames, including the two pre-existing failures with sparse frames."
+        ),
+        (
+            "The dataset card declares MIT, and OSWorld task source declares Apache-2.0. The dataset card does not "
+            "itemize third-party document or screenshot rights."
+        ),
     ]
-    write_json(DATA_ROOT / "batch.json", {
-        "schema_version": "1",
-        "batch_id": "osworld-five",
-        "notes": notes,
-        "tasks": batch_tasks,
-    })
+    write_json(
+        DATA_ROOT / "batch.json",
+        {
+            "schema_version": "1",
+            "batch_id": "osworld-five",
+            "notes": notes,
+            "tasks": batch_tasks,
+        },
+    )
     print(f"Wrote {DATA_ROOT / 'batch.json'} with {len(batch_tasks)} tasks")
-    print(f"Selected uncompressed members: {sum(item['uncompressed_size'] for group in selected.values() for item in group):,} bytes")
+    selected_bytes = sum(item["uncompressed_size"] for group in selected.values() for item in group)
+    print(f"Selected uncompressed members: {selected_bytes:,} bytes")
 
 
 if __name__ == "__main__":
+    # No options; parsing makes --help print the description instead of running.
+    argparse.ArgumentParser(description=__doc__).parse_args()
     main()

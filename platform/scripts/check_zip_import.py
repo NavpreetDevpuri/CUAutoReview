@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Real-service ZIP dataset acceptance checks; never starts model jobs."""
+
 from __future__ import annotations
 
+import argparse
 import datetime
 import hashlib
 import json
@@ -12,23 +14,25 @@ import urllib.error
 import urllib.request
 import zlib
 from io import BytesIO
-from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from e2e_local import BASE, Client, ROOT
+from e2e_local import BASE, ROOT, Client
 
 
 def png_bytes(color: tuple[int, int, int]) -> bytes:
     """Create a valid 1x1 RGBA PNG using only the standard library."""
+
     def chunk(kind: bytes, content: bytes) -> bytes:
         checksum = zlib.crc32(kind + content) & 0xFFFFFFFF
         return struct.pack(">I", len(content)) + kind + content + struct.pack(">I", checksum)
 
     red, green, blue = color
-    return (b"\x89PNG\r\n\x1a\n" +
-            chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 6, 0, 0, 0)) +
-            chunk(b"IDAT", zlib.compress(bytes((0, red, green, blue, 255)))) +
-            chunk(b"IEND", b""))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 6, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(bytes((0, red, green, blue, 255))))
+        + chunk(b"IEND", b"")
+    )
 
 
 def acceptance_task(task_id: str, screenshot: str) -> dict:
@@ -37,13 +41,15 @@ def acceptance_task(task_id: str, screenshot: str) -> dict:
         "title": "Acceptance ZIP screenshot fixture",
         "instruction": "Inspect the visible acceptance fixture.",
         "outcome": "passed",
-        "steps": [{
-            "step_id": "acceptance-step-1",
-            "action": "Inspect screenshot",
-            "observation": "A single colored pixel is recorded.",
-            "evidence_refs": ["acceptance-zip-image"],
-            "screenshot": screenshot,
-        }],
+        "steps": [
+            {
+                "step_id": "acceptance-step-1",
+                "action": "Inspect screenshot",
+                "observation": "A single colored pixel is recorded.",
+                "evidence_refs": ["acceptance-zip-image"],
+                "screenshot": screenshot,
+            }
+        ],
     }
 
 
@@ -88,8 +94,7 @@ def main() -> None:
         raise RuntimeError("Missing ignored local test credentials at platform/.local/test-account.json")
     credentials = json.loads(account_path.read_text(encoding="utf-8"))
     admin = Client()
-    identity = admin.call("POST", "/auth/login", {
-        "email": credentials["email"], "password": credentials["password"]})
+    identity = admin.call("POST", "/auth/login", {"email": credentials["email"], "password": credentials["password"]})
     if identity.get("role") != "admin":
         raise AssertionError("The configured local test account must be an administrator")
 
@@ -100,9 +105,14 @@ def main() -> None:
     revised_image = png_bytes((180, 70, 35))
     assert hashlib.sha256(original_image).digest() != hashlib.sha256(revised_image).digest()
 
-    dataset = admin.call("POST", "/datasets", {
-        "name": "Acceptance ZIP import " + suffix,
-        "description": "Named real-service ZIP import acceptance fixture; no inference."})
+    dataset = admin.call(
+        "POST",
+        "/datasets",
+        {
+            "name": "Acceptance ZIP import " + suffix,
+            "description": "Named real-service ZIP import acceptance fixture; no inference.",
+        },
+    )
     before = admin.call("GET", f"/datasets/{dataset['id']}")
     assert before["tasks"] == []
 
@@ -122,29 +132,45 @@ def main() -> None:
     initial_dataset_url = initial_task["steps"][0]["screenshot_url"]
     assert "revision_id=" + initial_task["revision_id"] in initial_dataset_url
 
-    invalid_dataset = admin.call("POST", "/datasets", {
-        "name": "Acceptance ZIP invalid atomicity " + suffix,
-        "description": "Named invalid ZIP atomicity acceptance fixture."})
+    invalid_dataset = admin.call(
+        "POST",
+        "/datasets",
+        {
+            "name": "Acceptance ZIP invalid atomicity " + suffix,
+            "description": "Named invalid ZIP atomicity acceptance fixture.",
+        },
+    )
     partial_task = acceptance_task("acceptance-zip-partial-" + suffix, image_path)
     invalid_task = acceptance_task("", image_path)
     invalid_payload = archive_bytes([partial_task, invalid_task], original_image)
     invalid = zip_call(admin, f"/datasets/{invalid_dataset['id']}/import-zip", invalid_payload, expected=422)
     assert any(item["code"] == "invalid_task_id" for item in invalid["detail"]["errors"])
-    assert admin.call("GET", f"/datasets/{invalid_dataset['id']}")["tasks"] == [], \
+    assert admin.call("GET", f"/datasets/{invalid_dataset['id']}")["tasks"] == [], (
         "Invalid archive partially wrote task revisions"
+    )
     pass_check("Valid import is idempotent; invalid multi-task archive leaves no partial writes")
 
     # Existing fixture users are not needed: create two ephemeral viewer accounts.
     viewer = Client()
-    viewer_identity = viewer.call("POST", "/auth/signup", {
-        "name": "Acceptance ZIP reviewer " + suffix,
-        "email": f"acceptance-zip-reviewer-{suffix}@example.test",
-        "password": secrets.token_urlsafe(24)})
+    viewer_identity = viewer.call(
+        "POST",
+        "/auth/signup",
+        {
+            "name": "Acceptance ZIP reviewer " + suffix,
+            "email": f"acceptance-zip-reviewer-{suffix}@example.test",
+            "password": secrets.token_urlsafe(24),
+        },
+    )
     outsider = Client()
-    outsider_identity = outsider.call("POST", "/auth/signup", {
-        "name": "Acceptance ZIP outsider " + suffix,
-        "email": f"acceptance-zip-outsider-{suffix}@example.test",
-        "password": secrets.token_urlsafe(24)})
+    outsider_identity = outsider.call(
+        "POST",
+        "/auth/signup",
+        {
+            "name": "Acceptance ZIP outsider " + suffix,
+            "email": f"acceptance-zip-outsider-{suffix}@example.test",
+            "password": secrets.token_urlsafe(24),
+        },
+    )
     assert viewer_identity["role"] == outsider_identity["role"] == "viewer"
     viewer.call("GET", f"/datasets/{dataset['id']}", expected=403)
     zip_call(viewer, "/imports/zip/validate", payload, expected=403)
@@ -156,28 +182,35 @@ def main() -> None:
         raise AssertionError("Local acceptance requires an existing saved_replay preset")
     team = admin.call("POST", "/teams", {"name": "Acceptance ZIP team " + suffix})
     admin.call("POST", f"/teams/{team['id']}/members", {"user_id": viewer_identity["id"]})
-    batch = admin.call("POST", "/batches", {
-        "name": "Acceptance ZIP batch " + suffix,
-        "dataset_id": dataset["id"],
-        "mode": "appendable",
-        "preset_id": replay["id"],
-        "task_ids": [task_id],
-        "team_ids": [team["id"]],
-    })
+    batch = admin.call(
+        "POST",
+        "/batches",
+        {
+            "name": "Acceptance ZIP batch " + suffix,
+            "dataset_id": dataset["id"],
+            "mode": "appendable",
+            "preset_id": replay["id"],
+            "task_ids": [task_id],
+            "team_ids": [team["id"]],
+        },
+    )
     batch_id = batch["id"]
     batch_path = f"/batches/{batch_id}/tasks/{task_id}"
     outsider.call("GET", batch_path, expected=403)
     first_member = viewer.call("GET", batch_path)
-    first_member_id = first_member["member"]["id"]
     first_url = first_member["task"]["steps"][0]["screenshot_url"]
     first_bytes = viewer.call("GET", first_url.removeprefix("/api"))
     assert first_bytes == original_image
     outsider.call("GET", first_url.removeprefix("/api"), expected=403)
 
-    changed = zip_call(admin, f"/datasets/{dataset['id']}/import-zip",
-                       archive_bytes([acceptance_task(task_id, image_path)], revised_image))
-    assert changed["created"] == 0 and changed["revised"] == 1 and changed["unchanged"] == 0, \
+    changed = zip_call(
+        admin,
+        f"/datasets/{dataset['id']}/import-zip",
+        archive_bytes([acceptance_task(task_id, image_path)], revised_image),
+    )
+    assert changed["created"] == 0 and changed["revised"] == 1 and changed["unchanged"] == 0, (
         "Changed screenshot checksum did not create a task revision"
+    )
     current_task = admin.call("GET", f"/datasets/{dataset['id']}")["tasks"][0]
     current_dataset_url = current_task["steps"][0]["screenshot_url"]
     assert current_task["revision_id"] != initial_task["revision_id"]
@@ -200,7 +233,7 @@ def main() -> None:
     pass_check("Batch sync carries the changed image revision into member-scoped screenshot access")
 
     report = {
-        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
         "base_url": BASE,
         "provider_calls": 0,
         "checks": [
@@ -223,4 +256,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # No options; parsing makes --help print the description instead of running.
+    argparse.ArgumentParser(description=__doc__).parse_args()
     main()

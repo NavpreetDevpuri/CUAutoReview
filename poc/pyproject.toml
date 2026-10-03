@@ -1,0 +1,12 @@
+# Tooling for the preserved POC. The platform backend keeps its own configuration.
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Tests import the POC modules (run, label_tools, serve) from this directory.
+pythonpath = ["."]

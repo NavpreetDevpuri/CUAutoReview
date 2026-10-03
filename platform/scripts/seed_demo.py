@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Create local demo identities and grants through the API, without model calls."""
+
 from __future__ import annotations
 
 import argparse
 import http.cookiejar
 import json
 import os
-from pathlib import Path
 import secrets
 import tempfile
 import urllib.error
 import urllib.request
+from pathlib import Path
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,14 +35,15 @@ TEAMS = [
 class Client:
     def __init__(self, base: str):
         self.base = base
-        self.opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
 
     def request(self, method, path, body=None):
         request = urllib.request.Request(
             self.base + "/api" + path,
             data=json.dumps(body).encode() if body is not None else None,
-            method=method, headers={"Content-Type": "application/json", "Origin": self.base})
+            method=method,
+            headers={"Content-Type": "application/json", "Origin": self.base},
+        )
         try:
             response = self.opener.open(request, timeout=30)
         except urllib.error.HTTPError as exc:
@@ -88,19 +90,19 @@ def save_manifest(manifest):
 
 def provision_person(base, person):
     client = Client(base)
-    status, user = client.request("POST", "/auth/login", {
-        "email": person["email"], "password": person["password"]})
+    status, user = client.request("POST", "/auth/login", {"email": person["email"], "password": person["password"]})
     if status == 200:
         if person.get("id") and person["id"] != user["id"]:
             raise RuntimeError(f"Account identity changed for {person['email']}; inspect the local manifest.")
         return user, client
     if status != 401:
         raise RuntimeError(f"Cannot check {person['email']}: HTTP {status}")
-    status, user = client.request("POST", "/auth/signup", {
-        key: person[key] for key in ("name", "email", "password")})
+    status, user = client.request("POST", "/auth/signup", {key: person[key] for key in ("name", "email", "password")})
     if status == 409:
-        raise RuntimeError(f"{person['email']} already exists with different credentials or is inactive. "
-                           "No password, role or active status was changed.")
+        raise RuntimeError(
+            f"{person['email']} already exists with different credentials or is inactive. "
+            "No password, role or active status was changed."
+        )
     if status != 200:
         raise RuntimeError(f"Cannot create {person['email']}: HTTP {status}")
     return user, client
@@ -133,10 +135,20 @@ def seed(base, admin_credentials=None, public_base=None):
         if {p["email"] for p in manifest["accounts"]} != expected:
             raise RuntimeError("Demo account manifest has unexpected identities; no changes made.")
     else:
-        manifest = {"seed_version": 1, "base_url": public_base, "accounts": [
-            {"key": key, "name": name, "email": key + "@cuautoreview.test",
-             "role": role, "password": secrets.token_urlsafe(18)}
-            for key, name, role in PEOPLE]}
+        manifest = {
+            "seed_version": 1,
+            "base_url": public_base,
+            "accounts": [
+                {
+                    "key": key,
+                    "name": name,
+                    "email": key + "@cuautoreview.test",
+                    "role": role,
+                    "password": secrets.token_urlsafe(18),
+                }
+                for key, name, role in PEOPLE
+            ],
+        }
         # Persist passwords before the first API mutation, so interrupted runs can resume.
         save_manifest(manifest)
 
@@ -155,8 +167,10 @@ def seed(base, admin_credentials=None, public_base=None):
         save_manifest(manifest)
         if admin is None:
             if user["role"] != "admin":
-                raise RuntimeError("This workspace already has an administrator. Rerun with "
-                                   "--admin-credentials /path/to/admin.json containing email and password.")
+                raise RuntimeError(
+                    "This workspace already has an administrator. Rerun with "
+                    "--admin-credentials /path/to/admin.json containing email and password."
+                )
             admin = client
         if not person.get("initialized"):
             if user["role"] != person["role"]:
@@ -183,29 +197,52 @@ def seed(base, admin_credentials=None, public_base=None):
     batch = next((b for b in admin.items("/batches?include_archived=true") if b["name"] == "Retained POC replay"), None)
     if not batch:
         save_manifest(manifest)
-        raise RuntimeError("Demo users and teams exist, but Retained POC replay is missing. "
-                           "Enable the documented POC seed in a fresh workspace or assign batch grants manually.")
+        raise RuntimeError(
+            "Demo users and teams exist, but Retained POC replay is missing. "
+            "Enable the documented POC seed in a fresh workspace or assign batch grants manually."
+        )
     for team in team_records:
         if not any(g.get("team_id") == team["id"] and g["role"] == team["role"] for g in batch["grants"]):
             admin.call("POST", f"/batches/{batch['id']}/grants", {"team_id": team["id"], "role": team["role"]})
     manifest["batch"] = {"id": batch["id"], "name": batch["name"]}
     save_manifest(manifest)
-    lines = ["# Local demo login details", "", f"Open [{public_base}]({public_base}), sign out if needed, then choose **Sign in**.", "",
-             "Generated for this local workspace only. This file is ignored by Git and excluded from Docker builds.", "",
-             "| Name | Email | Password | Workspace role |", "|---|---|---|---|"]
+    lines = [
+        "# Local demo login details",
+        "",
+        f"Open [{public_base}]({public_base}), sign out if needed, then choose **Sign in**.",
+        "",
+        "Generated for this local workspace only. This file is ignored by Git and excluded from Docker builds.",
+        "",
+        "| Name | Email | Password | Workspace role |",
+        "|---|---|---|---|",
+    ]
     for person in manifest["accounts"]:
         lines.append(f"| {person['name']} | `{person['email']}` | `{person['password']}` | {person['role']} |")
-    lines += ["", f"Open the [five-task example batch]({public_base}/#/batches/{batch['id']}?include_archived=true) after signing in.", "",
-              "| Team | Members | Access to the example batch |", "|---|---|---|"]
+    lines += [
+        "",
+        f"Open the [five-task example batch]({public_base}/#/batches/{batch['id']}?include_archived=true) "
+        "after signing in.",
+        "",
+        "| Team | Members | Access to the example batch |",
+        "|---|---|---|",
+    ]
     for team in team_records:
         lines.append(f"| {team['name']} | {', '.join(people[k]['name'] for k in team['members'])} | {team['role']} |")
-    reseed_command = ("docker compose -f platform/compose.yaml run --rm seed"
-                      if urlsplit(base).hostname == "app" else "python3 platform/scripts/seed_demo.py")
-    lines += ["", "Admin manages users and taxonomy publication. Manager manages datasets and batches. "
-              "Reviewers inspect trajectories, add feedback and propose labels. Viewer reads and exports. "
-              "Reviewer/viewer batch access comes from their team grants.", "",
-              f"Reseed with `{reseed_command}`. Existing passwords and saved reviews are retained; "
-              "missing demo team memberships and batch grants are restored. No model jobs are started.", ""]
+    reseed_command = (
+        "docker compose -f platform/compose.yaml run --rm seed"
+        if urlsplit(base).hostname == "app"
+        else "python3 platform/scripts/seed_demo.py"
+    )
+    lines += [
+        "",
+        "Admin manages users and taxonomy publication. Manager manages datasets and batches. "
+        "Reviewers inspect trajectories, add feedback and propose labels. Viewer reads and exports. "
+        "Reviewer/viewer batch access comes from their team grants.",
+        "",
+        f"Reseed with `{reseed_command}`. Existing passwords and saved reviews are retained; "
+        "missing demo team memberships and batch grants are restored. No model jobs are started.",
+        "",
+    ]
     private_write(GUIDE, "\n".join(lines))
     print(f"Ready: {len(people)} demo users, {len(team_records)} teams, {batch['name']}.")
     print(f"Login details: {GUIDE}")

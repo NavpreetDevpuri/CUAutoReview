@@ -1,0 +1,7 @@
+# Tooling for the seeding and verification scripts. The platform backend keeps its own configuration.
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
