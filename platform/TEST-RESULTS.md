@@ -11,7 +11,7 @@ A full review of the backend, worker, frontend and POC code; each fix below has 
 | Backend suite, `python -m pytest -q` in `platform/backend` | **121 passed** (was 95) |
 | POC suite, `python -m pytest -q tests` in `poc` | **27 passed** (was 17), including validation of every retained saved review |
 | Frontend, `npm test` and `npm run build` in `platform/web` | **10 passed** (was 3); build passed |
-| Continuous integration | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs all three suites and the build on every push, then builds the Compose stack on amd64, seeds it twice and runs `verify_docker_quickstart.py` after each seed |
+| Continuous integration | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs all three suites and the build on every push, then builds the Compose stack on amd64, seeds it twice and runs `verify_docker_quickstart.py` after each seed. First run passed all jobs: 8 distinct tasks, 5 logins, and identities and passwords stable across the reseed |
 | Browser pass | Headless Chrome against the merged app (SQLite and local file store, demo workspace seeded with `seed_workspace.py`): 14 routes as reviewer and as admin, with no failed requests, console errors or sign-outs |
 
 **Query counts per request**, 500 tasks across 2 runs, measured with a SQLAlchemy statement counter. `test_query_counts.py` asserts that counts stay flat as tasks grow.

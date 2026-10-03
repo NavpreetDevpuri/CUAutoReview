@@ -18,7 +18,7 @@ Stop with `docker compose -f platform/compose.yaml down`; named volumes retain d
 
 If Docker reports `no space left on device` during a build, free unused build cache in Docker Desktop and retry. This occurred during local validation; the application data volumes were retained.
 
-Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](evidence/docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. AMD64 package selection is supported but was not executed in this check.
+Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](evidence/docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. The same checks now run on amd64 in CI on every push: the stack is built, seeded twice and verified after each seed ([workflow](../.github/workflows/ci.yml)).
 
 The Compose stack runs FastAPI and the built React-admin/MUI UI, a Celery worker, PostgreSQL, RabbitMQ and SeaweedFS with its S3-compatible API. Compose binds the application to loopback. The retained POC has its own run instructions and uses port 8765: [POC README](../poc/README.md).
 
