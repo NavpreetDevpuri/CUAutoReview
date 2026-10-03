@@ -1,24 +1,31 @@
-import React from "react";
+import React, { lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { Admin, CustomRoutes, Resource } from "react-admin";
 import { Route } from "react-router-dom";
 import { authProvider, dataProvider } from "./api";
 import { WorkspaceLayout } from "./layout";
 import { AccessPage } from "./auth";
-import { HelpPage } from "./pages/Help";
 import { ThemeModeProvider, useThemeMode } from "./theme";
-import { OverviewPage } from "./pages/Overview";
-import { DatasetsPage, DatasetDetailPage } from "./pages/Datasets";
-import { BatchesPage, BatchDetailPage } from "./pages/Batches";
-import { DatasetTaskPage } from "./pages/DatasetTask";
-import { TrajectoryPage } from "./pages/Trajectory";
-import { TeamsPage } from "./pages/Teams";
-import { PresetsPage } from "./pages/Presets";
-import { TaxonomyPage, CandidatePage } from "./pages/Taxonomy";
-import { ActivityPage, JobDetailPage, JobsPage } from "./pages/Activity";
-import { AnalyticsPage } from "./pages/Analytics";
-import { ComparePage } from "./pages/Compare";
 import "./styles.css";
+
+// Pages load on first visit; WorkspaceLayout supplies the Suspense fallback. Sign-in stays in the main bundle.
+const HelpPage = lazy(() => import("./pages/Help").then(module => ({ default: module.HelpPage })));
+const OverviewPage = lazy(() => import("./pages/Overview").then(module => ({ default: module.OverviewPage })));
+const DatasetsPage = lazy(() => import("./pages/Datasets").then(module => ({ default: module.DatasetsPage })));
+const DatasetDetailPage = lazy(() => import("./pages/Datasets").then(module => ({ default: module.DatasetDetailPage })));
+const BatchesPage = lazy(() => import("./pages/Batches").then(module => ({ default: module.BatchesPage })));
+const BatchDetailPage = lazy(() => import("./pages/Batches").then(module => ({ default: module.BatchDetailPage })));
+const DatasetTaskPage = lazy(() => import("./pages/DatasetTask").then(module => ({ default: module.DatasetTaskPage })));
+const TrajectoryPage = lazy(() => import("./pages/Trajectory").then(module => ({ default: module.TrajectoryPage })));
+const TeamsPage = lazy(() => import("./pages/Teams").then(module => ({ default: module.TeamsPage })));
+const PresetsPage = lazy(() => import("./pages/Presets").then(module => ({ default: module.PresetsPage })));
+const TaxonomyPage = lazy(() => import("./pages/Taxonomy").then(module => ({ default: module.TaxonomyPage })));
+const CandidatePage = lazy(() => import("./pages/Taxonomy").then(module => ({ default: module.CandidatePage })));
+const ActivityPage = lazy(() => import("./pages/Activity").then(module => ({ default: module.ActivityPage })));
+const JobDetailPage = lazy(() => import("./pages/Activity").then(module => ({ default: module.JobDetailPage })));
+const JobsPage = lazy(() => import("./pages/Activity").then(module => ({ default: module.JobsPage })));
+const AnalyticsPage = lazy(() => import("./pages/Analytics").then(module => ({ default: module.AnalyticsPage })));
+const ComparePage = lazy(() => import("./pages/Compare").then(module => ({ default: module.ComparePage })));
 
 function App() {
   const { theme } = useThemeMode();

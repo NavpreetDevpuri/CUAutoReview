@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useGetIdentity, useLogout } from "react-admin";
 import { AppBar, Avatar, Box, Button, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Stack, Toolbar, Tooltip, Typography, useMediaQuery } from "@mui/material";
@@ -19,6 +19,7 @@ import WorkspacesRounded from "@mui/icons-material/WorkspacesRounded";
 import LogoutRounded from "@mui/icons-material/LogoutRounded";
 import type { ReactNode } from "react";
 import { ThemeModeToggle } from "./theme";
+import { LoadingState } from "./components";
 
 type NavItem = { label: string; path: string; icon: ReactNode };
 const navItems: NavItem[] = [
@@ -114,7 +115,7 @@ export function WorkspaceLayout({ children }: { children: ReactNode }) {
     {mobile ? <Drawer variant="temporary" open={mobileOpen} onClose={closeMobile} ModalProps={{ keepMounted: true }} PaperProps={{ component: "nav", "aria-label": "Workspace navigation", sx: { width: "min(280px, 88vw)", display: "flex", flexDirection: "column", bgcolor: "background.paper" } }}><SidebarContent collapsed={false} onNavigate={closeMobile} /></Drawer> : <Box component="nav" aria-label="Workspace navigation" sx={{ position: "fixed", inset: "0 auto 0 0", zIndex: 10, width: navWidth, overflowY: "auto", display: "flex", flexDirection: "column", bgcolor: "background.paper", borderRight: "1px solid", borderColor: "divider", transition: "width 160ms ease" }}><SidebarContent collapsed={collapsed} /></Box>}
     <Box sx={{ ml: { xs: 0, md: `${navWidth}px` }, minWidth: 0, minHeight: "100dvh", transition: "margin-left 160ms ease" }}>
       <TopBar mobile={mobile} collapsed={collapsed} onMenu={toggle} />
-      <Box component="main" id="workspace-main" sx={{ width: "100%", maxWidth: 1640, minWidth: 0, mx: "auto", px: { xs: 1.5, sm: 2.5, lg: 3 }, py: { xs: 2, md: 2.5 } }}>{children}</Box>
+      <Box component="main" id="workspace-main" sx={{ width: "100%", maxWidth: 1640, minWidth: 0, mx: "auto", px: { xs: 1.5, sm: 2.5, lg: 3 }, py: { xs: 2, md: 2.5 } }}><Suspense fallback={<LoadingState label="Loading page…" />}>{children}</Suspense></Box>
       <Box component="footer" sx={{ px: { xs: 1.5, sm: 2.5, lg: 3 }, pb: 2, color: "text.secondary", fontSize: 11.5 }}>
         Local workspace · Evidence and evaluator outcomes are preserved as recorded.
       </Box>
