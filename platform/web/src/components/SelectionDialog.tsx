@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputAdornment, Link, Stack, Tab, Tabs, TextField, Typography } from "@mui/material";
 import SearchRounded from "@mui/icons-material/SearchRounded";
 import OpenInNewRounded from "@mui/icons-material/OpenInNewRounded";
-import { useApi } from "./hooks";
-import { ErrorState, LoadingState, Panel, StatusTag, countLabel } from "./components";
+import { Panel } from "./Page";
+import { ErrorState, LoadingState } from "./States";
+import { StatusTag } from "./StatusTag";
+import { useApi } from "../hooks/useApi";
+import { countLabel } from "../lib/format";
 
 export interface Selection { datasetIds: string[]; runIds: string[]; taskDefinitionIds: string[] }
 export interface CatalogItem { id: string; name?: string; title?: string; dataset_id?: string; dataset_ids?: string[]; task_id?: string; task_definition_id?: string; task_count?: number; run_count?: number; step_count?: number; problem_count?: number | null; outcome?: string; status?: string; partial_access?: boolean }

@@ -4,10 +4,13 @@ import FilterAltRounded from "@mui/icons-material/FilterAltRounded";
 import CompareArrowsRounded from "@mui/icons-material/CompareArrowsRounded";
 import RefreshRounded from "@mui/icons-material/RefreshRounded";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
-import { apiRequest } from "../api";
-import { useApi } from "../hooks";
-import { EmptyState, ErrorState, LoadingState, MetricCard, PageHeader, Panel, SectionTitle, StatusTag } from "../components";
-import { type Catalog, type Selection, SelectionDialog, emptySelection, selectionSummary } from "../SelectionDialog";
+import { apiRequest } from "../api/client";
+import { MetricCard } from "../components/MetricCard";
+import { PageHeader, Panel, SectionTitle } from "../components/Page";
+import { type Catalog, emptySelection, type Selection, SelectionDialog, selectionSummary } from "../components/SelectionDialog";
+import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { useApi } from "../hooks/useApi";
 
 export interface AnalyticsRow { run_id: string | null; run_name: string | null; dataset_id: string; task_definition_id: string; task_id: string; task_title?: string; task_revision_id: string; task_revision: number; member_id: string | null; review_result_id: string | null; status: string; outcome: string; review_kind: string | null; problem_count: number; labels: { id: string; name: string }[]; recovery_step_count: number; missing_evidence_count: number; known_cost_usd: number; unknown_cost_jobs: number; unknown_cost_attempts: number; backend?: string; model?: string }
 interface Analytics { counts: { task_definitions: number; rows: number; run_members: number; problem_episodes: number; recovery_steps: number; missing_evidence: number; absent_frame_steps?: number; missing_artifact_records?: number; broken_source_files?: number; cost_usd: number | null; known_cost_usd: number; unknown_cost_jobs: number; unknown_cost_attempts: number; statuses: Record<string, number>; outcomes: Record<string, number> }; labels: { id: string; name: string; count: number }[]; rows: AnalyticsRow[] }

@@ -1,5 +1,5 @@
 import { Alert, Autocomplete, Box, Button, TextField, Typography } from "@mui/material";
-import type { LoadState } from "./hooks";
+import type { LoadState } from "../hooks/useApi";
 
 export interface ModelChoice {
   id: string;

@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from "@mui/material";
 import AddRounded from "@mui/icons-material/AddRounded";
-import { apiRequest } from "../api";
-import { ModelPicker, preferredModel, suggestedBudget, type ModelCatalog } from "../ModelPicker";
-import { useApi, useResourceList } from "../hooks";
 import { Alert as MuiAlert } from "@mui/material";
-import { ErrorState, LoadingState, PageHeader, Panel, SectionTitle, StatusTag, formatDate, displayValue } from "../components";
+import { apiRequest } from "../api/client";
+import { type ModelCatalog, ModelPicker, preferredModel, suggestedBudget } from "../components/ModelPicker";
+import { PageHeader, Panel, SectionTitle } from "../components/Page";
+import { ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { useApi } from "../hooks/useApi";
+import { useResourceList } from "../hooks/useResourceList";
+import { displayValue, formatDate } from "../lib/format";
 
 interface Preset { id: string; name: string; backend?: string; model?: string; reasoning?: string; budget_usd?: number; revision?: number; configuration?: Record<string, unknown>; [key: string]: unknown }
 type ProviderChoice = string | { id?: string; name?: string; configured?: boolean; supported?: boolean; available?: boolean; status?: string; capabilities?: string[] };

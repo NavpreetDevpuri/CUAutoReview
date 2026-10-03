@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useLogin } from "react-admin";
 import { Alert, Box, Button, CircularProgress, Container, Divider, Paper, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import AutoAwesomeRounded from "@mui/icons-material/AutoAwesomeRounded";
-import { apiRequest } from "./api";
+import { apiRequest } from "../api/client";
 import { ThemeModeToggle } from "./theme";
 
 export function AccessPage() {

@@ -3,10 +3,14 @@ import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { Alert, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, Grid, MenuItem, Paper, Radio, RadioGroup, Select, Stack, TextField, Typography } from "@mui/material";
 import AddRounded from "@mui/icons-material/AddRounded";
 import MergeTypeRounded from "@mui/icons-material/MergeTypeRounded";
-import { apiRequest } from "../api";
-import { useApi, useResourceList } from "../hooks";
-import type { TaxonomyResponse } from "../types";
-import { EmptyState, ErrorState, LoadingState, PageHeader, Panel, SectionTitle, StatusTag, formatDate, displayValue } from "../components";
+import { apiRequest } from "../api/client";
+import type { TaxonomyResponse } from "../api/types";
+import { PageHeader, Panel, SectionTitle } from "../components/Page";
+import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { useApi } from "../hooks/useApi";
+import { useResourceList } from "../hooks/useResourceList";
+import { displayValue, formatDate } from "../lib/format";
 
 interface TaxonomyData extends TaxonomyResponse { releases?: Record<string, unknown>[]; proposals?: Record<string, unknown>[]; candidates?: Record<string, unknown>[]; labels?: Record<string, unknown>[] }
 interface TaxonomyPreset extends Record<string, unknown> { id: string; name: string; latest_revision?: Record<string, unknown> | null }

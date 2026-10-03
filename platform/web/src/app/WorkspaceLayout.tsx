@@ -19,7 +19,7 @@ import WorkspacesRounded from "@mui/icons-material/WorkspacesRounded";
 import LogoutRounded from "@mui/icons-material/LogoutRounded";
 import type { ReactNode } from "react";
 import { ThemeModeToggle } from "./theme";
-import { LoadingState } from "./components";
+import { LoadingState } from "../components/States";
 
 type NavItem = { label: string; path: string; icon: ReactNode };
 const navItems: NavItem[] = [

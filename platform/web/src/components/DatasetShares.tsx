@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Autocomplete, Alert, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import PersonAddAlt1Rounded from "@mui/icons-material/PersonAddAlt1Rounded";
-import { apiRequest } from "../api";
-import { Panel, SectionTitle, LoadingState, ErrorState } from "../components";
+import { apiRequest } from "../api/client";
+import { Panel, SectionTitle } from "./Page";
+import { ErrorState, LoadingState } from "./States";
 
 type ShareRole = "viewer" | "reviewer" | "manager";
 type Row = Record<string, unknown>;

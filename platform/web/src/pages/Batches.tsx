@@ -9,13 +9,19 @@ import StopRounded from "@mui/icons-material/StopRounded";
 import ArchiveRounded from "@mui/icons-material/ArchiveRounded";
 import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
 import InsightsRounded from "@mui/icons-material/InsightsRounded";
-import { apiRequest } from "../api";
-import { useApi } from "../hooks";
-import { CATALOG_PAGING, RUN_TASK_PAGING } from "../pagination";
-import type { BatchRecord, ReviewJobRecord, TaskRecord, TaskReviewSummary } from "../types";
-import { RunComposer } from "../RunComposer";
-import { RunShares } from "./RunShares";
-import { BenchmarkResult, EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, TruncationNote, benchmarkResultLabel, formatDate, displayValue, reviewProcessingError, runStatusLabel } from "../components";
+import { apiRequest } from "../api/client";
+import { CATALOG_PAGING, RUN_TASK_PAGING } from "../api/pagination";
+import type { BatchRecord, ReviewJobRecord, TaskRecord, TaskReviewSummary } from "../api/types";
+import { BenchmarkResult } from "../components/BenchmarkResult";
+import { PageBreadcrumbs, PageHeader, Panel, SectionTitle } from "../components/Page";
+import { RunComposer } from "../components/RunComposer";
+import { RunShares } from "../components/RunShares";
+import { EmptyState, ErrorState, LoadingState, TruncationNote } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { useApi } from "../hooks/useApi";
+import { benchmarkResultLabel } from "../lib/benchmark";
+import { displayValue, formatDate, reviewProcessingError, runStatusLabel } from "../lib/format";
+import { asRecord } from "../lib/records";
 
 const linkedCardSx = {
   position: "relative", minWidth: 0, borderRadius: 2,
@@ -57,9 +63,8 @@ interface RunDetailResponse {
   grants?: Row[];
   [key: string]: unknown;
 }
-const object = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
 const idOf = (row: Row) => String(row.id || row.run_id || row.batch_id || "");
-const finishedCount = (progress: Record<string, unknown>) => Number(progress.completed || 0) + Number(progress.failed || 0) + Number(object(progress.status_counts).cancelled || 0);
+const finishedCount = (progress: Record<string, unknown>) => Number(progress.completed || 0) + Number(progress.failed || 0) + Number(asRecord(progress.status_counts).cancelled || 0);
 const percent = (progress?: Record<string, unknown>) => {
   const total = Number(progress?.total || 0);
   const completed = finishedCount(progress || {});
@@ -206,7 +211,7 @@ export function BatchesPage() {
         const runPath = `/runs/${encodeURIComponent(id)}${run.archived || run.archived_at ? "?include_archived=true" : ""}`;
         return <Grid key={id} size={{ xs: 12, md: 6, xl: 4 }}><Paper sx={{ ...linkedCardSx, height: "100%", display: "flex", flexDirection: "column", p: 2, border: "1px solid", borderColor: "divider", bgcolor: "background.paper" }}>
           <Stack gap={1}><Box sx={{ minWidth: 0 }}><Typography component={RouterLink} to={runPath} sx={{ ...cardLinkSx, fontSize: 15, lineHeight: 1.4 }}>{run.name || "Untitled run"}</Typography><Typography color="text.secondary" sx={{ mt: .5, fontSize: 13 }}>{runDescription(run)}</Typography></Box><Stack direction="row" alignItems="center" gap={.6} flexWrap="wrap"><Typography color="text.secondary" sx={{ fontSize: 11.5 }}>Review processing</Typography><StatusTag value={runStatusLabel({ ...run, progress })} /></Stack></Stack>
-          <Stack direction="row" gap={.7} flexWrap="wrap" sx={{ mt: 1.5 }}><StatusTag value={run.workflow_name || run.configuration?.workflow_revision_id || run.workflow_revision_id ? `Workflow ${String(run.workflow_name || run.configuration?.workflow_revision_id || run.workflow_revision_id)}` : "Workflow not recorded"} /><StatusTag value={object(run.configuration?.execution_snapshot).backend || run.backend || "Execution not recorded"} /></Stack>
+          <Stack direction="row" gap={.7} flexWrap="wrap" sx={{ mt: 1.5 }}><StatusTag value={run.workflow_name || run.configuration?.workflow_revision_id || run.workflow_revision_id ? `Workflow ${String(run.workflow_name || run.configuration?.workflow_revision_id || run.workflow_revision_id)}` : "Workflow not recorded"} /><StatusTag value={asRecord(run.configuration?.execution_snapshot).backend || run.backend || "Execution not recorded"} /></Stack>
           <Typography color="text.secondary" sx={{ mt: 1.1, fontSize: 12.5 }}><strong>{benchmarkResultLabel(run as Record<string, unknown>)}:</strong> {summaryOutcomeText(progress.outcome_summary)}</Typography>
           <Stack direction="row" alignItems="center" gap={1} sx={{ mt: 1.4 }}><Box sx={{ flex: 1 }}><LinearProgress variant="determinate" value={value} sx={{ height: 8, borderRadius: 6 }} /></Box><Typography sx={{ minWidth: 44, fontSize: 13, fontWeight: 750 }}>{finishedCount(progress)} / {String(progress.total ?? 0)}</Typography></Stack>
           <Typography color="text.secondary" sx={{ mt: .3, fontSize: 12.5 }}>Review processing · {String(progress.completed ?? 0)} completed · {String(progress.running ?? 0)} active · {String(progress.queued ?? 0)} queued · {String(progress.failed ?? 0)} failed</Typography>
@@ -234,14 +239,14 @@ export function BatchDetailPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const nestedRun = detail.data?.run || detail.data?.batch;
-  const run = detail.data ? ({ ...object(nestedRun), ...detail.data } as RunRecord) : undefined;
+  const run = detail.data ? ({ ...asRecord(nestedRun), ...detail.data } as RunRecord) : undefined;
   const tasks = records(tasksState.data);
   const progress = detail.data?.progress || run?.progress || {};
   const status = String(run?.status || run?.processing_status || "unknown").toLowerCase();
   const archived = Boolean(run?.archived || run?.archived_at);
   const runConfig = run?.configuration || {};
-  const workflow = object(runConfig.workflow_snapshot || run?.workflow_snapshot);
-  const execution = object(runConfig.execution_snapshot || run?.execution_snapshot);
+  const workflow = asRecord(runConfig.workflow_snapshot || run?.workflow_snapshot);
+  const execution = asRecord(runConfig.execution_snapshot || run?.execution_snapshot);
   const sourceDatasets = run?.source_datasets || [];
   const primaryDataset = sourceDatasets[0];
   const datasetId = String(primaryDataset?.id || primaryDataset?.dataset_id || run?.dataset_id || "");
@@ -267,7 +272,7 @@ export function BatchDetailPage() {
   if (detail.error) return <ErrorState message={detail.error} onRetry={detail.reload} />;
   if (!detail.data || !run) return <EmptyState title="Run not found" description="This run may have been removed or you may not have access." action={<Button component={RouterLink} to="/runs" variant="outlined">Back to runs</Button>} />;
   const workflowId = String(run.configuration?.workflow_revision_id || run.workflow_revision_id || workflow.id || workflow.revision_id || "Not recorded");
-  const executionBackend = String(execution.backend || run.backend || object(run.preset).backend || "Not recorded");
+  const executionBackend = String(execution.backend || run.backend || asRecord(run.preset).backend || "Not recorded");
   const progressValue = percent(progress);
   const isTerminal = ["completed", "cancelled", "canceled", "failed"].includes(status);
   return <>

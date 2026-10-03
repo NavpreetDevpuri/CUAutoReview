@@ -1,6 +1,6 @@
 import type { AuthProvider, DataProvider } from "react-admin";
-import type { ApiErrorShape, ListResult, SessionUser } from "./types";
 import { endsSession } from "./sessionErrors";
+import type { ApiErrorShape, ListResult, SessionUser } from "./types";
 
 export class ApiError extends Error {
   status: number;

@@ -5,17 +5,23 @@ import { alpha, useTheme } from "@mui/material/styles";
 import CloseRounded from "@mui/icons-material/CloseRounded";
 import OpenInNewRounded from "@mui/icons-material/OpenInNewRounded";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
-import { StepFlag, StepFlagGroup, type StepFlagData } from "../StepFlag";
-import { groupStepFlags, stepFlagEvidence } from "../stepFlagGroups";
 import ArchiveRounded from "@mui/icons-material/ArchiveRounded";
 import CompareArrowsRounded from "@mui/icons-material/CompareArrowsRounded";
 import DownloadRounded from "@mui/icons-material/DownloadRounded";
 import InsightsRounded from "@mui/icons-material/InsightsRounded";
-import { RunComposer } from "../RunComposer";
-import { apiRequest } from "../api";
-import { useApi } from "../hooks";
-import type { DatasetRecord, DatasetTaskSummary, ReviewEvidenceProvenance, TaskRecord } from "../types";
-import { BenchmarkResult, EmptyState, ErrorState, LoadingState, MetricCard, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, displayValue, formatDate, reviewProcessingError } from "../components";
+import { apiRequest } from "../api/client";
+import type { DatasetRecord, DatasetTaskSummary, ReviewEvidenceProvenance, TaskRecord } from "../api/types";
+import { BenchmarkResult } from "../components/BenchmarkResult";
+import { MetricCard } from "../components/MetricCard";
+import { PageBreadcrumbs, PageHeader, Panel, SectionTitle } from "../components/Page";
+import { RunComposer } from "../components/RunComposer";
+import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { StepFlag, type StepFlagData, StepFlagGroup } from "../components/StepFlag";
+import { useApi } from "../hooks/useApi";
+import { displayValue, formatDate, reviewProcessingError } from "../lib/format";
+import { groupStepFlags, stepFlagEvidence } from "../lib/stepFlagGroups";
+import { asRecord } from "../lib/records";
 
 type Row = Record<string, unknown>;
 interface TaskHistory {
@@ -30,11 +36,10 @@ interface TaskHistory {
   [key: string]: unknown;
 }
 const quantity = (count: number | undefined, word: string) => `${count ?? "Not recorded"} ${word}${count === 1 ? "" : "s"}`;
-const object = (value: unknown): Row => value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
 const rowId = (row: Row): string => String(row.id || row.run_id || row.batch_id || "");
 const idList = (value: unknown): string[] => Array.isArray(value) ? value.map(String) : [];
 function evidenceCoverageText(value: unknown, summary: Row = {}, sourceStepCount?: number) {
-  const provenance = object(value) as ReviewEvidenceProvenance;
+  const provenance = asRecord(value) as ReviewEvidenceProvenance;
   const sourceIds = idList(provenance.source_image_step_ids);
   const suppliedIds = idList(provenance.supplied_image_step_ids);
   const citedIds = idList(provenance.cited_image_step_ids);
@@ -63,14 +68,14 @@ function buildSourceStepSlots(steps: NonNullable<TaskRecord["steps"]>) {
   return slots;
 }
 function reviewIdForFilter(review: Row, index: number) {
-  const nested = object(review.review);
+  const nested = asRecord(review.review);
   return String(review.result_id || review.review_result_id || nested.result_id || review.id || nested.id || `${review.run_id || review.batch_id || "review"}-${index}`);
 }
 function reviewFlagsAtStep(row: Row, stepId: string) {
-  const review = object(row.review);
+  const review = asRecord(row.review);
   const episodes = Array.isArray(review.episodes) ? review.episodes as Row[] : [];
   const reviewStep = (Array.isArray(review.steps) ? review.steps as Row[] : []).find(step => String(step.step_id || "") === stepId);
-  const refs = Array.isArray(reviewStep?.episode_refs) ? reviewStep!.episode_refs.map(ref => String(object(ref).episode_id || object(ref).id || ref)) : [];
+  const refs = Array.isArray(reviewStep?.episode_refs) ? reviewStep!.episode_refs.map(ref => String(asRecord(ref).episode_id || asRecord(ref).id || ref)) : [];
   const flags: StepFlagData[] = [];
   const relatedEpisodes: Row[] = [];
   for (const [index, episode] of episodes.entries()) {
@@ -78,7 +83,7 @@ function reviewFlagsAtStep(row: Row, stepId: string) {
     const onset = Array.isArray(episode.onset_step_ids) ? episode.onset_step_ids.map(String) : [];
     const first = String(episode.first_observed_step_id || onset[0] || "unknown");
     const atOnset = first === stepId || onset.includes(stepId);
-    const recovery = object(episode.recovery);
+    const recovery = asRecord(episode.recovery);
     const recoveryIds = Array.isArray(recovery.step_ids) ? recovery.step_ids.map(String) : [];
     const atRecovery = recoveryIds.includes(stepId);
     const related = refs.includes(episodeId);
@@ -115,20 +120,20 @@ export function DatasetTaskPage() {
   const sourceStepListRef = useRef<HTMLDivElement>(null);
   const history = detail.data;
   const taskSummary = history?.summary;
-  const definition = object(history?.task_definition);
-  const revision = object(history?.current_revision || history?.revision);
-  const task: TaskRecord = (history?.task || object(revision.content) || revision) as TaskRecord;
+  const definition = asRecord(history?.task_definition);
+  const revision = asRecord(history?.current_revision || history?.revision);
+  const task: TaskRecord = (history?.task || asRecord(revision.content) || revision) as TaskRecord;
   const dataset = history?.dataset || (datasetState.data && "dataset" in datasetState.data ? datasetState.data.dataset : datasetState.data) as DatasetRecord | undefined;
   const runs = Array.isArray(history?.runs) ? history!.runs! : [];
   const reviewRows: Row[] = Array.isArray(history?.reviews) ? history!.reviews! : runs.flatMap(run => {
-    const embedded = Array.isArray(run.reviews) ? run.reviews as Row[] : run.review ? [object(run.review)] : [];
+    const embedded = Array.isArray(run.reviews) ? run.reviews as Row[] : run.review ? [asRecord(run.review)] : [];
     return embedded.map(review => ({ ...review, run_id: review.run_id || rowId(run), run_name: review.run_name || run.run_name || run.name }));
   });
   const reviews: Row[] = reviewRows.map(review => {
     const runId = String(review.run_id || review.batch_id || "");
     const run = runs.find(item => rowId(item) === runId);
-    const runConfiguration = object(run?.configuration);
-    const execution = object(review.execution || run?.execution || runConfiguration.execution_snapshot);
+    const runConfiguration = asRecord(run?.configuration);
+    const execution = asRecord(review.execution || run?.execution || runConfiguration.execution_snapshot);
     return {
       ...review,
       run_id: runId || rowId(run || {}),
@@ -159,7 +164,7 @@ export function DatasetTaskPage() {
   const modelOptions = [...new Set(reviews.map(review => String(review.model || "")).filter(Boolean))].sort();
   const filteredReviews = reviews.filter(review => (backendFilter === "all" || review.backend === backendFilter) && (modelFilter === "all" || review.model === modelFilter));
   const reviewId = (review: Row) => {
-    const nested = object(review.review);
+    const nested = asRecord(review.review);
     return String(review.result_id || review.review_result_id || nested.result_id || review.id || nested.id || "");
   };
   const sourceRevisionId = (review: Row) => String(review.source_revision_id || "");
@@ -241,7 +246,7 @@ export function DatasetTaskPage() {
               if (!slot.step) return <Alert key={`gap-${slot.id}`} severity="warning" icon={false} sx={{ py: .1, px: 1.2, fontSize: 12 }}>Step {slot.id} is missing from the source record.</Alert>;
               const flags = visibleSourceReviews.flatMap(({ review, number }, reviewIndex) => {
                 const found = reviewFlagsAtStep(review, slot.id).flags;
-                const evidence = stepFlagEvidence(object(review.provenance || review.review_provenance), slot.id);
+                const evidence = stepFlagEvidence(asRecord(review.provenance || review.review_provenance), slot.id);
                 return found.map(flag => ({ ...flag, review: String(number), model: displayValue(review.model, "Not recorded"), run: displayValue(review.run_name, String(review.run_id || review.batch_id || "Not recorded")), evidence, key: `${reviewIdForFilter(review, reviewIndex)}-${flag.kind}-${flag.number}-${flag.label}` }));
               });
               const flagGroups = groupStepFlags(flags);
@@ -286,15 +291,15 @@ export function DatasetTaskPage() {
           </Box>
           {selectedSourceScreenshotUrl && !sourceScreenshotFailed && <Link href={selectedSourceScreenshotUrl} target="_blank" rel="noopener noreferrer" sx={{ display: "inline-flex", alignItems: "center", gap: .5, mt: .7, fontSize: 12 }}>Open screenshot at full size<OpenInNewRounded sx={{ fontSize: 14 }} /></Link>}
           {selectedSourceStep && <Stack gap={1.2} sx={{ mt: 1.4 }}>
-            <Stack direction={{ xs: "column", md: "row" }} gap={1.2}><Paper variant="outlined" sx={{ p: 1.2, flex: 1, minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>Recorded intent</Typography><Typography sx={{ mt: .3, fontSize: 14, overflowWrap: "anywhere" }}>{displayValue(object(selectedSourceStep.intent).text || selectedSourceStep.intent)}</Typography></Paper><Paper variant="outlined" sx={{ p: 1.2, flex: 1, minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>Action</Typography><Typography sx={{ mt: .3, fontSize: 14, overflowWrap: "anywhere" }}>{displayValue(selectedSourceStep.action)}</Typography></Paper><Paper variant="outlined" sx={{ p: 1.2, flex: 1, minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>Observation</Typography><Typography sx={{ mt: .3, fontSize: 14, overflowWrap: "anywhere" }}>{displayValue(selectedSourceStep.observation || selectedSourceStep.observed_ui)}</Typography></Paper></Stack>
+            <Stack direction={{ xs: "column", md: "row" }} gap={1.2}><Paper variant="outlined" sx={{ p: 1.2, flex: 1, minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>Recorded intent</Typography><Typography sx={{ mt: .3, fontSize: 14, overflowWrap: "anywhere" }}>{displayValue(asRecord(selectedSourceStep.intent).text || selectedSourceStep.intent)}</Typography></Paper><Paper variant="outlined" sx={{ p: 1.2, flex: 1, minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>Action</Typography><Typography sx={{ mt: .3, fontSize: 14, overflowWrap: "anywhere" }}>{displayValue(selectedSourceStep.action)}</Typography></Paper><Paper variant="outlined" sx={{ p: 1.2, flex: 1, minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>Observation</Typography><Typography sx={{ mt: .3, fontSize: 14, overflowWrap: "anywhere" }}>{displayValue(selectedSourceStep.observation || selectedSourceStep.observed_ui)}</Typography></Paper></Stack>
             <Box><Typography variant="h3" sx={{ mb: .5 }}>{sourceReviewFilter === "all" ? "Review overlays" : "Selected review"}</Typography><Typography color="text.secondary" sx={{ mb: 1, fontSize: 13 }}>Flags are model assessments. Use the evidence and review status below before accepting a diagnosis.</Typography>{!visibleSourceReviews.length ? <Typography color="text.secondary" sx={{ fontSize: 13 }}>No saved reviews are available to overlay.</Typography> : <Stack gap={.8}>{visibleSourceReviews.map(({ review, number }, reviewIndex) => {
               const evidence = reviewFlagsAtStep(review, selectedSourceStepId);
-              const provenance = object(review.provenance || review.review_provenance);
+              const provenance = asRecord(review.provenance || review.review_provenance);
               const textOnly = provenance.evidence_mode === "text_only" || (!Array.isArray(provenance.supplied_image_step_ids) && Array.isArray(provenance.inspected_image_step_ids) && provenance.inspected_image_step_ids.length === 0);
               const sent = Array.isArray(provenance.supplied_image_step_ids) ? (idList(provenance.supplied_image_step_ids).includes(selectedSourceStepId) ? "yes" : "no") : textOnly ? "no" : "not recorded";
               const cited = Array.isArray(provenance.cited_image_step_ids) ? (idList(provenance.cited_image_step_ids).includes(selectedSourceStepId) ? "yes" : "no") : textOnly ? "no" : "not recorded";
 
-              return <Paper key={reviewIdForFilter(review, reviewIndex)} variant="outlined" sx={{ p: 1.2, borderRadius: 2 }}><Box sx={{ display: "grid", gridTemplateColumns: "64px minmax(0, 1fr)", columnGap: 1, rowGap: .25, "& .MuiTypography-root": { fontSize: 12, overflowWrap: "anywhere" } }}><Typography color="text.secondary">Review</Typography><Typography fontWeight={700}>{number}</Typography><Typography color="text.secondary">Model</Typography><Typography>{displayValue(review.model, "Not recorded")}</Typography><Typography color="text.secondary">Harness</Typography><Typography>{displayValue(review.backend, "Not recorded")}</Typography><Typography color="text.secondary">Run</Typography><Link component={RouterLink} to={`/runs/${encodeURIComponent(String(review.run_id || review.batch_id || ""))}`} sx={{ fontSize: 12, overflowWrap: "anywhere" }}>{displayValue(review.run_name, `Run ${reviewIndex + 1}`)}</Link></Box><Stack direction="row" gap={.6} flexWrap="wrap" sx={{ mt: .7 }}><Chip size="small" variant="outlined" label={`Screenshot sent to this review: ${sent}`} /><Chip size="small" variant="outlined" label={`Frame cited by this review: ${cited}`} /></Stack>{textOnly && <Alert severity="info" sx={{ mt: .8 }}>This review received text only. Screenshots visible above were not supplied to that model. Its original assessment is preserved.</Alert>}{evidence.flags.length ? <Stack gap={.5} sx={{ mt: .8 }}>{evidence.flags.map((flag, flagIndex) => <StepFlag key={`${flag.kind}-${flagIndex}`} {...flag} />)}</Stack> : <Typography color="text.secondary" sx={{ mt: .6, fontSize: 13 }}>No problem or recovery flag recorded for this step.</Typography>}{evidence.relatedEpisodes.map((episode, episodeIndex) => <Paper key={`${episode.episode_id || episodeIndex}-detail`} variant="outlined" sx={{ mt: .8, p: 1, borderRadius: 1.5 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>{String(episode.label_name || episode.label_id || "Problem details")}</Typography><Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}><strong>Definition:</strong> {displayValue(episode.label_description || episode.label_definition || episode.definition || episode.description, "Draft label: use the evidence-backed mechanism below.")}</Typography><Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}><strong>Mechanism:</strong> {displayValue(episode.mechanism)}</Typography></Paper>)}{evidence.reviewStep && <><StatusTag value={evidence.reviewStep.review_status === "insufficient_evidence" ? "Cannot confirm from evidence" : evidence.reviewStep.review_status || "review recorded"} /><Typography sx={{ mt: .5, fontSize: 13, whiteSpace: "pre-wrap" }}>{displayValue(evidence.reviewStep.assessment, "No assessment recorded.")}</Typography>{evidence.reviewStep.intent && <Typography sx={{ mt: .6, fontSize: 13 }}><strong>Reviewer intent interpretation:</strong> {displayValue(object(evidence.reviewStep.intent).kind)} · {displayValue(object(evidence.reviewStep.intent).text || evidence.reviewStep.intent)}</Typography>}{evidence.reviewStep.observed_ui && <Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}>Observed: {displayValue(evidence.reviewStep.observed_ui)}</Typography>}{evidence.reviewStep.effect && <Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}>Effect: {displayValue(evidence.reviewStep.effect)}</Typography>}</>}</Paper>;
+              return <Paper key={reviewIdForFilter(review, reviewIndex)} variant="outlined" sx={{ p: 1.2, borderRadius: 2 }}><Box sx={{ display: "grid", gridTemplateColumns: "64px minmax(0, 1fr)", columnGap: 1, rowGap: .25, "& .MuiTypography-root": { fontSize: 12, overflowWrap: "anywhere" } }}><Typography color="text.secondary">Review</Typography><Typography fontWeight={700}>{number}</Typography><Typography color="text.secondary">Model</Typography><Typography>{displayValue(review.model, "Not recorded")}</Typography><Typography color="text.secondary">Harness</Typography><Typography>{displayValue(review.backend, "Not recorded")}</Typography><Typography color="text.secondary">Run</Typography><Link component={RouterLink} to={`/runs/${encodeURIComponent(String(review.run_id || review.batch_id || ""))}`} sx={{ fontSize: 12, overflowWrap: "anywhere" }}>{displayValue(review.run_name, `Run ${reviewIndex + 1}`)}</Link></Box><Stack direction="row" gap={.6} flexWrap="wrap" sx={{ mt: .7 }}><Chip size="small" variant="outlined" label={`Screenshot sent to this review: ${sent}`} /><Chip size="small" variant="outlined" label={`Frame cited by this review: ${cited}`} /></Stack>{textOnly && <Alert severity="info" sx={{ mt: .8 }}>This review received text only. Screenshots visible above were not supplied to that model. Its original assessment is preserved.</Alert>}{evidence.flags.length ? <Stack gap={.5} sx={{ mt: .8 }}>{evidence.flags.map((flag, flagIndex) => <StepFlag key={`${flag.kind}-${flagIndex}`} {...flag} />)}</Stack> : <Typography color="text.secondary" sx={{ mt: .6, fontSize: 13 }}>No problem or recovery flag recorded for this step.</Typography>}{evidence.relatedEpisodes.map((episode, episodeIndex) => <Paper key={`${episode.episode_id || episodeIndex}-detail`} variant="outlined" sx={{ mt: .8, p: 1, borderRadius: 1.5 }}><Typography sx={{ fontWeight: 700, fontSize: 13 }}>{String(episode.label_name || episode.label_id || "Problem details")}</Typography><Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}><strong>Definition:</strong> {displayValue(episode.label_description || episode.label_definition || episode.definition || episode.description, "Draft label: use the evidence-backed mechanism below.")}</Typography><Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}><strong>Mechanism:</strong> {displayValue(episode.mechanism)}</Typography></Paper>)}{evidence.reviewStep && <><StatusTag value={evidence.reviewStep.review_status === "insufficient_evidence" ? "Cannot confirm from evidence" : evidence.reviewStep.review_status || "review recorded"} /><Typography sx={{ mt: .5, fontSize: 13, whiteSpace: "pre-wrap" }}>{displayValue(evidence.reviewStep.assessment, "No assessment recorded.")}</Typography>{evidence.reviewStep.intent && <Typography sx={{ mt: .6, fontSize: 13 }}><strong>Reviewer intent interpretation:</strong> {displayValue(asRecord(evidence.reviewStep.intent).kind)} · {displayValue(asRecord(evidence.reviewStep.intent).text || evidence.reviewStep.intent)}</Typography>}{evidence.reviewStep.observed_ui && <Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}>Observed: {displayValue(evidence.reviewStep.observed_ui)}</Typography>}{evidence.reviewStep.effect && <Typography color="text.secondary" sx={{ mt: .4, fontSize: 12.5 }}>Effect: {displayValue(evidence.reviewStep.effect)}</Typography>}</>}</Paper>;
             })}</Stack>}</Box>
           </Stack>}
         </Box>
@@ -324,9 +329,9 @@ export function DatasetTaskPage() {
             const jobs = Array.isArray(run.jobs) ? run.jobs as Row[] : [];
             const latestJob = jobs.at(-1);
             const failureJob = [...jobs].reverse().find(job => String(job.status || "").toLowerCase() === "failed" || Boolean(job.error));
-            const latestReview = object((Array.isArray(run.reviews) ? run.reviews as Row[] : []).at(-1));
-            const latestReviewData = object(latestReview.review);
-            const reviewSummary = object(run.review_summary);
+            const latestReview = asRecord((Array.isArray(run.reviews) ? run.reviews as Row[] : []).at(-1));
+            const latestReviewData = asRecord(latestReview.review);
+            const reviewSummary = asRecord(run.review_summary);
             const processingStatus = String(run.processing_status || run.status || "not started").replaceAll("_", " ");
             const reviewCount = Number(reviewSummary.review_count ?? (Array.isArray(run.reviews) ? run.reviews.length : 0));
             const reviewEpisodes = Array.isArray(latestReviewData.episodes) ? latestReviewData.episodes as Row[] : undefined;
@@ -364,7 +369,7 @@ export function DatasetTaskPage() {
             const run = runs.find(item => rowId(item) === runId);
             const memberId = String(review.member_id || run?.member_id || "");
             const id = reviewId(review);
-            const nestedReview = object(review.review);
+            const nestedReview = asRecord(review.review);
             const revisionId = sourceRevisionId(review);
             const runArchived = Boolean(run?.archived || run?.archived_at);
             const reviewParams = new URLSearchParams();

@@ -4,9 +4,11 @@ import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, 
 import AddRounded from "@mui/icons-material/AddRounded";
 import PersonAddAlt1Rounded from "@mui/icons-material/PersonAddAlt1Rounded";
 import DeleteOutlineRounded from "@mui/icons-material/DeleteOutlineRounded";
-import { apiRequest } from "../api";
-import { useResourceList } from "../hooks";
-import { EmptyState, ErrorState, LoadingState, PageHeader, Panel, SectionTitle, StatusTag } from "../components";
+import { apiRequest } from "../api/client";
+import { PageHeader, Panel, SectionTitle } from "../components/Page";
+import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { useResourceList } from "../hooks/useResourceList";
 
 // Member emails are only returned to roles that may manage people; others see names and roles.
 interface Member { id?: string; user_id?: string; name?: string; email?: string | null; role?: string; active?: boolean; [key: string]: unknown }

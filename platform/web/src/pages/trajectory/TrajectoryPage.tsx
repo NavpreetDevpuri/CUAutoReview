@@ -3,7 +3,6 @@ import { Link as RouterLink, useNavigate, useParams, useSearchParams } from "rea
 import { Alert, Avatar, Box, Button, Chip, Collapse, Dialog, DialogContent, DialogTitle, Divider, IconButton, InputAdornment, Link, Paper, Stack, TextField, Typography, useMediaQuery } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import FormatListNumberedRounded from "@mui/icons-material/FormatListNumberedRounded";
-import { StepFlag } from "../StepFlag";
 import ArrowBackRounded from "@mui/icons-material/ArrowBackRounded";
 import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import ExpandLessRounded from "@mui/icons-material/ExpandLessRounded";
@@ -11,198 +10,20 @@ import ExpandMoreRounded from "@mui/icons-material/ExpandMoreRounded";
 import SearchRounded from "@mui/icons-material/SearchRounded";
 import CloseRounded from "@mui/icons-material/CloseRounded";
 import OpenInNewRounded from "@mui/icons-material/OpenInNewRounded";
-import { apiRequest } from "../api";
-import { useApi } from "../hooks";
-import { RUN_TASK_PAGING } from "../pagination";
-import type { BatchRecord, Episode, ReviewEvidenceProvenance, TaskRecord, TrajectoryStep } from "../types";
-import { BenchmarkResult, EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, displayValue, formatDate, reviewProcessingError } from "../components";
-
-type AnyRecord = Record<string, unknown>;
-interface BatchTaskRow extends TaskRecord { review_kind?: string; review_status?: string; reviewed_steps?: number; total_steps?: number; }
-interface TrajectoryResponse {
-  batch?: BatchRecord;
-  member?: BatchTaskRow & { task?: TaskRecord };
-  task?: TaskRecord;
-  review?: TaskRecord["review"];
-  review_history?: AnyRecord[];
-  review_provenance?: ReviewEvidenceProvenance | null;
-  artifacts?: AnyRecord[];
-  feedback?: AnyRecord[];
-  [key: string]: unknown;
-}
-
-function idOf(value: unknown): string { return value === undefined || value === null ? "" : String(value); }
-function record(value: unknown): AnyRecord { return value && typeof value === "object" && !Array.isArray(value) ? value as AnyRecord : {}; }
-function text(value: unknown, fallback = "Not recorded"): string {
-  if (value === null || value === undefined || value === "") return fallback;
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) return value.map(item => text(item)).join(", ");
-  const inner = record(value);
-  if (typeof inner.text === "string") return inner.text;
-  return displayValue(value, fallback);
-}
-function outcomeLabel(value: unknown): string {
-  if (value === true) return "passed";
-  if (value === false) return "failed";
-  return text(value, "unknown");
-}
-function stepsOf(task?: TaskRecord | null): TrajectoryStep[] {
-  return Array.isArray(task?.steps) ? task.steps : [];
-}
-function stepId(step: TrajectoryStep): string { return idOf(step.step_id ?? step.id); }
-function reviewFor(row: BatchTaskRow | TaskRecord | undefined): TaskRecord["review"] {
-  return row?.review && typeof row.review === "object" ? row.review : undefined;
-}
-function episodesOf(review?: TaskRecord["review"]): Episode[] { return Array.isArray(review?.episodes) ? review.episodes : []; }
-function getEpisodeId(episode: Episode): string { return idOf(episode.episode_id ?? episode.id); }
-function stepRefs(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.map(item => typeof item === "object" && item !== null ? idOf((item as AnyRecord).step_id ?? (item as AnyRecord).id) : idOf(item)).filter(Boolean);
-}
-function refsWithRole(value: unknown): { episodeId: string; role: string }[] {
-  if (!Array.isArray(value)) return [];
-  return value.flatMap(item => {
-    if (typeof item === "string" || typeof item === "number") return [{ episodeId: String(item), role: "" }];
-    const ref = record(item);
-    const episodeId = idOf(ref.episode_id ?? ref.id);
-    return episodeId ? [{ episodeId, role: String(ref.role || "").toLowerCase() }] : [];
-  });
-}
-function recoveryIds(episode: Episode): string[] {
-  const recovery = record(episode.recovery);
-  return stepRefs(recovery.step_ids ?? recovery.steps);
-}
-function relatedIds(episode: Episode): string[] {
-  return stepRefs(episode.related_step_ids ?? episode.related_steps);
-}
-function labelFor(episode: Episode): string { return text(episode.label_name ?? episode.label_id, "Unlabeled"); }
-const labelTitles: Record<string, string> = {
-  "Repeated mis-targeted UI activation": "Repeated clicks do not activate the target",
-  "Wrong UI target activated": "Wrong control activated",
-  "Repeated ineffective modal dismissal": "Dialog remains open after dismissal attempts",
-  "Online resource blocked by proxy or network path": "Online resource cannot be reached",
-  "Malformed command-entry key sequence": "Command entered incorrectly",
-  "Retrieved information does not match requested scope": "Result does not match the requested information",
-  "Numeric entry appended in wrong field": "Text entered in the wrong field",
-  "Required dialog action left incomplete": "Dialog left unfinished",
-  "Repeated intended-control activation miss": "Repeated clicks do not activate the target",
-  "Unintended control activation": "Wrong control activated",
-  "Persistent modal after dismissal attempts": "Dialog stays open after attempts to close it",
-  "Network-path resource blockage": "Network error blocks the page",
-  "Malformed command-entry sequence": "Command entered incorrectly",
-  "Retrieved scope mismatch": "Result does not match the requested information",
-  "Entry into still-focused wrong field": "Text entered in the wrong field",
-  "Dialog abandoned before correction and confirmation": "Dialog left unfinished",
-};
-function displayedLabel(name: string): string { return labelTitles[name] || name; }
-const labelPalette = [
-  { light: { bg: "#eaf1ff", fg: "#345fc0", border: "#b8c9ef" }, dark: { bg: "#253a60", fg: "#c1d4ff", border: "#5272a7" } },
-  { light: { bg: "#e7f5ee", fg: "#19704d", border: "#b1dbc6" }, dark: { bg: "#214638", fg: "#b8e8d0", border: "#497961" } },
-  { light: { bg: "#fff2da", fg: "#946311", border: "#e8d2a4" }, dark: { bg: "#49391f", fg: "#f3d18c", border: "#896b35" } },
-  { light: { bg: "#f0eaff", fg: "#6845a7", border: "#d2c2ed" }, dark: { bg: "#392f52", fg: "#d6c6ff", border: "#7462a4" } },
-  { light: { bg: "#ffebeb", fg: "#aa3a40", border: "#e5b7b9" }, dark: { bg: "#4a2c32", fg: "#ffc1c6", border: "#97575e" } },
-  { light: { bg: "#e5f5f6", fg: "#176d73", border: "#acd9dc" }, dark: { bg: "#1e4144", fg: "#b9e9eb", border: "#4c8386" } },
-  { light: { bg: "#fce9f2", fg: "#9b3c6b", border: "#e8bfd2" }, dark: { bg: "#482c3b", fg: "#f7c4db", border: "#985b79" } },
-  { light: { bg: "#eef1f4", fg: "#495766", border: "#c7cdd4" }, dark: { bg: "#303945", fg: "#d0d7df", border: "#687583" } },
-];
-function labelColor(key: string): typeof labelPalette[number] {
-  const canonical = /^c(\d+)$/i.exec(key);
-  const index = canonical ? Number(canonical[1]) - 1 : [...key].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) >>> 0, 0);
-  return labelPalette[Math.abs(index) % labelPalette.length];
-}
-function LabelChip({ id, label, count }: { id?: string; label: string; count?: number }) {
-  const theme = useTheme();
-  const colors = labelColor(id || label);
-  const color = theme.palette.mode === "dark" ? colors.dark : colors.light;
-  return <Chip size="small" label={count === undefined ? label : `${label} · ${count}`} sx={{ maxWidth: "100%", fontWeight: 750, bgcolor: color.bg, color: color.fg, border: "1px solid", borderColor: color.border }} />;
-}
-function resolveEpisodeLabel(episode: Episode, labels: AnyRecord[], proposals: AnyRecord[]) {
-  const episodeLabelId = idOf(episode.label_id);
-  const pinned = labels.find(item => episodeLabelId && String(item.id) === episodeLabelId);
-  const recordedName = labelFor(episode);
-  const draft = proposals.find(item => episodeLabelId && String(item.label_id || item.id || item.proposal_id) === episodeLabelId)
-    || proposals.find(item => String(item.name || "") === recordedName);
-  const revision = record(draft?.latest_revision);
-  const name = String(pinned?.name || draft?.name || revision.name || recordedName);
-  const pinnedDescription = typeof pinned?.description === "string" && pinned.description.trim() ? pinned.description : undefined;
-  const draftDescription = episode.label_description || draft?.description || revision.description;
-  return {
-    id: String(pinned?.id || episode.label_id || draft?.id || ""),
-    rawName: recordedName,
-    displayName: displayedLabel(name),
-    definition: pinnedDescription || draftDescription,
-    definitionSource: pinnedDescription ? "Pinned taxonomy definition" : draftDescription ? "Recorded draft definition (not approved)" : "Definition",
-  };
-}
-function labelDefinitionText(resolved: ReturnType<typeof resolveEpisodeLabel>): string {
-  return resolved.definition ? `${resolved.definitionSource}: ${text(resolved.definition)}` : "Not recorded in the pinned taxonomy or draft proposals.";
-}
-function taskSummary(task: TaskRecord) {
-  const review = reviewFor(task);
-  const hasEpisodeData = Boolean(review && Array.isArray(review.episodes));
-  const episodes = episodesOf(review);
-  const flagged = new Set<string>();
-  const recovery = new Set<string>();
-  episodes.forEach(episode => {
-    stepRefs(episode.onset_step_ids).forEach(id => flagged.add(id));
-    recoveryIds(episode).forEach(id => recovery.add(id));
-  });
-  const labelGroups = new Map<string, { id: string; label: string; count: number }>();
-  for (const episode of episodes) {
-    const original = labelFor(episode);
-    if (original === "Unlabeled") continue;
-    const id = idOf(episode.label_id);
-    const key = id || original;
-    const group = labelGroups.get(key) || { id, label: displayedLabel(original), count: 0 };
-    group.count += 1;
-    labelGroups.set(key, group);
-  }
-  const labels = [...labelGroups.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-  return {
-    episodes,
-    problemCount: hasEpisodeData ? episodes.length : null,
-    flaggedCount: hasEpisodeData ? flagged.size : null,
-    recoveryCount: hasEpisodeData ? recovery.size : null,
-    labelCount: hasEpisodeData ? labels.length : null,
-    labels,
-  };
-}
-function taskOutcome(row: TaskRecord): unknown { return row.outcome ?? row.evaluator_outcome ?? record(row.source).outcome; }
-function taskKey(row: TaskRecord): string { return idOf(row.task_id ?? row.id); }
-function reviewAssessmentLabel(row: TaskRecord, review = reviewFor(row)): string {
-  if (review) return String(review.result || (episodesOf(review).length ? "Issues recorded" : "No issues recorded"));
-  const summary = record(row.review_summary);
-  if (Number(summary.review_count || 0) > 0) return "Assessment recorded";
-  if (String(row.processing_status || row.status || "").toLowerCase() === "failed") return "Not available: review processing failed";
-  return "Not recorded";
-}
-function reviewProcessingLabel(row: TaskRecord): string {
-  return `Review processing: ${String(row.processing_status || row.status || "not started").replaceAll("_", " ")}`;
-}
-
-function firstProblemAnchor(task: TaskRecord, episode: Episode): string {
-  if (String(task.review?.schema_version) === "2" && episode.first_observed_step_id !== undefined && episode.first_observed_step_id !== null) return String(episode.first_observed_step_id);
-  const onset = new Set(stepRefs(episode.onset_step_ids));
-  return (task.steps || []).map(stepId).find(id => onset.has(id)) || stepRefs(episode.onset_step_ids)[0] || "";
-}
-function taskProblemLinks(task: TaskRecord, episode: Episode): { id: string; role: string }[] {
-  const anchor = firstProblemAnchor(task, episode);
-  const observedAnchor = String(task.review?.schema_version) === "2" && episode.first_observed_step_id !== undefined && episode.first_observed_step_id !== null;
-  const onset = stepRefs(episode.onset_step_ids);
-  const links: { id: string; role: string }[] = [];
-  if (observedAnchor && anchor && !onset.includes(anchor)) links.push({ id: anchor, role: "First observed here" });
-  for (const id of onset) links.push({ id, role: id === anchor ? (observedAnchor ? "First observed here" : "First flagged here") : observedAnchor ? "Also observed here" : "Also flagged here" });
-  for (const id of recoveryIds(episode)) links.push({ id, role: "Recovery step" });
-  const episodeId = getEpisodeId(episode);
-  for (const step of task.steps || []) {
-    const id = stepId(step);
-    if (!id || id === anchor || onset.includes(id) || recoveryIds(episode).includes(id)) continue;
-    if (refsWithRole(step.episode_refs).some(ref => ref.episodeId === episodeId)) links.push({ id, role: "Related step" });
-  }
-  const seen = new Set<string>();
-  return links.filter(link => { const key = `${link.id}/${link.role}`; if (seen.has(key)) return false; seen.add(key); return true; });
-}
+import { apiRequest } from "../../api/client";
+import { RUN_TASK_PAGING } from "../../api/pagination";
+import type { BatchRecord, ReviewEvidenceProvenance, TaskRecord } from "../../api/types";
+import { BenchmarkResult } from "../../components/BenchmarkResult";
+import { PageBreadcrumbs, PageHeader, Panel, SectionTitle } from "../../components/Page";
+import { EmptyState, ErrorState, LoadingState } from "../../components/States";
+import { StatusTag } from "../../components/StatusTag";
+import { StepFlag } from "../../components/StepFlag";
+import { useApi } from "../../hooks/useApi";
+import { formatDate, reviewProcessingError } from "../../lib/format";
+import { asRecord } from "../../lib/records";
+import { EpisodeCard } from "./EpisodeCard";
+import { LabelChip } from "./LabelChip";
+import { type AnyRecord, type BatchTaskRow, displayedLabel, episodesOf, firstProblemAnchor, getEpisodeId, idOf, labelDefinitionText, labelFor, outcomeLabel, resolveEpisodeLabel, reviewAssessmentLabel, reviewFor, reviewProcessingLabel, roleBadgeLabel, rolesForStep, stepId, stepRefs, stepsOf, taskKey, taskOutcome, taskProblemLinks, taskSummary, text, type TrajectoryResponse } from "./trajectoryModel";
 
 export function TrajectoryPage() {
   const { id: batchId = "", taskId = "" } = useParams();
@@ -224,7 +45,7 @@ export function TrajectoryPage() {
   const normalizedTask: TaskRecord | undefined = task ? { ...task, task_id: taskKey(task) || taskId, review: review || task.review } : undefined;
   const batchRecord = batch.data?.run || batch.data?.batch || batch.data as BatchRecord | null;
   const sourceDatasets = Array.isArray((batch.data as AnyRecord | null)?.source_datasets) ? (batch.data as AnyRecord).source_datasets as AnyRecord[] : [];
-  const datasetId = String(normalizedTask?.dataset_id || record(normalizedTask?.source).dataset_id || sourceDatasets[0]?.id || sourceDatasets[0]?.dataset_id || batchRecord?.dataset_id || "");
+  const datasetId = String(normalizedTask?.dataset_id || asRecord(normalizedTask?.source).dataset_id || sourceDatasets[0]?.id || sourceDatasets[0]?.dataset_id || batchRecord?.dataset_id || "");
   // The run already lists its source datasets by name; only fetch when that name is unknown, since
   // run-only access does not include reading the source dataset itself.
   const knownSource = sourceDatasets.find(item => String(item.id || item.dataset_id || "") === datasetId);
@@ -272,7 +93,7 @@ export function TrajectoryPage() {
     if (stepPickerOpen) requestAnimationFrame(() => stepListRef.current?.querySelector<HTMLElement>('[aria-current="step"]')?.scrollIntoView({ block: "center" }));
   }, [stepPickerOpen]);
   const currentTask = normalizedTask;
-  const reviewProvenance = response?.review_provenance || currentTask?.review_provenance || member?.review_provenance || (Array.isArray(response?.review_history) ? record(response.review_history.at(-1)?.provenance) as ReviewEvidenceProvenance : undefined);
+  const reviewProvenance = response?.review_provenance || currentTask?.review_provenance || member?.review_provenance || (Array.isArray(response?.review_history) ? asRecord(response.review_history.at(-1)?.provenance) as ReviewEvidenceProvenance : undefined);
   const currentJobs = Array.isArray(currentTask?.jobs) ? currentTask.jobs : [];
   const failedJob = [...currentJobs].reverse().find(job => String(job.status || "").toLowerCase() === "failed" || Boolean(job.error));
   const failureJobId = idOf(failedJob?.job_id || failedJob?.id || currentTask?.job_id);
@@ -326,7 +147,7 @@ export function TrajectoryPage() {
     finally { setFeedbackBusy(false); }
   };
   const selectedReviewStep = (review?.steps || []).find(item => idOf(item.step_id) === selectedStepId);
-  const provenance = record(reviewProvenance);
+  const provenance = asRecord(reviewProvenance);
   const suppliedImageIds = stepRefs(provenance.supplied_image_step_ids);
   const citedImageIds = stepRefs(provenance.cited_image_step_ids);
   const sourceImageIds = stepRefs(provenance.source_image_step_ids);
@@ -351,7 +172,7 @@ export function TrajectoryPage() {
   if (detailState.error) return <ErrorState message={detailState.error} onRetry={detailState.reload} />;
   if (!currentTask) return <EmptyState title="Task trajectory not found" description="This run task may no longer be available, or access may have changed." action={<Button component={RouterLink} to={`/runs/${encodeURIComponent(batchId)}`} variant="outlined">Back to run</Button>} />;
   const pinnedRelease = (batchRecord?.taxonomy_release || taxonomyState.data?.releases?.find(item => String(item.id) === String(batchRecord?.taxonomy_release_id)) || {}) as AnyRecord;
-  const pinnedLabels = Array.isArray(pinnedRelease.labels) ? pinnedRelease.labels as AnyRecord[] : Array.isArray(record(pinnedRelease.content).labels) ? record(pinnedRelease.content).labels as AnyRecord[] : [];
+  const pinnedLabels = Array.isArray(pinnedRelease.labels) ? pinnedRelease.labels as AnyRecord[] : Array.isArray(asRecord(pinnedRelease.content).labels) ? asRecord(pinnedRelease.content).labels as AnyRecord[] : [];
   const draftProposals = taxonomyState.data?.proposals || [];
 
   const datasetRecord = datasetState.data?.dataset || datasetState.data as AnyRecord | null;
@@ -396,7 +217,7 @@ export function TrajectoryPage() {
         {recordedRawUrl && <Button size="small" variant="text" href={recordedRawUrl}>Raw record</Button>}
       </Stack>
     </Stack>
-    {record(currentTask.provenance).saved_replay === true || (Array.isArray(response?.review_history) && record(response.review_history.at(-1)).backend === "saved_replay") ? <Alert severity="info" sx={{ mb: 1.5 }}><strong>Saved replay.</strong> This review reuses retained evidence and made no new model calls.</Alert> : <Alert severity="info" sx={{ mb: 1.5 }}>The viewer displays the saved task and review. Opening evidence does not start new model calls.</Alert>}
+    {asRecord(currentTask.provenance).saved_replay === true || (Array.isArray(response?.review_history) && asRecord(response.review_history.at(-1)).backend === "saved_replay") ? <Alert severity="info" sx={{ mb: 1.5 }}><strong>Saved replay.</strong> This review reuses retained evidence and made no new model calls.</Alert> : <Alert severity="info" sx={{ mb: 1.5 }}>The viewer displays the saved task and review. Opening evidence does not start new model calls.</Alert>}
     <PageBreadcrumbs items={[{ label: "Datasets", to: "/datasets" }, { label: datasetName, to: datasetId ? `/datasets/${encodeURIComponent(datasetId)}` : undefined }, { label: currentTask.title || currentTask.task_id, to: datasetId ? `/datasets/${encodeURIComponent(datasetId)}/tasks/${encodeURIComponent(String(currentTask.task_definition_id || taskId))}` : undefined }, { label: "Review" }]} />
     <PageHeader eyebrow="TRAJECTORY REVIEW" title={currentTask.title || currentTask.task_id} description={`${currentTask.task_id} · ${batchRecord?.name || "Run"}`} action={<Stack gap={.7} alignItems="flex-start"><BenchmarkResult task={currentTask} compact /><StatusTag value={reviewProcessingStatus} /><StatusTag value={`Review assessment: ${reviewAssessmentStatus}`} /></Stack>} />
     <Panel sx={{ mb: 2, p: { xs: 1.2, md: 1.5 } }}>
@@ -504,80 +325,6 @@ export function TrajectoryPage() {
       </DialogContent>
     </Dialog>
   </Box>;
-}
-
-function roleBadgeLabel(kind: string, observedAnchor: boolean): string {
-  if (kind === "first") return observedAnchor ? "First observed here" : "First flagged here";
-  if (kind === "onset") return observedAnchor ? "Also observed here" : "Also flagged here";
-  if (kind === "recovery") return "Recovery step";
-  return "Related step";
-}
-
-interface StepRole { episodeId: string; number: number; kind: "first" | "onset" | "recovery" | "related"; firstObserved: boolean; }
-function rolesForStep(id: string, trajectory: TrajectoryStep[], episodes: Episode[], review: TaskRecord["review"]): StepRole[] {
-  if (!id) return [];
-  return episodes.flatMap((episode, index) => {
-    const episodeId = getEpisodeId(episode);
-    const number = Number(episode.problem_number) || index + 1;
-    const explicitOnsets = stepRefs(episode.onset_step_ids);
-    const firstObservedId = idOf(episode.first_observed_step_id);
-    const firstObserved = String(review?.schema_version) === "2" && Boolean(firstObservedId);
-    const anchor = firstObserved ? firstObservedId : explicitOnsets.find(candidate => trajectory.some(step => stepId(step) === candidate)) || explicitOnsets[0] || "";
-    const refs = [
-      ...trajectory.filter(step => stepId(step) === id).flatMap(step => refsWithRole(step.episode_refs)),
-      ...(review?.steps || []).filter(step => idOf(step.step_id) === id).flatMap(step => refsWithRole(step.episode_refs)),
-    ];
-    const role = refs.find(ref => ref.episodeId === episodeId)?.role;
-    const result: StepRole[] = [];
-    if (id === anchor) result.push({ episodeId, number, kind: "first", firstObserved });
-    else if (explicitOnsets.includes(id) || role === "onset") result.push({ episodeId, number, kind: "onset", firstObserved });
-    if (recoveryIds(episode).includes(id) || role === "recovery") result.push({ episodeId, number, kind: "recovery", firstObserved });
-    if (relatedIds(episode).includes(id) || role === "related" || (refs.some(ref => ref.episodeId === episodeId) && !explicitOnsets.includes(id) && !recoveryIds(episode).includes(id) && id !== anchor)) result.push({ episodeId, number, kind: "related", firstObserved });
-    return result;
-  });
-}
-function EpisodeCard({ episode, index, steps, review, labels, proposals, onStep }: { episode: Episode; index: number; steps: TrajectoryStep[]; review?: TaskRecord["review"]; labels: AnyRecord[]; proposals: AnyRecord[]; onStep: (id: string) => void }) {
-  const id = getEpisodeId(episode);
-  const observedAnchor = String(review?.schema_version) === "2" && episode.first_observed_step_id !== undefined && episode.first_observed_step_id !== null;
-  const onset = stepRefs(episode.onset_step_ids);
-  const explicitAnchor = observedAnchor ? idOf(episode.first_observed_step_id) : "";
-  const anchorId = explicitAnchor || onset.slice().sort((a, b) => {
-    const ai = steps.findIndex(step => stepId(step) === a); const bi = steps.findIndex(step => stepId(step) === b);
-    return ai < 0 ? (bi < 0 ? 0 : 1) : bi < 0 ? -1 : ai - bi;
-  })[0] || "";
-  const recovery = recoveryIds(episode);
-  const explicitlyRelated = relatedIds(episode);
-  const onsetSet = new Set(onset);
-  const recoverySet = new Set(recovery);
-  const relatedFromLinks = steps.filter(step => {
-    if (!refsWithRole(step.episode_refs).some(ref => ref.episodeId === id)) return false;
-    const linkedStep = stepId(step);
-    const explicitRole = refsWithRole(step.episode_refs).find(ref => ref.episodeId === id)?.role;
-    return explicitRole === "related" || (!onsetSet.has(linkedStep) && !recoverySet.has(linkedStep) && linkedStep !== anchorId);
-  }).map(stepId);
-  const related = [...new Set([...explicitlyRelated, ...relatedFromLinks])];
-  const resolvedLabel = resolveEpisodeLabel(episode, labels, proposals);
-  const recordedLabel = resolvedLabel.rawName;
-  return <Paper variant="outlined" sx={{ p: 1.1, borderRadius: 2 }}>
-    <Stack direction="row" justifyContent="space-between" gap={.6} alignItems="flex-start"><Typography sx={{ fontWeight: 750, fontSize: 13.5 }}>Problem {Number(episode.problem_number) || index + 1}</Typography><StatusTag value={episode.outcome_contribution} /></Stack>
-    <Box sx={{ mt: .6 }}><LabelChip id={resolvedLabel.id} label={resolvedLabel.displayName} /></Box>
-    <Typography color="text.secondary" sx={{ mt: .6, fontSize: 13 }}>{labelDefinitionText(resolvedLabel)}</Typography>
-    <Box component="details" sx={{ mt: .4 }}><Box component="summary" sx={{ cursor: "pointer", color: "primary.main", fontSize: 12.5, fontWeight: 650 }}>Recorded label</Box><Typography color="text.secondary" sx={{ mt: .3, fontSize: 12 }}>Name: {recordedLabel}{episode.label_id ? ` · ID: ${episode.label_id}` : " · ID: Not recorded"}</Typography></Box>
-    <Typography color="text.secondary" sx={{ mt: .45, fontSize: 13, whiteSpace: "pre-wrap" }}>{text(episode.mechanism, "Problem description not recorded.")}</Typography>
-    <Stack gap={.65} sx={{ mt: .9 }}>
-      {!!(onset.length || anchorId) && <Stack direction="row" gap={.45} flexWrap="wrap"><StepJumpChip label={observedAnchor ? "First observed here" : "First flagged here"} id={anchorId} missing={!steps.some(step => stepId(step) === anchorId)} onClick={onStep} /><>{onset.filter(step => step !== anchorId).map((step, i) => <StepJumpChip key={`onset-${step}-${i}`} label={observedAnchor ? "Also observed here" : "Also flagged here"} id={step} missing={!steps.some(item => stepId(item) === step)} onClick={onStep} />)}</></Stack>}
-      {!!recovery.length && <Box><Stack direction="row" gap={.45} alignItems="center" flexWrap="wrap"><Typography color="success.dark" sx={{ fontSize: 12.5, fontWeight: 700 }}>Recovery steps</Typography><Typography color="text.secondary" sx={{ fontSize: 12.5 }}>First anchor:</Typography><StepJumpChip label="Step" id={anchorId} missing={!steps.some(item => stepId(item) === anchorId)} onClick={onStep} /></Stack><Stack direction="row" gap={.45} flexWrap="wrap" sx={{ mt: .35 }}>{recovery.map((step, i) => <StepJumpChip key={`recovery-${step}-${i}`} label="Recovery" id={step} missing={!steps.some(item => stepId(item) === step)} onClick={onStep} tone="success" />)}</Stack></Box>}
-      {!!related.length && <Box component="details"><Box component="summary" sx={{ cursor: "pointer", color: "primary.main", fontSize: 12.5, fontWeight: 650 }}>Related steps · {related.length}</Box><Stack direction="row" gap={.45} flexWrap="wrap" sx={{ mt: .4 }}><Typography color="text.secondary" sx={{ fontSize: 12.5, alignSelf: "center" }}>First anchor:</Typography><StepJumpChip label="Step" id={anchorId} missing={!steps.some(item => stepId(item) === anchorId)} onClick={onStep} />{related.map((step, i) => <StepJumpChip key={`related-${step}-${i}`} label="Related" id={step} missing={!steps.some(item => stepId(item) === step)} onClick={onStep} />)}</Stack></Box>}
-      {!anchorId && !onset.length && !recovery.length && !related.length && <Typography color="text.secondary" sx={{ fontSize: 13 }}>No exact step links recorded.</Typography>}
-    </Stack>
-    <Typography color="text.secondary" sx={{ display: "block", mt: .8, fontSize: 12 }}>Recovery: {text(record(episode.recovery).status, "Not recorded")}{record(episode.recovery).rationale ? ` · ${text(record(episode.recovery).rationale)}` : ""}</Typography>
-    {episode.uncertainty && <Typography color="text.secondary" sx={{ mt: .5, fontSize: 12 }}>Uncertainty: {text(episode.uncertainty)}</Typography>}
-  </Paper>;
-}
-
-function StepJumpChip({ label, id, missing, onClick, tone }: { label: string; id: string; missing: boolean; onClick: (id: string) => void; tone?: "success" }) {
-  if (!id) return <Chip size="small" variant="outlined" disabled label={`${label}: Not recorded`} sx={{ fontSize: 12 }} />;
-  return <Chip size="small" component="button" clickable={!missing} disabled={missing} color={missing ? "error" : tone} variant="outlined" label={missing ? `Step ${id} unavailable` : `${label} · ${id}`} onClick={() => !missing && onClick(id)} sx={{ fontSize: 12, fontWeight: 650 }} />;
 }
 
 function DetailField({ label, value }: { label: string; value: string }) {

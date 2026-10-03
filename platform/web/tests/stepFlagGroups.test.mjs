@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { groupStepFlags, stepFlagEvidence } from "../src/stepFlagGroups.ts";
+import { groupStepFlags, stepFlagEvidence } from "../src/lib/stepFlagGroups.ts";
 
 test("matching display text retains every review occurrence and local problem number", () => {
   const first = Object.freeze({ kind: "problem", label: "Wrong target", relation: "Continues from step 2", number: "1", review: "1", model: "model-a", run: "First run" });

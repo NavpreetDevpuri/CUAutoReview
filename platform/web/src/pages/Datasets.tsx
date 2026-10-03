@@ -6,13 +6,18 @@ import FileUploadRounded from "@mui/icons-material/FileUploadRounded";
 import SyncRounded from "@mui/icons-material/SyncRounded";
 import ArchiveRounded from "@mui/icons-material/ArchiveRounded";
 import ExpandMoreRounded from "@mui/icons-material/ExpandMoreRounded";
-import { DatasetShares } from "./DatasetShares";
-import { apiRequest } from "../api";
-import { TaskImportPicker, importSummary, uploadPreparedImport, useTaskImport } from "../TaskImport";
-import { useApi } from "../hooks";
-import { CATALOG_PAGING } from "../pagination";
-import type { DatasetRecord, DatasetTaskModelSummary, DatasetTaskSummary, TaskRecord } from "../types";
-import { BenchmarkResult, PageHeader, PageBreadcrumbs, Panel, LoadingState, ErrorState, EmptyState, SectionTitle, StatusTag, formatDate, displayValue, reviewProcessingError, runStatusLabel } from "../components";
+import { apiRequest } from "../api/client";
+import { CATALOG_PAGING } from "../api/pagination";
+import type { DatasetRecord, DatasetTaskModelSummary, DatasetTaskSummary, TaskRecord } from "../api/types";
+import { BenchmarkResult } from "../components/BenchmarkResult";
+import { DatasetShares } from "../components/DatasetShares";
+import { PageBreadcrumbs, PageHeader, Panel, SectionTitle } from "../components/Page";
+import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { importSummary, TaskImportPicker, uploadPreparedImport, useTaskImport } from "../components/TaskImport";
+import { useApi } from "../hooks/useApi";
+import { displayValue, formatDate, reviewProcessingError, runStatusLabel } from "../lib/format";
+import { asRecord } from "../lib/records";
 
 const linkedCardSx = {
   position: "relative", minWidth: 0, borderRadius: 2,
@@ -109,9 +114,6 @@ interface DatasetDetails {
 type TaskHistoryRow = Record<string, unknown>;
 interface TaskHistoryResponse { summary?: DatasetTaskSummary; runs?: TaskHistoryRow[]; }
 
-function rowObject(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
-}
 
 function rowArray(value: unknown): Record<string, unknown>[] {
   return Array.isArray(value) ? value.filter(item => item && typeof item === "object") as Record<string, unknown>[] : [];
@@ -127,7 +129,7 @@ function modelEvidenceSummary(model: DatasetTaskModelSummary): string | null {
 }
 
 function runReviewMetrics(summary: Record<string, unknown>, reviews: Record<string, unknown>[], processingStatus: string) {
-  const latestReview = rowObject(reviews.at(-1)?.review);
+  const latestReview = asRecord(reviews.at(-1)?.review);
   const episodes = Array.isArray(latestReview.episodes) ? latestReview.episodes as Record<string, unknown>[] : undefined;
   const flaggedStepIds = new Set<string>();
   for (const episode of episodes || []) {
@@ -166,7 +168,7 @@ function TaskReviewBreakdown({ datasetId, taskId, includeArchived, summary }: { 
       {runs.map((run, index) => {
         const runId = String(run.run_id || run.batch_id || run.id || "");
         const jobs = rowArray(run.jobs);
-        const reviewSummary = rowObject(run.review_summary);
+        const reviewSummary = asRecord(run.review_summary);
         const reviews = rowArray(run.reviews);
         const processingStatus = String(run.processing_status || run.status || "not started").replaceAll("_", " ");
         const metrics = runReviewMetrics(reviewSummary, reviews, processingStatus);

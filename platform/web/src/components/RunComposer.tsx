@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Autocomplete, Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, Stack, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 import TuneRounded from "@mui/icons-material/TuneRounded";
-import { apiRequest } from "./api";
-import { ModelPicker, preferredModel, suggestedBudget, type ModelCatalog } from "./ModelPicker";
-import { useApi } from "./hooks";
-import { CATALOG_PAGING } from "./pagination";
-import { ErrorState, LoadingState, Panel, countLabel } from "./components";
-import { type Catalog, type Selection, SelectionDialog, emptySelection } from "./SelectionDialog";
+import { apiRequest } from "../api/client";
+import { CATALOG_PAGING } from "../api/pagination";
+import { type ModelCatalog, ModelPicker, preferredModel, suggestedBudget } from "./ModelPicker";
+import { Panel } from "./Page";
+import { type Catalog, emptySelection, type Selection, SelectionDialog } from "./SelectionDialog";
+import { ErrorState, LoadingState } from "./States";
+import { useApi } from "../hooks/useApi";
+import { countLabel } from "../lib/format";
 
 interface Workflow { id: string; revision_id: string; name: string; description: string; stages: { id: string; name: string; kind: string; prompt: string }[] }
 interface Provider { id: string; name: string; configured?: boolean; supported?: boolean; available?: boolean; description?: string; suggested_models?: string[] }

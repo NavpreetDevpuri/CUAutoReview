@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Alert, Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import PersonAddAlt1Rounded from "@mui/icons-material/PersonAddAlt1Rounded";
-import { apiRequest } from "../api";
-import { useApi } from "../hooks";
-import { Panel, SectionTitle } from "../components";
+import { apiRequest } from "../api/client";
+import { Panel, SectionTitle } from "./Page";
+import { useApi } from "../hooks/useApi";
 interface Person { id: string; name: string; email?: string; kind: "user" | "team" }
 interface Grant { id: string; team_id?: string; user_id?: string; team_name?: string; user_name?: string; email?: string; role?: string }
 export function RunShares({ runId, grants, onChange }: { runId: string; grants: Grant[]; onChange: () => void }) {

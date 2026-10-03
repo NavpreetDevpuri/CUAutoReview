@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Box, Button, Checkbox, Chip, FormControlLabel, Grid, Link, Stack, TextField, Typography } from "@mui/material";
 import FlagRounded from "@mui/icons-material/FlagRounded";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
-import { apiRequest } from "../api";
-import { EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, StatusTag, formatDate } from "../components";
+import { apiRequest } from "../api/client";
+import { PageBreadcrumbs, PageHeader, Panel } from "../components/Page";
+import { EmptyState, ErrorState, LoadingState } from "../components/States";
+import { StatusTag } from "../components/StatusTag";
+import { formatDate } from "../lib/format";
 interface Step { step_id: string; review_status: string; assessment: string; effect: string; observed_ui: string; episode_refs: string[]; intent?: {kind: string; text: string}; action?: string }
 interface Episode { episode_id: string; problem_number?: number; label_id: string; label_name: string; first_observed_step_id?: string; onset_step_ids: string[]; mechanism: string; recovery: { status: string; step_ids: string[]; rationale: string }; outcome_contribution: string; uncertainty?: string }
 interface Review { summary?: string; result?: string; coverage_notes?: string[]; steps?: Step[]; episodes?: Episode[] }

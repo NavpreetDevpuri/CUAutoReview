@@ -3,8 +3,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import FileUploadRounded from "@mui/icons-material/FileUploadRounded";
 import DownloadRounded from "@mui/icons-material/DownloadRounded";
-import { ApiError, apiRequest } from "./api";
-import type { TaskRecord } from "./types";
+import { ApiError, apiRequest } from "../api/client";
+import type { TaskRecord } from "../api/types";
 
 interface ImportIssue { path: string; message: string; code?: string }
 interface PreviewTask { task_id: string; title?: string; step_count: number; outcome?: string }

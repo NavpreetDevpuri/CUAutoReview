@@ -3,12 +3,13 @@ import { Link as RouterLink, useNavigate, useParams, useSearchParams } from "rea
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Box, Button, Grid, Link as MuiLink, Stack, Typography } from "@mui/material";
-import { EmptyState, PageHeader, Panel, SectionTitle } from "../components";
 import gettingStarted from "../docs/getting-started.md?raw";
 import rolesTeams from "../docs/roles-teams.md?raw";
 import datasets from "../docs/datasets.md?raw";
 import batches from "../docs/batches.md?raw";
 import reviewing from "../docs/reviewing.md?raw";
+import { PageHeader, Panel, SectionTitle } from "../components/Page";
+import { EmptyState } from "../components/States";
 
 const guides = [
   { slug: "getting-started", title: "Getting started", markdown: gettingStarted },

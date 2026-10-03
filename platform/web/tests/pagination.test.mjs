@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { collectPages, pageItems, withPageParams } from "../src/pagination.ts";
-import { endsSession } from "../src/sessionErrors.ts";
+import { collectPages, pageItems, withPageParams } from "../src/api/pagination.ts";
+import { endsSession } from "../src/api/sessionErrors.ts";
 
 test("page parameters are added without dropping existing filters", () => {
   assert.equal(withPageParams("/runs/r1/tasks", 2, 500), "/runs/r1/tasks?page=2&per_page=500");
