@@ -1,6 +1,6 @@
 # CUAutoReview: submission summary
 
-[Repository](https://github.com/NavpreetDevpuri/CUAutoReview) · [Full design](../README.md) · [Run locally](../platform/README.md)
+[Repository](https://github.com/NavpreetDevpuri/CUAutoReview) · [System design](DESIGN.md) · [Overview](../README.md) · [Run locally](../platform/README.md)
 
 **Explain where computer-use agents make mistakes, whether they recover, and which failure patterns recur.** [System-design submission](../reference/SWE-Assignment.md), supported by a preserved [five-task POC](../poc/README.md) and local platform; production readiness remains unproven.
 
@@ -24,7 +24,7 @@ flowchart TB
     K -->|adopt in successor run| G
 ```
 
-Target architecture; unknown or error outcomes wait for resolution. Current boundaries below. [Component contracts](../specs/02-data-and-contracts.md).
+Target architecture; unknown or error outcomes wait for resolution. Current boundaries below. [Data model, example queries, clustering and scale table](DESIGN.md) · [component contracts](../specs/02-data-and-contracts.md).
 
 | Replaceable component | Contract and reason |
 |---|---|

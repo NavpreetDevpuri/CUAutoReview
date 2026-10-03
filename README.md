@@ -1,21 +1,30 @@
 # CUAutoReview
 
-**Explain a computer-use attempt step by step, find mistakes and recoveries, and group recurring problems. Review both failed and passing attempts.**
+[![CI](https://github.com/NavpreetDevpuri/CUAutoReview/actions/workflows/ci.yml/badge.svg)](https://github.com/NavpreetDevpuri/CUAutoReview/actions/workflows/ci.yml)
 
-A **rollout** records one attempt: task, actions, screenshots, visible reasoning, logs and evaluation. The [original brief](reference/SWE-Assignment.md) asks for system design; this project now also includes a working local platform and the preserved POC.
+**Explain where computer-use agents go wrong, whether they recover, and which failure patterns recur, across failed and passing rollouts.**
 
-[Benchmark attribution and third-party notices](THIRD_PARTY_NOTICES.md).
+A **rollout** is one attempt at a task: actions, screenshots, visible reasoning, logs and the evaluator's grade. The [original brief](reference/SWE-Assignment.md) asks for a system design. This repository contains that design, a working local platform and the POC that preceded it.
 
-**For reviewers:** [submission summary](docs/SUBMISSION.md) covers the main decisions, assumptions, trade-offs, validation and limitations.
+**Start here: [system design](docs/DESIGN.md).** One document covers the architecture, data model with example queries, failure clustering, taxonomy evolution, scale and cost. The [submission summary](docs/SUBMISSION.md) lists decisions, assumptions and limits in two pages.
 
-- **Open:** [local platform](http://127.0.0.1:8000) · [setup and implementation status](platform/README.md).
-- **Demo sign-ins:** the Docker quickstart below creates five users, three teams and eight distinct tasks. Admin email: `admin@cuautoreview.test`; passwords are generated locally and never committed.
-- **Implemented:** Dataset → Task → Reviews, multi-dataset Runs, explicit workflow/harness/model setup, searchable user/team sharing, JSON/ZIP imports, filtered analytics, same-revision comparison, archive/restore, trajectory evidence, taxonomy approval, light/dark appearance and in-app Markdown guides.
-- **Verified:** 95 automated tests, five ZIP-import checks and four batch-completion checks; earlier evidence includes 11 real-service scenarios and four broker lifecycle checks. Five saved trajectories passed through PostgreSQL, RabbitMQ and SeaweedFS's S3-compatible storage. [Test evidence](platform/TEST-RESULTS.md). Earlier acceptance checks use saved replay. Live comparison evidence is tracked separately in the platform guide.
-- **Interface:** compact responsive layouts, mobile step picker and whole-card links. Repeated step labels group for display while preserving each review’s problem number, run, model and frame-delivery status. Grouping does not establish agreement; checkboxes and actions remain independent.
-- **Preserved:** [POC](poc/README.md), original Luna/Sol results and measured costs. [Latest findings](poc/RESULTS-SOL.md).
-- **Live models:** All eight tasks have completed screenshot-enabled Gemini 3.8 Flash reviews; a matched GPT-6 Sol review also completed. The 11 new attempts cost an estimated **$0.3671**, including one automatic retry and one storage-recovery retry. [Results, costs and limits](platform/LIVE-RESULTS.md).
-- **Pending:** human adjudication of model diagnoses, broader accuracy evaluation and production hardening. Supplying screenshots fixes missing delivery, not every evidence gap: two Writer sources retain only 3 screenshots for 15 steps. [Independent Opus 5.5 audit](reviews/claude-opus-5.5-feedback.md) completed for a CLI-reported $0.525; [verified findings and changes](reviews/claude-audit-actions.md) separate applied fixes from open validation.
+| | What it is |
+|---|---|
+| **Design** | [docs/DESIGN.md](docs/DESIGN.md) is the entry point; [specs/01–11](specs/01-system-design.md) hold the full contracts |
+| **Local platform** | Docker app: JSON/ZIP import, multi-dataset runs, outbox + RabbitMQ/Celery workers, trajectory viewer, analytics, same-revision comparison, taxonomy proposals with human approval. [Status](platform/README.md) |
+| **POC** | Five OSWorld trajectories reviewed end to end, with parallel reviewers sharing draft labels and a final consolidation step. [Results](poc/README.md) |
+| **Evidence** | Backend, POC and frontend test suites run in CI on every push; real PostgreSQL/RabbitMQ/S3 checks; 8 screenshot-enabled live reviews for **$0.367 estimated**. [Tests](platform/TEST-RESULTS.md) · [live results](platform/LIVE-RESULTS.md) |
+| **Not yet proven** | Diagnosis accuracy against human adjudication, throughput at scale, production hardening. [Validation plan](reviews/HUMAN-VALIDATION.md) |
+
+**Five decisions that shape everything else**
+
+1. **Explain first, label later.** Each review records every step and groups mistakes into evidence-cited *episodes* before any taxonomy label is attached, so taxonomy changes never require re-reading trajectories.
+2. **Review passing rollouts too.** A pass can hide mistakes the agent recovered from. Failed and passed rollouts take separate review routes with their own prompts and budgets.
+3. **Let the taxonomy emerge, then version it.** Reviewers propose labels into a shared pool; a consolidation step (plus density clustering at scale) drafts candidates; only a human approval publishes an immutable release. Old results stay pinned to their release.
+4. **PostgreSQL decides, the broker delivers.** A transactional outbox, leases and fenced commits make duplicate deliveries harmless. Provider rate and spend limits, not infrastructure, are the expected bottleneck.
+5. **Trajectory content is untrusted.** Review agents get read-only evidence helpers, no shell or network, and credentials never enter prompts.
+
+Demo sign-ins: the Docker quickstart below creates five users, three teams and eight distinct tasks (admin: `admin@cuautoreview.test`; passwords are generated locally and never committed). [Independent design reviews and follow-up](reviews/README.md) · [benchmark attribution and third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Run locally with Docker
 
@@ -200,7 +209,7 @@ The bullets in this section describe the broader platform design. For local impl
 - **Teams and runs:** datasets hold source tasks; runs pin a selected set from one or more datasets. Legacy appendable batches retain explicit sync without resetting progress or pinned settings.
   - Admins manage people/teams, managers batches, reviewers annotations, viewers reading, curators taxonomy. Shared computation does not share access/corrections.
   - Reuse React-admin for UI; specialize synchronized steps/images, recovery links, version badges, feedback and backlog/cost views.
-- **Local services:** app, general Celery worker, optional isolated CLI worker, PostgreSQL/pgvector, RabbitMQ and SeaweedFS. Diagram stages are jobs, not separate servers.
+- **Local services:** app, general Celery worker, isolated CLI worker, PostgreSQL, RabbitMQ and SeaweedFS (pgvector is a production target). Diagram stages are jobs, not separate servers.
   - S3-compatible storage holds originals/YAML; PostgreSQL holds searchable versions/references.
   - Outbox, unique IDs, leases, bounded retries/checkpoints: save work before delivery, results before acknowledgment. Crashes may repeat charges, not authoritative publication.
   - Enforce quotas per model call and trajectory. Scale from measured queue/DB/provider limits; production broker HA uses three nodes.
