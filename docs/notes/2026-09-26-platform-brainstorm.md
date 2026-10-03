@@ -1,13 +1,13 @@
-# Platform brainstorm: captured 26 September 2026
+# Platform decision log: 26 September 2026
 
-This records your requested additions. It is separate from the original assignment. The work remains local documentation and research; implementation and publication are future steps.
+This log records the platform requirements added after the original assignment and the decision taken for each. Entries are dated: at the time of writing the work was local documentation and research, with implementation and publication as future steps. Later entries supersede earlier ones where noted, and the platform was subsequently implemented; see [platform status](../../platform/README.md).
 
-| Your idea | Captured decision / next step |
+| Requirement | Decision / next step |
 |---|---|
-| Run the whole platform locally with Docker Compose | Updated to five core services: app, Celery worker, PostgreSQL, RabbitMQ, and SeaweedFS; offline fixture default, optional real local models. |
+| Run the whole platform locally with Docker Compose | Updated to five core services: app, Celery worker, PostgreSQL, RabbitMQ, and SeaweedFS (an isolated CLI review worker was added later); offline fixture default, optional real local models. |
 | Switch local services to live infrastructure through environment settings | Same application/S3 client with configurable endpoints, database URL, bucket, and credential source. Provisioning and data migration remain explicit deployment work. |
-| Keep the queue minimal; consider PostgreSQL | Earlier PostgreSQL queue choice superseded after your scale/reuse request: RabbitMQ quorum delivery + Celery; PostgreSQL keeps work state/outbox and fenced publication. PostgreSQL was not ruled out as inherently unscalable. |
-| Use the straightforward name CUAutoReview | Accepted project name: **Computer Use Auto Review**. Local folder and authored document links renamed; original assignment preserved. |
+| Keep the queue minimal; consider PostgreSQL | Earlier PostgreSQL queue choice superseded by a later scale/reuse requirement: RabbitMQ quorum delivery + Celery; PostgreSQL keeps work state/outbox and fenced publication. PostgreSQL was not ruled out as inherently unscalable. |
+| Use a straightforward project name | Accepted project name: **Computer Use Auto Review**. Local folder and authored document links renamed; original assignment preserved. |
 | Use the newly released Jev model for quick analysis | Evaluate TypeSafe Jev as optional text-based triage and existing-mode classification. Preserve the evaluator and evidence/VLM pipeline; see [the proposal](../specs/07-jev-fast-analysis.md). |
 | Build a platform with admins, viewers, and teams | Workspace membership, team membership, and scoped batch roles; users can be added and removed. |
 | Assign teams to particular batches | Team-to-batch grants; access to one batch does not expose an entire dataset. |
@@ -26,13 +26,13 @@ This records your requested additions. It is separate from the original assignme
 | Understand the correct result and available scoring | Record the task's success criteria, evaluator implementation/revision, result, and any reference solution; a single golden action sequence may not exist. |
 | Earlier request: analyze failures, not ordinary passing trajectories | **Superseded by the recovery-review request below.** Historical presets retain this policy; new presets review both known outcomes through separate agents/prompts. Unknown/error outcomes still await resolution. |
 | Treat taxonomy as versioned failure labels | Labels have definitions, examples, and lineage. Pin taxonomy and scoring versions independently; never overwrite historical results. |
-| Use the Data OS / Harbor dataset-sync interaction as inspiration | Preserve your described interaction pattern. No Data OS implementation or UI has been inspected or assumed. |
+| Use the Data OS / Harbor dataset-sync interaction as inspiration | Preserve the described interaction pattern. No Data OS implementation or UI has been inspected or assumed. |
 
 Details: [platform specification](../specs/05-platform-and-workflows.md) and [benchmark research](../specs/06-benchmark-and-example-data.md).
 
 ## Follow-up decisions: scale, harnesses, taxonomy, and reuse
 
-| Your request | Captured design |
+| Request | Design decision |
 |---|---|
 | Prefer a dedicated scalable queue | RabbitMQ quorum queues/Celery, outbox/confirm/ACK recovery; local single node versus production three-node HA; compare SQS/NATS/Temporal/Redis and retain measured tradeoffs. |
 | Support raw APIs, Codex, Gemini CLI and Claude Code | Separate per-stage model API and harness backends; LiteLLM versus ACP/acpx/native adapters; optional Harbor benchmark runner. No automatic desktop-agent parity. |
@@ -49,7 +49,7 @@ New research: [queue](../specs/08-local-deployment-and-queue.md) · [open-source
 
 ## Follow-up: explicit decisions, YAML and trajectory-level agents
 
-| Your clarification | Captured design and reason |
+| Clarification | Design decision and reason |
 |---|---|
 | Make our assumptions/decisions prominent and explain why | An early README decision table distinguishes the OSWorld source assumption from assignment requirements, followed by progressively deeper workflow details. |
 | Assume tasks/rollouts initially come from OSWorld | OSWorld-Verified supplies concrete examples and checkers; an adapter keeps other sources possible. Historical provenance gaps remain visible. |
@@ -65,7 +65,7 @@ Earlier fixed-call cost estimates are retained only as an illustrative compariso
 
 ## Follow-up: passing recovery review and compact detailed specs
 
-| Your clarification | Captured design and reason |
+| Clarification | Design decision and reason |
 |---|---|
 | Passing/full-score attempts can contain mistakes and later recovery | Default `pass_recovery` reviews every compact step for supported mistakes, later repair and unresolved issues. Preserve the evaluator grade; a pass does not prove recovery or an error-free path. |
 | Use a different prompt and agent for this quick review | Separate immutable prompt, agent recipe, logical session and budget from `failure_analysis`; models/helpers may be shared. Expand evidence when needed; speed/cost savings remain unmeasured. |
@@ -78,7 +78,7 @@ Passing-review validation needs genuine passing traces, including clean passes, 
 
 ## Follow-up: focused local POC and shared label proposals
 
-| Your request | Captured design |
+| Request | Design decision |
 |---|---|
 | Implement a tiny POC for five actual computer-use trajectories | One CLI review batch, with Codex GPT-6 Luna as the default and GPT-6 Sol only if practical within the minimal-spend constraint. Final implementation status and outcome are tracked in `poc/README.md`; no accuracy or cost result is assumed. |
 | Show the reviewed batch simply | One read-only batch viewer with a prominent red POC banner. It may display provisional labels and a versioned candidate taxonomy, without implementing production approval or publication. |

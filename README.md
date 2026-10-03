@@ -10,11 +10,36 @@ A **rollout** is one attempt at a task: actions, screenshots, visible reasoning,
 
 | | What it is |
 |---|---|
-| **Design** | [docs/DESIGN.md](docs/DESIGN.md) is the entry point; [specs/01–11](docs/specs/01-system-design.md) hold the full contracts |
+| **Design** | [docs/DESIGN.md](docs/DESIGN.md) is the entry point; [docs/specs/01–11](docs/specs/01-system-design.md) hold the full contracts |
 | **Local platform** | Docker app: JSON/ZIP import, multi-dataset runs, outbox + RabbitMQ/Celery workers, trajectory viewer, analytics, same-revision comparison, taxonomy proposals with human approval. [Status](platform/README.md) |
 | **POC** | Five OSWorld trajectories reviewed end to end, with parallel reviewers sharing draft labels and a final consolidation step. [Results](poc/README.md) |
 | **Evidence** | Backend, POC and frontend test suites run in CI on every push; real PostgreSQL/RabbitMQ/S3 checks; 8 screenshot-enabled live reviews for **$0.367 estimated**. [Tests](platform/docs/TEST-RESULTS.md) · [live results](platform/docs/LIVE-RESULTS.md) |
 | **Not yet proven** | Diagnosis accuracy against human adjudication, throughput at scale, production hardening. [Validation plan](docs/reviews/HUMAN-VALIDATION.md) |
+
+**Repository layout**
+
+```text
+docs/                  Design and supporting material
+  DESIGN.md            System design entry point
+  SUBMISSION.md        Two-page submission summary
+  specs/               Full design contracts, 01–11
+  reference/           Original brief and example sources
+  reviews/             Independent reviews, human-validation worksheet, audit tool
+  notes/               Dated decision log
+platform/              Working local platform
+  backend/             FastAPI API, Celery worker, review adapters, tests
+  web/                 React-admin/MUI interface, in-app guides, tests
+  scripts/             Seeding and real-service verification scripts
+  demo-data/           Bundled demo ZIPs and their regeneration inputs
+  deploy/              Local service configuration (SeaweedFS S3 identities)
+  docs/                API contract, acceptance, test and live results, evidence, screenshots
+  Dockerfile, compose.yaml, .env.example
+poc/                   Preserved five-task proof of concept
+  run.py, serve.py     Parallel reviewer runner and loopback viewer server
+  prompts/, viewer/    Review prompts and static trajectory viewer
+  data/, runs/         Source trajectories and retained run artifacts
+  docs/                Results, viewer feedback and screenshots
+```
 
 **Five decisions that shape everything else**
 
