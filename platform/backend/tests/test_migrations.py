@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import replace
 
 import pytest
@@ -89,4 +90,21 @@ def test_migrate_command_upgrades_then_checks(tmp_path, monkeypatch):
     monkeypatch.setattr(database, "engine", engine)
     assert migrate.main([]) == 0
     assert migrate.main(["--check"]) == 0
+    engine.dispose()
+
+
+POSTGRES_URL = os.environ.get("CUAUTOREVIEW_TEST_POSTGRES_URL")
+
+
+@pytest.mark.skipif(not POSTGRES_URL, reason="set CUAUTOREVIEW_TEST_POSTGRES_URL to run against PostgreSQL")
+def test_migrations_match_the_models_on_postgresql():
+    # SQLite is forgiving about types and constraints; production runs PostgreSQL, so CI checks it there too.
+    engine = database.make_engine(POSTGRES_URL)
+    with engine.begin() as connection:
+        connection.execute(text("DROP SCHEMA public CASCADE"))
+        connection.execute(text("CREATE SCHEMA public"))
+    assert migrate.upgrade(engine) == f"Database schema upgraded from empty to {migrate.head_revision()}"
+    assert schema_diff(engine) == []
+    assert migrate.upgrade(engine) == f"Database schema is up to date ({migrate.head_revision()})"
+    migrate.require_head(engine)
     engine.dispose()
