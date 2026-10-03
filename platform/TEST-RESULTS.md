@@ -2,6 +2,70 @@
 
 Verified on 27 September 2026 using the local Docker Compose stack. Regression and service checks use saved replay or isolated fixtures and make no provider calls. Live CLI attempts are reported separately; replay retains the original uncertainty and provenance.
 
+## Code review hardening: 3 October 2026
+
+A full review of the backend, worker, frontend and POC code; each fix below has a regression test that fails on the previous code. No provider calls were made.
+
+| Check | Result |
+|---|---|
+| Backend suite, `python -m pytest -q` in `platform/backend` | **121 passed** (was 95) |
+| POC suite, `python -m pytest -q tests` in `poc` | **27 passed** (was 17), including validation of every retained saved review |
+| Frontend, `npm test` and `npm run build` in `platform/web` | **10 passed** (was 3); build passed |
+| Continuous integration | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs all three suites and the build on every push, then builds the Compose stack on amd64, seeds it twice and runs `verify_docker_quickstart.py` after each seed |
+| Browser pass | Headless Chrome against the merged app (SQLite and local file store, demo workspace seeded with `seed_workspace.py`): 14 routes as reviewer and as admin, with no failed requests, console errors or sign-outs |
+
+**Query counts per request**, 500 tasks across 2 runs, measured with a SQLAlchemy statement counter. `test_query_counts.py` asserts that counts stay flat as tasks grow.
+
+| Endpoint | Before | After |
+|---|---:|---:|
+| `/api/catalog` | 8,023 | 20 |
+| `/api/datasets/{id}` | 10,027 | 34 |
+| `/api/analytics/query` | 6,020 | 23 |
+| `/api/runs` | 3,543 | 37 |
+| `/api/datasets` | 3,028 | 30 |
+| `/api/overview` | 2,524 | 34 |
+| `/api/runs/{id}` | 2,023 | 24 |
+
+**Initial JavaScript:** route-level code splitting reduced the first download from 1.38 MB (416 KB gzip) to 0.89 MB (278 KB gzip). Help, with its Markdown renderer, now loads only when opened.
+
+**Fixed defects:**
+
+- **Queue:**
+  - A manual retry followed by Start no longer creates a second paid job for the same task.
+  - A paused backlog can no longer block other runs from being dispatched.
+  - Messages acknowledged without a claim are now redispatched.
+  - A storage outage after a validated review keeps the review for a store-only retry at no extra cost.
+  - Gemini timeouts keep their retryable timeout diagnosis.
+  - Fenced JSON from model APIs is accepted.
+  - The optional native CLI adapter that inherited the full worker environment now receives only an allowlisted environment and is stopped as a process group.
+- **API:**
+  - Audit events record the IDs of created objects.
+  - Reruns keep each grant's original role and skip deactivated users.
+  - Pagination rejects non-positive values.
+  - JSON imports register only bundled PNG/JPEG/WebP evidence.
+  - Presets are held to the same bounds and secret checks as runs.
+  - Proposal label IDs stay unique.
+  - Viewers and reviewers no longer see teammates' emails.
+  - Admins cannot deactivate themselves.
+  - Login timing no longer reveals which accounts exist.
+  - A global request-body cap applies.
+  - Startup and shutdown use a lifespan handler.
+  - Job lists and the overview now include runs visible through dataset shares.
+- **Frontend:**
+  - A 403 no longer signs the user out.
+  - Lists page through every record instead of stopping at 50 or 100.
+  - Late responses can no longer overwrite newer data.
+  - Pages no longer request data the caller's role cannot read.
+- **POC:**
+  - The validator rejects uncited reviewed steps, unsupported recovery claims and empty `issues_observed` results.
+  - Rejected output is stored separately and never counted as findings.
+  - `runs/latest` is replaced only by completed runs.
+  - Ctrl-C stops running model processes.
+  - The viewer server applies its allowlist to HEAD requests.
+  - Saved artifacts use repository-relative paths.
+
+**Scope:** the browser pass used SQLite and the local file store rather than PostgreSQL, RabbitMQ and SeaweedFS. The Docker stack is exercised by the CI job above. Earlier real-service results below were not rerun locally.
+
 ## Opus audit follow-up: 27 September 2026
 
 - **Independent review:** one host Claude Code session, `claude-opus-5-5`, medium effort, 16 text inputs and four actual screenshots, tools disabled. CLI-reported **$0.5249934**, two turns including automatic continuation, within a $1.50 session limit. [Report, capture limitation and actions](../reviews/README.md). This is not human adjudication or a platform adapter test.
@@ -18,13 +82,13 @@ Verified on 27 September 2026 using the local Docker Compose stack. Regression a
 |---|---|---|
 | Backend behavior and provider boundaries | `docker compose -f platform/compose.yaml exec -T app env TMPDIR=/dev/shm PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q -p no:cacheprovider --disable-warnings --basetemp=/dev/shm/pytest-of-final` | 95 passed; 6 warnings; 13.79 seconds; followed by the focused serialization check below |
 | Final job-detail serialization | Existing hosted-retry and attempt-cost tests with additional assertions | 2 passed after the final edit; verifies pinned harness/model, all-unknown costs and mixed known/unknown subtotals |
-| Runs, hierarchy, analytics and sharing | `python3 platform/scripts/check_runs_analytics.py`, [results](runs-analytics-verification.json) | 7 real-service checks passed; 0 provider calls; temporary fixtures soft-archived |
-| Real services and five tasks | `python3 platform/scripts/e2e_local.py`, [machine-readable results](verification.json) | 11 scenario checks passed; PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint used; 0 provider calls |
-| Pause, duplicate delivery and retry | `python3 platform/scripts/verify_queue.py`, [results](queue-verification.json) | 4 checks passed against the real broker; 3 immutable result revisions retained |
+| Runs, hierarchy, analytics and sharing | `python3 platform/scripts/check_runs_analytics.py`, [results](evidence/runs-analytics-verification.json) | 7 real-service checks passed; 0 provider calls; temporary fixtures soft-archived |
+| Real services and five tasks | `python3 platform/scripts/e2e_local.py`, [machine-readable results](evidence/verification.json) | 11 scenario checks passed; PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint used; 0 provider calls |
+| Pause, duplicate delivery and retry | `python3 platform/scripts/verify_queue.py`, [results](evidence/queue-verification.json) | 4 checks passed against the real broker; 3 immutable result revisions retained |
 | Object immutability | Real SeaweedFS conditional PUT, GET, identical repeat and conflicting overwrite | Same bytes preserved; conflicting write rejected |
 | Frontend | `npm run build` from `platform/web` | Build passed; approximately 1.36 MB initial bundle warning; earlier dependency audit reported 0 vulnerabilities |
 | Browser UX | Actual local browser, desktop and 800px-wide layout | Passed the focused checks below; [trajectory capture](screenshots/trajectory-review.png), [task picker](screenshots/task-picker.png) |
-| Demo seed and role logins | API checks plus repeated `python3 platform/scripts/seed_demo.py`; [results](demo-verification.json) | 7 checks passed: 5 accounts, 3 populated teams, 5 shared example tasks, access boundaries, unchanged identities/passwords/grants/jobs on repeat; 0 model calls |
+| Demo seed and role logins | API checks plus repeated `python3 platform/scripts/seed_demo.py`; [results](evidence/demo-verification.json) | 7 checks passed: 5 accounts, 3 populated teams, 5 shared example tasks, access boundaries, unchanged identities/passwords/grants/jobs on repeat; 0 model calls |
 
 ## Latest visual-review and clarity checks
 
@@ -51,21 +115,21 @@ This pass changes the frontend only. `npm run build` passed; the existing large-
 | Mobile navigation and forms | Drawer fits the viewport and closes after navigation; run composer fills the phone screen; no analysis submitted |
 | Model evidence settings | Gemini CLI exposes Gemini 3.8 Flash and screenshot allowance up to 32; CLI forms no longer force text-only requests |
 
-Captures: [desktop flags](screenshots/desktop-aligned-flags-20260927.png), [mobile steps](screenshots/mobile-step-picker-final-20260927.png), [mobile evidence](screenshots/mobile-evidence-20260927.png). [Measurements and interaction record](responsive-ui-verification-20260927.json). These are responsive browser checks, not physical-device or exhaustive accessibility certification.
+Captures: [desktop flags](screenshots/desktop-aligned-flags-20260927.png), [mobile steps](screenshots/mobile-step-picker-final-20260927.png), [mobile evidence](screenshots/mobile-evidence-20260927.png). [Measurements and interaction record](evidence/responsive-ui-verification-20260927.json). These are responsive browser checks, not physical-device or exhaustive accessibility certification.
 
 ## Docker-only quickstart, 27 September 2026
 
 - Built the documented multi-stage Dockerfile and started Compose with `up --build -d --wait` on Linux ARM64. Used a separate project, empty volumes and port 18000; the existing workspace stayed healthy.
 - Ran the Docker `seed` service twice. Both checks passed: five logins/roles, three teams, three example datasets with eight distinct tasks, eight admin screenshot reads, three viewer screenshot reads and anonymous access denial. The separate saved POC dataset remained available.
 - The second seed preserved passwords, user/team/task IDs and task revisions. `--show-logins` rendered all five generated accounts; credentials are absent from published evidence. No analysis jobs or provider calls occurred.
-- [Machine-readable results](docker-quickstart-verification.json) and [portable verifier](scripts/verify_docker_quickstart.py) record the checks. Temporary test containers and volumes were removed after success. This pass checks setup/seeding, not model quality or queue execution; earlier queue tests remain separate. AMD64 image execution remains unverified.
+- [Machine-readable results](evidence/docker-quickstart-verification.json) and [portable verifier](scripts/verify_docker_quickstart.py) record the checks. Temporary test containers and volumes were removed after success. This pass checks setup/seeding, not model quality or queue execution; earlier queue tests remain separate. AMD64 image execution remains unverified.
 - Environment fixes: added Docker Desktop's installed credential-helper directory to the build command's PATH, then cleared 13.64 GB of unused build cache after an image export exhausted Docker disk space. No existing data volumes or global account settings were changed.
 
 ## ZIP and batch-status regression checks
 
-- `python3 platform/scripts/check_zip_import.py`: five real-service checks passed. Preview saves no tasks; repeated import is unchanged; invalid multi-task archives commit no task revisions; viewer access is rejected; changed image bytes create a revision with distinct, preserved screenshot links. Batch sync carries those images into member-scoped S3 access. [Results](zip-import-verification.json).
-- `python3 platform/scripts/check_batch_completion.py`: four checks passed. Five saved tasks completed through RabbitMQ/Celery and the batch settled before any repair request. Reconciliation was a no-op for completed work; unknown outcomes remained awaiting review with no jobs. [Results](batch-completion-verification.json).
-- The reported stale batch was explicitly reconciled from running to completed after all six members were confirmed finished. No review restarted. [Repair record](batch-status-repair.json).
+- `python3 platform/scripts/check_zip_import.py`: five real-service checks passed. Preview saves no tasks; repeated import is unchanged; invalid multi-task archives commit no task revisions; viewer access is rejected; changed image bytes create a revision with distinct, preserved screenshot links. Batch sync carries those images into member-scoped S3 access. [Results](evidence/zip-import-verification.json).
+- `python3 platform/scripts/check_batch_completion.py`: four checks passed. Five saved tasks completed through RabbitMQ/Celery and the batch settled before any repair request. Reconciliation was a no-op for completed work; unknown outcomes remained awaiting review with no jobs. [Results](evidence/batch-completion-verification.json).
+- The reported stale batch was explicitly reconciled from running to completed after all six members were confirmed finished. No review restarted. [Repair record](evidence/batch-status-repair.json).
 - Isolated tests cover corrupt images, archive limits, path traversal, symlinks, duplicate IDs/keys, deep manifests, YAML aliases, bounded diagnostics, trusted screenshot checksums, and pause/cancel/retry fencing. These tests are functional regressions, not an exhaustive security audit.
 
 ## Browser checks

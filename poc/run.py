@@ -31,7 +31,7 @@ DISABLED=('shell_tool','unified_exec','apps','plugins','hooks','browser_use','br
           'skill_mcp_dependency_install','sleep_tool','goals','view_image')
 
 
-# Running Codex process groups; Ctrl-C must stop them because they run in their own sessions.
+# Running model CLI process groups; Ctrl-C must stop them because they run in their own sessions.
 CHILDREN=set();CHILDREN_LOCK=threading.Lock()
 
 

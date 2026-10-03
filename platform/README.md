@@ -18,7 +18,7 @@ Stop with `docker compose -f platform/compose.yaml down`; named volumes retain d
 
 If Docker reports `no space left on device` during a build, free unused build cache in Docker Desktop and retry. This occurred during local validation; the application data volumes were retained.
 
-Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. AMD64 package selection is supported but was not executed in this check.
+Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](evidence/docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. AMD64 package selection is supported but was not executed in this check.
 
 The Compose stack runs FastAPI and the built React-admin/MUI UI, a Celery worker, PostgreSQL, RabbitMQ and SeaweedFS with its S3-compatible API. Compose binds the application to loopback. The retained POC has its own run instructions and uses port 8765: [POC README](../poc/README.md).
 
@@ -46,7 +46,7 @@ python3 platform/scripts/seed_demo.py
 
 - Reruns reuse identities and passwords, restore missing demo memberships/grants, and remove no data. Changed account roles and unrelated email collisions stop the seed instead of being overwritten.
 - Empty workspace: creates the first admin. Existing workspace: uses the local test admin; otherwise pass `--admin-credentials /path/to/admin.json` containing an existing admin's `email` and `password`. A previously seeded demo admin can also bootstrap a rerun.
-- Verified: five logins, role boundaries, evidence/export access, team grants and repeat-run stability. [Seven seed checks](demo-verification.json), recorded against the earlier five-task example batch, passed with zero model calls. [Populated teams in the browser](screenshots/demo-teams.png).
+- Verified: five logins, role boundaries, evidence/export access, team grants and repeat-run stability. [Seven seed checks](evidence/demo-verification.json), recorded against the earlier five-task example batch, passed with zero model calls. [Populated teams in the browser](screenshots/demo-teams.png).
 
 ## Implemented local workflows
 
@@ -59,7 +59,7 @@ python3 platform/scripts/seed_demo.py
 - Screenshot evidence links and a trajectory/problem viewer. Missing evidence stays visible as missing rather than inferred from an arbitrary path.
 - Light/dark appearance with a browser-persisted preference, plus in-app Markdown guides for roles, teams, datasets, ZIP imports, batches, trajectories and taxonomy.
 
-Current verification passed: 95 automated tests, five real-service ZIP checks and four batch-completion checks. Earlier evidence covers 11 real-service scenarios with five saved trajectories, four broker lifecycle checks and seven demo-seed checks. See [acceptance scenarios](ACCEPTANCE.md) and [test results](TEST-RESULTS.md). A checklist is not proof that a scenario passed. The local stack does not provide production HA, identity integrations, independently measured review quality, or capacity guarantees.
+Current verification: 121 backend, 27 POC and 10 frontend tests, run in CI on every push together with the production build and an amd64 Docker quickstart; plus five real-service ZIP checks and four batch-completion checks. Earlier evidence covers 11 real-service scenarios with five saved trajectories, four broker lifecycle checks and seven demo-seed checks. See [acceptance scenarios](ACCEPTANCE.md) and [test results](TEST-RESULTS.md). A checklist is not proof that a scenario passed. The local stack does not provide production HA, identity integrations, independently measured review quality, or capacity guarantees.
 
 ## Datasets, runs and comparisons
 

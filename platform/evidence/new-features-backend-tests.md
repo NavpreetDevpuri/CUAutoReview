@@ -4,7 +4,7 @@
 
 - `python -m py_compile backend/app/main.py backend/tests/test_hierarchy_api.py scripts/check_runs_analytics.py` passed.
 - Earlier focused hierarchy suite: **6 passed**; those checks remain part of the full suite below.
-- Latest full suite in the final running Docker app: **95 passed**, 6 warnings, in 13.79 seconds. No provider requests were made. [Exact command](TEST-RESULTS.md).
+- Full suite at the time, in the final running Docker app: **95 passed**, 6 warnings, in 13.79 seconds. No provider requests were made. [Exact command](../TEST-RESULTS.md).
 - Earlier focused direct-run permission regression: **1 passed**, 61 deselected; included in the latest full suite.
 - The live service check at `scripts/check_runs_analytics.py` passed 7 checks with `provider_calls: 0`. Its report is `runs-analytics-verification.json`; 4 created runs, 2 task definitions, and 2 datasets were soft-archived.
 - The live app health endpoint returned `{"status":"ok","queue_mode":"sql_outbox_celery","object_store":"s3"}`. OpenAPI included run aliases for grants, task feedback, task export, and reconcile.

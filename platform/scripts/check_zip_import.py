@@ -217,9 +217,9 @@ def main() -> None:
         "revision_ids": [member["revision_id"] for member in matching],
         "note": "Named acceptance fixtures only. No batch jobs are started; no model/provider calls are made.",
     }
-    output = ROOT / "platform/zip-import-verification.json"
+    output = ROOT / "platform/evidence/zip-import-verification.json"
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print("Saved platform/zip-import-verification.json")
+    print("Saved platform/evidence/zip-import-verification.json")
 
 
 if __name__ == "__main__":

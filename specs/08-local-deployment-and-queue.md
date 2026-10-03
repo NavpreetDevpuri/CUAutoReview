@@ -1,6 +1,6 @@
 # 8. Local deployment and the dedicated queue
 
-**Implementation status:** The core local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. See [platform status](../platform/README.md), [test results](../platform/TEST-RESULTS.md) and [fresh Docker verification](../platform/docker-quickstart-verification.json) for completed checks and limits. This specification remains the broader design target. Production HA, cloud S3 parity and sustained capacity are unverified; bounded provider checks are recorded separately in [live results](../platform/LIVE-RESULTS.md). Research references below were checked **26 September 2026**.
+**Implementation status:** The core local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. See [platform status](../platform/README.md), [test results](../platform/TEST-RESULTS.md) and [fresh Docker verification](../platform/evidence/docker-quickstart-verification.json) for completed checks and limits. This specification remains the broader design target. Production HA, cloud S3 parity and sustained capacity are unverified; bounded provider checks are recorded separately in [live results](../platform/LIVE-RESULTS.md). Research references below were checked **26 September 2026**.
 
 ## Six services
 
@@ -8,7 +8,7 @@
 |---|---|
 | `app` | API/built UI, permissions/evidence proxy; elected outbox/discovery/recovery loop. Production ingress; split the loop when measured load warrants. |
 | `worker` | Celery stages, targeted claims, heartbeats/fenced publication; scale fixed-concurrency replicas/pools. |
-| `cli-worker` | Separate Celery queue for native Codex/Gemini CLI reviews: read-only filesystem, no capabilities, memory/PID limits and one task at a time. |
+| `cli-worker` | Separate Celery queue for native CLI reviews: read-only filesystem, no capabilities, memory/PID limits and one task at a time. |
 | `postgres` | Metadata, permissions, jobs/outbox/attempts/quotas/results; production managed PostgreSQL with pgvector, backups and verified TLS. The local image is plain PostgreSQL 17: embeddings and vector search are not implemented yet. |
 | `rabbitmq` | Persistent local broker/quorum queues; production three nodes/queue replicas across failure domains, requiring a majority. |
 | `storage` | Single-process SeaweedFS with persistent volume; production Amazon S3. |

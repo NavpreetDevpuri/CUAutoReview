@@ -40,7 +40,7 @@ docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins
 - Seeding imports bundled example tasks and saved POC evidence without model calls. Repeating it preserves account identities and passwords; new model reviews are opt-in.
 - Database, evidence and Docker seed credentials stay in local named volumes. Stop with `docker compose -f platform/compose.yaml down`; omit `-v` to retain them.
 - [Dockerfile](platform/Dockerfile) · [Compose services](platform/compose.yaml) · [setup, roles and provider configuration](platform/README.md).
-- [Fresh Docker verification](platform/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
+- [Fresh Docker verification](platform/evidence/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
 
 ![CUAutoReview platform overview with workspace totals and recent runs.](platform/screenshots/audit-overview-20260927.jpg)
 

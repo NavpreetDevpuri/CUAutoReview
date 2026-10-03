@@ -4,7 +4,7 @@
 This starts PAID hosted inference, so it does nothing without --run. The dataset and task
 IDs below are specific to the workspace where the experiment was recorded; on another
 workspace, edit them first. No provider keys are read by this script; workers must already
-be enabled. Canary first, then remaining seven tasks, plus one optional matched Codex review.
+be enabled. Canary first, then remaining seven tasks, plus one optional matched comparison review.
 Each job uses the platform's bounded retry policy; this script never restarts it.
 """
 import argparse

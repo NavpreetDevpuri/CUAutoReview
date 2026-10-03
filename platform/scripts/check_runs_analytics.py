@@ -355,7 +355,7 @@ def main() -> None:
                           "dataset_ids": created["datasets"]},
         "note": "Local saved-replay hierarchy and analytics checks. No live model calls or production certification.",
     }
-    output = ROOT / "platform/runs-analytics-verification.json"
+    output = ROOT / "platform/evidence/runs-analytics-verification.json"
     output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"Saved {output.relative_to(ROOT)}")
     print("PASS Soft-archived all created runs, task definitions and datasets")

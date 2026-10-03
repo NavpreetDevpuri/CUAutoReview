@@ -16,7 +16,7 @@ def main():
     client=Client()
     account=json.loads((ROOT/'platform/.local/test-account.json').read_text())
     client.call('POST','/auth/login',{'email':account['email'],'password':account['password']})
-    previous=json.loads((ROOT/'platform/verification.json').read_text())
+    previous=json.loads((ROOT/'platform/evidence/verification.json').read_text())
     bid=previous['batch_id']; jid=previous['job_ids'][0]
     def current(): return next(j for j in client.call('GET','/jobs')['items'] if j['id']==jid)
     original=current()
@@ -58,7 +58,7 @@ def main():
     state=container(f"from app.main import SessionLocal\nfrom app.models import Job, ReviewResult\nfrom sqlalchemy import select\nwith SessionLocal() as s:\n j=s.get(Job,{jid!r})\n r=s.scalars(select(ReviewResult).where(ReviewResult.job_id==j.id)).all()\n assert len(r)=={job['attempt_count']}\n assert len({{x.artifact_key for x in r}})==len(r)\n print(str(len(r))+' immutable result revisions and artifact keys')\n")
     checks.append(state)
     result={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'provider_calls':0,'checks':checks}
-    (ROOT/'platform/queue-verification.json').write_text(json.dumps(result,indent=2)+'\n')
+    (ROOT/'platform/evidence/queue-verification.json').write_text(json.dumps(result,indent=2)+'\n')
     for check in checks: print('PASS '+check)
 
 if __name__=='__main__':main()
