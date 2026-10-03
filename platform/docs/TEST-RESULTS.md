@@ -38,7 +38,7 @@ The codebase was reorganized and hardened for production without changing API be
 - With insecure defaults in production mode, the app exits and lists six problems.
 - The production Compose file renders only when every required secret is set.
 
-**Not yet exercised outside CI:** the Docker stack with the `migrate` job, and migrations on PostgreSQL. Both run in the CI workflow.
+**CI on GitHub (amd64):** all four jobs passed on the first run. The backend suite ran 159 tests, including migrations on PostgreSQL 17 with no schema drift. The Docker job ran the one-shot `migrate` service before the API started, then seeded twice and passed the quickstart verifier, readiness check and security-header check. The production override failed without its secrets and rendered with them.
 
 ## Code review hardening: 3 October 2026
 
