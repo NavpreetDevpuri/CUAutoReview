@@ -256,6 +256,7 @@ def execute_review(*, backend: str, preset_revision: dict, task_snapshot: dict,
             raise ReviewBackendError(str(exc),usage={**(exc.usage or {}),'evidence':_image_provenance(task_snapshot,inspected)}) from None
     elif backend in ('model_api','api','litellm'):
         import litellm
+        from .cli_backends import _unwrap_single_json_fence
         estimated_tokens=len(prompt.encode()) + 12000*len(images)
         try:
             input_cost,output_cost=litellm.cost_per_token(model=model,prompt_tokens=estimated_tokens,completion_tokens=max_tokens)
@@ -280,24 +281,36 @@ def execute_review(*, backend: str, preset_revision: dict, task_snapshot: dict,
                 cost=None
             usage={'input_tokens':tokens.get('prompt_tokens'),'output_tokens':tokens.get('completion_tokens'),'estimated_usd':cost,
                    'kind':'provider_reported_tokens','reserved_usd':reserved,'billed':True}
-            result=json.loads(raw)
+            result=json.loads(_unwrap_single_json_fence(raw))
         except Exception as exc:
-            raise ReviewBackendError('Model API call failed or returned invalid JSON ('+type(exc).__name__+'). No automatic retry or fallback was made.',usage=usage) from None
+            raise ReviewBackendError('Model API call failed or returned invalid JSON ('+type(exc).__name__+'). This adapter made one request; the job retry policy decides whether another attempt runs.',usage=usage) from None
         provenance={'backend':'model_api','model':getattr(response,'model',model),'requested_model':model,
                     'new_inference':True,'inspected_image_step_ids':inspected,'duration_ms':round((time.monotonic()-started)*1000)}
     elif backend=='claude_code':
         if not shutil.which('claude') or not os.getenv('ANTHROPIC_API_KEY'):
             raise ReviewBackendError('Claude Code and ANTHROPIC_API_KEY are required for this adapter.')
+        from .cli_backends import _terminate
         with tempfile.TemporaryDirectory(prefix='cu-review-') as tmp:
-            env={k:v for k,v in os.environ.items() if k not in ('ANTHROPIC_AUTH_TOKEN','CLAUDE_CODE_OAUTH_TOKEN','ANTHROPIC_BASE_URL')}
-            env['CLAUDE_CODE_MAX_OUTPUT_TOKENS']=str(max_tokens)
+            home=Path(tmp)/'home'
+            home.mkdir(mode=0o700)
+            # Allowlisted environment: the CLI never sees database, storage or other provider secrets.
+            env={'PATH':os.getenv('CUAUTOREVIEW_CLI_PATH','/usr/local/bin:/usr/bin:/bin'),'HOME':str(home),
+                 'TMPDIR':tmp,'LANG':'C.UTF-8','ANTHROPIC_API_KEY':os.environ['ANTHROPIC_API_KEY'],
+                 'CLAUDE_CODE_MAX_OUTPUT_TOKENS':str(max_tokens)}
             command=['claude','--bare','--model',model.removeprefix('anthropic/'),'--effort',cfg.get('reasoning','medium'),
                      '--max-budget-usd',str(budget),'--tools','','--strict-mcp-config','--no-chrome','--disable-slash-commands',
                      '--no-session-persistence','--output-format','json','--json-schema',json.dumps(_schema()),'--print']
             try:
-                completed=subprocess.run(command,input=prompt,text=True,capture_output=True,cwd=tmp,env=env,timeout=timeout)
-                payload=json.loads(completed.stdout)
-                if completed.returncode or payload.get('is_error'):
+                process=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                         text=True,cwd=tmp,env=env,start_new_session=True)
+                try:
+                    stdout,_=process.communicate(prompt,timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    _terminate(process)  # kill the whole process group, not just the direct child
+                    process.communicate()
+                    raise
+                payload=json.loads(stdout)
+                if process.returncode or payload.get('is_error'):
                     raise ReviewBackendError('Claude Code rejected or failed the review; no retry was made.',
                         usage={'kind':'claude_code_reported','estimated_usd':payload.get('total_cost_usd'),'provider_usage':payload.get('usage')})
                 result=payload.get('structured_output') or json.loads(payload.get('result','{}'))

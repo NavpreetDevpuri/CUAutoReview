@@ -567,8 +567,9 @@ def run_cli(*, backend: str, model: str, reasoning: str, prompt: str,
                     if isinstance(event, dict):
                         events.append(event)
                 usage = _codex_usage(events)
-                if any(event.get("type") == "turn.failed" for event in events):
-                    error = error or "Codex CLI reported a failed turn."
+                # A wall-clock timeout keeps its own diagnosis; later output checks do not replace it.
+                if not error and any(event.get("type") == "turn.failed" for event in events):
+                    error = "Codex CLI reported a failed turn."
                     event_message = _event_diagnostic(events)
                     diagnostic_category = _diagnostic_category(
                         " ".join((event_message, stderr_text)), backend=backend)
@@ -593,19 +594,21 @@ def run_cli(*, backend: str, model: str, reasoning: str, prompt: str,
                     payload = json.loads(stdout_text)
                 except json.JSONDecodeError:
                     payload = None
-                    error = "Gemini CLI returned invalid JSON."
-                    report_message = _gemini_error_report(cwd)
-                    combined = " ".join((report_message, stderr_text))
-                    diagnostic_category = (_diagnostic_category(combined, backend=backend)
-                                           if combined.strip() else "cli_output_invalid_json")
-                    diagnostic_status = _diagnostic_status(combined)
-                    diagnostic_message = _safe_diagnostic_message(report_message or stderr_text, key)
-                    if not diagnostic_message and diagnostic_category == "cli_output_invalid_json":
-                        diagnostic_message = "Gemini CLI stdout did not contain valid JSON."
+                    # Empty stdout after a timeout is expected; keep the timeout diagnosis.
+                    if not error:
+                        error = "Gemini CLI returned invalid JSON."
+                        report_message = _gemini_error_report(cwd)
+                        combined = " ".join((report_message, stderr_text))
+                        diagnostic_category = (_diagnostic_category(combined, backend=backend)
+                                               if combined.strip() else "cli_output_invalid_json")
+                        diagnostic_status = _diagnostic_status(combined)
+                        diagnostic_message = _safe_diagnostic_message(report_message or stderr_text, key)
+                        if not diagnostic_message and diagnostic_category == "cli_output_invalid_json":
+                            diagnostic_message = "Gemini CLI stdout did not contain valid JSON."
                 if isinstance(payload, dict):
                     usage = _gemini_usage(payload.get("stats"))
-                    if payload.get("error"):
-                        error = error or "Gemini CLI reported a failed turn."
+                    if not error and payload.get("error"):
+                        error = "Gemini CLI reported a failed turn."
                         payload_error_message = _event_diagnostic([{
                             "type": "error", "error": payload.get("error")
                         }])
@@ -615,12 +618,12 @@ def run_cli(*, backend: str, model: str, reasoning: str, prompt: str,
                         diagnostic_status = _diagnostic_status(combined)
                         diagnostic_message = _safe_diagnostic_message(
                             report_message or payload_error_message or stderr_text, key)
-                    else:
+                    elif not error:
                         response_text = payload.get("response")
                         if isinstance(response_text, str):
                             response, response_diagnostics = _parse_structured_response(response_text, schema, key)
                             if response_diagnostics:
-                                error = error or "Gemini CLI returned invalid structured output."
+                                error = "Gemini CLI returned invalid structured output."
                                 diagnostic_category = response_diagnostics["cli_diagnostic_category"]
                                 diagnostic_message = response_diagnostics["cli_diagnostic_message"]
             if not error and process.returncode != 0:

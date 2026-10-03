@@ -51,6 +51,7 @@ def consolidate_drafts(*, preset_revision: dict, base_content: dict, proposals: 
         raise ReviewBackendError('Taxonomy exceeds the bounded curation context. Curate a smaller proposal set.')
     import litellm
     import jsonschema
+    from .cli_backends import _unwrap_single_json_fence
     output_cap = min(6000, max(512, int(cfg.get('max_output_tokens', 4000))))
     try:
         costs = litellm.cost_per_token(model=model, prompt_tokens=len(prompt.encode()), completion_tokens=output_cap)
@@ -70,7 +71,7 @@ def consolidate_drafts(*, preset_revision: dict, base_content: dict, proposals: 
             cost = None
         usage = {**usage, 'kind': 'provider_reported_tokens', 'estimated_usd': cost,
                  'input_tokens': tokens.get('prompt_tokens'), 'output_tokens': tokens.get('completion_tokens')}
-        result = json.loads(response.choices[0].message.content)
+        result = json.loads(_unwrap_single_json_fence(response.choices[0].message.content))
         jsonschema.validate(result, schema)
         base_ids = {str(label['id']) for label in base_content.get('labels', [])}
         allowed_ids = base_ids | {str(p.get('label_id') or p['proposal_id']) for p in proposals}
