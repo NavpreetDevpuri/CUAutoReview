@@ -466,3 +466,5 @@ html[data-theme="light"] .label-color-7 { --label-color: #4d50a8; }
   .task-dialog-card-head { gap: 8px; }
   .task-dialog-facts { grid-template-columns: 1fr; }
 }
+
+.task-error { margin: 8px 0 0; padding: 7px 10px; border: 1px solid color-mix(in srgb, var(--red) 40%, transparent); border-radius: 6px; background: var(--red-deep); color: var(--red); font-size: 14px; overflow-wrap: anywhere; }

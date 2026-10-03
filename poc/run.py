@@ -22,6 +22,7 @@ from label_tools import connect, snapshot
 from schemas import REVIEW, REVIEW_V1, REVIEW_V2, REVIEW_SCHEMA_VERSION, DEDUP
 
 ROOT=Path(__file__).resolve().parent
+REPO=ROOT.parent
 PRICES={'gpt-6-luna':(.10,.01,.50),'gpt-6-sol':(2.0,.20,10.0),'gpt-5.6-luna':(.20,.02,1.20),'gpt-5.6-sol':(4.0,.40,20.0)}
 CREDITS={'gpt-6-luna':(2.5,.25,12.5),'gpt-6-sol':(50,5,250),'gpt-5.6-luna':(5,.5,30),'gpt-5.6-sol':(100,10,500)}
 PRICE_SOURCE='https://developers.openai.com/api/docs/pricing'
@@ -30,7 +31,25 @@ DISABLED=('shell_tool','unified_exec','apps','plugins','hooks','browser_use','br
           'skill_mcp_dependency_install','sleep_tool','goals','view_image')
 
 
+# Running Codex process groups; Ctrl-C must stop them because they run in their own sessions.
+CHILDREN=set();CHILDREN_LOCK=threading.Lock()
+
+
 def now(): return datetime.now(timezone.utc).isoformat()
+def portable(text):
+    """Record repo- and home-relative paths instead of host-specific absolute ones."""
+    return str(text).replace(str(REPO),'.').replace(str(Path.home()),'~')
+def stop_process_group(process,grace=5):
+    try: os.killpg(process.pid,signal.SIGTERM)
+    except ProcessLookupError: return
+    try: process.wait(timeout=grace)
+    except subprocess.TimeoutExpired:
+        try: os.killpg(process.pid,signal.SIGKILL)
+        except ProcessLookupError: pass
+        process.wait()
+def terminate_children():
+    with CHILDREN_LOCK: processes=list(CHILDREN)
+    for process in processes: stop_process_group(process)
 def write_json(path,value):
     path.parent.mkdir(parents=True,exist_ok=True)
     tmp=path.with_name(path.name+f'.{uuid.uuid4().hex}.tmp')
@@ -73,19 +92,24 @@ def invoke(model,prompt,schema,outdir,timeout,task_file=None,db=None,images=(),r
     write_json(outdir/'schema.json',schema);(outdir/'prompt.txt').write_text(prompt)
     work=outdir/'workspace';work.mkdir(exist_ok=True)
     command=codex_command(model,outdir/'schema.json',outdir/'response.json',work,task_file,db,images,reasoning)
-    write_json(outdir/'command.json',command)
+    write_json(outdir/'command.json',[portable(arg) for arg in command])
     env=os.environ.copy()
     # Existing Codex auth remains in its normal location; never copy or log credentials.
     started=time.monotonic();error=None
     with (outdir/'agent.jsonl').open('w') as stdout,(outdir/'stderr.log').open('w') as stderr:
         process=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=stdout,stderr=stderr,text=True,
                                  env=env,start_new_session=True)
+        with CHILDREN_LOCK: CHILDREN.add(process)
         try: process.communicate(prompt,timeout=timeout)
         except subprocess.TimeoutExpired:
-            os.killpg(process.pid,signal.SIGTERM)
-            try: process.wait(timeout=5)
-            except subprocess.TimeoutExpired: os.killpg(process.pid,signal.SIGKILL);process.wait()
+            stop_process_group(process)
             error=f'Wall-clock limit {timeout}s reached; no automatic retry.'
+        except KeyboardInterrupt:
+            stop_process_group(process);raise
+        finally:
+            with CHILDREN_LOCK: CHILDREN.discard(process)
+    for log in ('agent.jsonl','stderr.log'):
+        (outdir/log).write_text(portable((outdir/log).read_text()))
     events=[];usage={'input_tokens':None,'cached_input_tokens':None,'output_tokens':None}
     for line in (outdir/'agent.jsonl').read_text().splitlines():
         try: event=json.loads(line)
@@ -125,9 +149,12 @@ def validate_review(review,task,pool):
     label_ids={p['id'] for p in pool['proposals']}
     episodes=review['episodes'];episode_ids=[e['episode_id'] for e in episodes]
     if len(set(episode_ids))!=len(episode_ids): raise ValueError('Duplicate episode ID')
+    reject_duplicate_refs(review)
     for step in review['steps']:
         if not set(step['evidence_refs']) <= evidence or not set(step['episode_refs']) <= set(episode_ids):
             raise ValueError('Invalid step evidence/episode reference')
+        if step['review_status']=='reviewed' and not step['evidence_refs']:
+            raise ValueError(f"Reviewed step {step['step_id']} cites no evidence; use insufficient_evidence")
     for ep in episodes:
         if not set(ep['onset_step_ids'])<=set(ids) or not ep['onset_step_ids']: raise ValueError('Invalid onset')
         earliest_onset=min(step_order[step_id] for step_id in ep['onset_step_ids'])
@@ -136,8 +163,10 @@ def validate_review(review,task,pool):
         if not set(ep['recovery']['step_ids'])<=set(ids): raise ValueError('Invalid recovery steps')
         if any(step_order[step_id]<earliest_onset for step_id in ep['recovery']['step_ids']):
             raise ValueError('Recovery step precedes episode onset')
-        if ep['recovery']['status']=='recovered' and (not ep['recovery']['step_ids'] or not ep['recovery']['evidence_refs']):
+        if ep['recovery']['status'] in ('recovered','partial') and (not ep['recovery']['step_ids'] or not ep['recovery']['evidence_refs']):
             raise ValueError('Recovery needs a step and evidence')
+        if ep['recovery']['status'] in ('not_assessed','none_observed','unknown') and ep['recovery']['step_ids']:
+            raise ValueError(f"Recovery status {ep['recovery']['status']} cannot tag recovery steps")
         if ep['label_id'] and ep['label_id'] not in label_ids: raise ValueError('Unknown label proposal ID')
         if task['outcome']=='passed' and ep['outcome_contribution']!='not_applicable': raise ValueError('Passed contribution must be not_applicable')
         if task['outcome']=='failed' and ep['outcome_contribution']=='not_applicable': raise ValueError('Failed contribution cannot be not_applicable')
@@ -145,19 +174,29 @@ def validate_review(review,task,pool):
         validate_review_v2_links(review,step_order)
     if review['result']=='no_issue_observed' and (episodes or any(s['review_status']!='reviewed' for s in review['steps'])):
         raise ValueError('No-issue result requires reviewed coverage and no episodes')
+    if review['result']=='issues_observed' and not episodes:
+        raise ValueError('Issues-observed result requires at least one episode')
 
 
-def validate_review_v2_links(review,step_order):
-    """Validate problem numbering and required onset/recovery links for schema v2."""
+def reject_duplicate_refs(review):
+    """Reject repeated IDs in any reference list (both schema versions)."""
     def reject_duplicates(values,field):
         if len(values)!=len(set(values)):
             raise ValueError(f'Duplicate reference in {field}')
 
-    links_by_step={step_id:set() for step_id in step_order}
     for step in review['steps']:
         reject_duplicates(step['evidence_refs'],f"step {step['step_id']} evidence_refs")
         reject_duplicates(step['episode_refs'],f"step {step['step_id']} episode_refs")
+    for ep in review['episodes']:
+        reject_duplicates(ep['onset_step_ids'],f"episode {ep['episode_id']} onset_step_ids")
+        reject_duplicates(ep['recovery']['step_ids'],f"episode {ep['episode_id']} recovery.step_ids")
+        reject_duplicates(ep['evidence_refs'],f"episode {ep['episode_id']} evidence_refs")
+        reject_duplicates(ep['recovery']['evidence_refs'],f"episode {ep['episode_id']} recovery.evidence_refs")
 
+
+def validate_review_v2_links(review,step_order):
+    """Validate problem numbering and required onset/recovery links for schema v2."""
+    links_by_step={step_id:set() for step_id in step_order}
     episodes=review['episodes']
     problem_numbers=[ep['problem_number'] for ep in episodes]
     if len(problem_numbers)!=len(set(problem_numbers)):
@@ -166,11 +205,6 @@ def validate_review_v2_links(review,step_order):
     for ep in episodes:
         onset_ids=ep['onset_step_ids']
         recovery_ids=ep['recovery']['step_ids']
-        reject_duplicates(onset_ids,f"episode {ep['episode_id']} onset_step_ids")
-        reject_duplicates(recovery_ids,f"episode {ep['episode_id']} recovery.step_ids")
-        reject_duplicates(ep['evidence_refs'],f"episode {ep['episode_id']} evidence_refs")
-        reject_duplicates(ep['recovery']['evidence_refs'],f"episode {ep['episode_id']} recovery.evidence_refs")
-
         first_observed=min(onset_ids,key=step_order.__getitem__)
         if ep['first_observed_step_id'] not in step_order:
             raise ValueError(f"Unknown first_observed_step_id for {ep['episode_id']}")
@@ -224,7 +258,8 @@ def main():
             'max_seconds_per_session':args.timeout,'reasoning_effort':args.reasoning,'automatic_retries':0,'hosted_inference':True},indent=2));return
     run_id=datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:5]
     run_dir=ROOT/'runs'/run_id;run_dir.mkdir(parents=True)
-    latest=ROOT/'runs/latest';latest.mkdir(exist_ok=True)
+    # runs/latest is a retained fixture for the viewer and platform seed; only completed runs replace it.
+    latest=ROOT/'runs/latest'
     db_path=run_dir/'labels.sqlite';db=connect(db_path);db.close()
     state={'run_id':run_id,'status':'running','started_at':now(),'finished_at':None,'model':args.model,
         'review_schema_version':REVIEW_SCHEMA_VERSION,
@@ -248,8 +283,9 @@ def main():
           'complete':all(u.get('estimated_usd') is not None for u in usages),
           'sessions_recorded':len(usages),'pricing_note':'API-equivalent only; ChatGPT plan/credit charge unavailable.',
           'pricing_source':PRICE_SOURCE,'estimated_credits':sum(u.get('estimated_credits') or 0 for u in usages) if known else None}
-        write_json(run_dir/'run.json',state);write_json(latest/'run.json',state)
+        write_json(run_dir/'run.json',state)
     save()
+    print(f'Live progress: http://127.0.0.1:8765/poc/viewer/?run={run_id} (python3 poc/serve.py)',flush=True)
     def review_task(task):
         task_dir=run_dir/task['task_id'];task_dir.mkdir()
         selected=[s for s in task['steps'] if s.get('screenshot')]
@@ -262,7 +298,7 @@ def main():
             if not path.is_relative_to(ROOT/'data') or not path.is_file(): raise ValueError('Invalid image path')
             image_paths.append(path);frame_ids.append(step['step_id'])
         context=copy.deepcopy(task)
-        for k in ('review','agent_trace','status','error'): context.pop(k,None)
+        for k in ('review','rejected_review','agent_trace','status','error'): context.pop(k,None)
         context['attached_frame_steps']=frame_ids
         definition=(ROOT/task.get('source',{}).get('task_definition','')).resolve()
         if definition.is_relative_to(ROOT/'data') and definition.is_file():
@@ -285,19 +321,37 @@ def main():
                 conn=connect(db_path);pool=snapshot(conn);conn.close();validate_review(result,context,pool)
             except Exception as exc: error=f'Validation: {exc}'
         with lock:
-            task.update(status='failed' if error else 'completed',review=result,agent_trace=trace,
+            # Output that fails validation is kept for inspection but never published as a review.
+            task.update(status='failed' if error else 'completed',review=None if error else result,agent_trace=trace,
                         usage=usage,error=error,duration_seconds=elapsed)
-            if result is not None: write_json(task_dir/'review.json',result);write_yaml(task_dir/'review.yaml',result)
+            if error and result is not None: task['rejected_review']=result
+            if result is not None and not error: write_json(task_dir/'review.json',result);write_yaml(task_dir/'review.yaml',result)
             task['artifacts']={k:f'/poc/runs/{run_id}/{task["task_id"]}/{name}' for k,name in
                 [('review_json','review.json'),('review_yaml','review.yaml'),('agent_jsonl','agent.jsonl')] if (task_dir/name).exists()}
             save()
         print(f'  {task["status"]}: {task["task_id"][:8]} {elapsed}s'+(f' {error}' if error else ''),flush=True)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.parallel) as pool:
-        futures={pool.submit(review_task,t):t for t in tasks}
-        for f in concurrent.futures.as_completed(futures):
-            try: f.result()
-            except Exception as exc:
-                with lock: futures[f].update(status='failed',error=str(exc));save()
+    executor=concurrent.futures.ThreadPoolExecutor(max_workers=args.parallel)
+    try:
+        finish_run(args,run_dir,latest,db_path,state,tasks,lock,save,review_task,executor)
+    except KeyboardInterrupt:
+        executor.shutdown(wait=False,cancel_futures=True)
+        terminate_children()
+        with lock:
+            state['status']='interrupted';state['finished_at']=now()
+            for t in tasks:
+                if t['status'] in ('queued','running'): t.update(status='failed',error=t.get('error') or 'Interrupted before completion.')
+            save()
+        print(f'Interrupted; stopped running model sessions. Partial record: {portable(run_dir)}/run.json',flush=True)
+        sys.exit(130)
+    executor.shutdown(wait=True)
+
+
+def finish_run(args,run_dir,latest,db_path,state,tasks,lock,save,review_task,executor):
+    futures={executor.submit(review_task,t):t for t in tasks}
+    for f in concurrent.futures.as_completed(futures):
+        try: f.result()
+        except Exception as exc:
+            with lock: futures[f].update(status='failed',error=str(exc));save()
     conn=connect(db_path);shared=snapshot(conn);conn.close();write_json(run_dir/'proposals.json',shared)
     state['status']='deduplicating';save()
     if shared['proposals']:
@@ -322,7 +376,9 @@ def main():
     state['unclassified_tasks']=unclassified
     state['status']='completed' if all(t['status']=='completed' for t in tasks) and not unclassified and not state['taxonomy']['deduplication'].get('error') else 'partial'
     save();write_yaml(run_dir/'run.yaml',state)
-    print(json.dumps({'run':str(run_dir),'status':state['status'],'usage':state['usage']},indent=2))
+    if state['status']=='completed': write_json(latest/'run.json',state)
+    print(json.dumps({'run':portable(run_dir),'status':state['status'],'usage':state['usage'],
+                      'promoted_to_latest':state['status']=='completed'},indent=2))
     if state['status']=='partial': sys.exit(1)
 
 if __name__=='__main__': main()

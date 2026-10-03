@@ -122,7 +122,9 @@ poc/.venv/bin/python -m unittest discover -s poc/tests -v
 | Shared-label helpers | Eight calls and four proposals per task |
 | Budget | Six sessions by default; no hard dollar cap. Multi-turn context is billed repeatedly, sometimes cached |
 
-- A rerun creates a new timestamped directory and updates `runs/latest/run.json`; earlier runs stay intact. Partial runs exit with code 1 and keep their evidence.
+- A rerun creates a new timestamped directory; earlier runs stay intact. Only a **completed** run replaces `runs/latest/run.json`, which the viewer and platform seed read. Partial runs exit with code 1 and keep their evidence; Ctrl-C stops running model sessions and marks the run `interrupted`. Open any run, including one in progress, with `/poc/viewer/?run=<run-id>`.
+- Output that fails validation is stored as `rejected_review` with the reason in `error`; it is never written as `review.json` or counted as recorded problems. A `reviewed` step must cite evidence, `partial`/`recovered` recovery must cite correction steps, and `issues_observed` needs at least one episode.
+- Recorded commands and logs use repo-relative (`./`) and home-relative (`~`) paths rather than host-specific absolute paths.
 - `--batch path/to/batch.json` accepts the same normalized structure as [data/batch.json](data/batch.json). This POC does not implement generic import adapters or dataset sync.
 - [prepare_data.py](prepare_data.py) can rebuild the sample from pinned public ZIP members using HTTP Range requests. It downloads data but makes no inference calls; it is unnecessary for the saved run.
 - A different model must be available to this CLI/account. Unknown model pricing stays unpriced; there is no silent model fallback.

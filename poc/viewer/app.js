@@ -1,6 +1,8 @@
 "use strict";
 
-const RUN_URL = "/poc/runs/latest/run.json";
+// ?run=<run-id> opens an in-progress or historical run; runs/latest holds the last completed run.
+const RUN_PARAM = new URLSearchParams(window.location.search).get("run");
+const RUN_URL = RUN_PARAM && /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(RUN_PARAM) ? `/poc/runs/${RUN_PARAM}/run.json` : "/poc/runs/latest/run.json";
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const state = { run: null, taskIndex: 0, section: "run", detailTab: "trajectory", stepIndex: 0, rawTaskUrl: null, sidebarCollapsed: false };
@@ -140,6 +142,22 @@ function taskReviewStatus(task) {
   return String(status);
 }
 
+// Older runs kept output that failed validation in task.review; treat it as rejected, never as findings.
+function normalizeRun(run) {
+  for (const task of Array.isArray(run.tasks) ? run.tasks : []) {
+    if (task && task.status === "failed" && task.error && task.review && !task.rejected_review) {
+      task.rejected_review = task.review;
+      task.review = null;
+    }
+  }
+  return run;
+}
+
+function taskErrorText(task) {
+  if (!task?.error) return "";
+  return `${task.rejected_review ? "Review rejected" : "Review failed"}: ${String(task.error)}`;
+}
+
 function taskHasReview(task) {
   const review = task?.review;
   return Boolean(review && typeof review === "object" && !Array.isArray(review) && Object.keys(review).length);
@@ -266,8 +284,9 @@ function renderTaskDialogList() {
     const status = node("div", "task-dialog-status");
     const outcome = evaluatorOutcome(task);
     status.append(makeBadge(`Evaluator · ${outcome.label}`, outcome.tone));
-    status.append(makeBadge(taskHasReview(task) ? "Review available" : "Review unavailable", taskHasReview(task) ? "good" : ""));
+    status.append(makeBadge(taskHasReview(task) ? "Review available" : task.rejected_review ? "Review rejected" : "Review unavailable", taskHasReview(task) ? "good" : task.error ? "bad" : ""));
     card.append(status);
+    if (task.error) card.append(node("p", "task-error", taskErrorText(task)));
 
     const counts = taskRecordedCounts(task);
     const facts = node("dl", "task-dialog-facts");
@@ -388,6 +407,7 @@ function makeTaskHeader(task) {
     if (task.usage.estimated_usd !== undefined) badges.append(makeBadge(formatMoney(task.usage.estimated_usd)));
   }
   heading.append(badges);
+  if (task.error) heading.append(node("p", "task-error", taskErrorText(task)));
   header.append(heading);
   return header;
 }
@@ -1268,7 +1288,7 @@ async function loadSnapshot(initial = false) {
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     const run = await response.json();
     if (!run || typeof run !== "object") throw new Error("The run record was empty or malformed.");
-    state.run = run;
+    state.run = normalizeRun(run);
     if (previousTaskId !== undefined) {
       const matchedTask = (run.tasks || []).findIndex(task => String(task.task_id) === String(previousTaskId));
       state.taskIndex = matchedTask >= 0 ? matchedTask : Math.min(state.taskIndex, Math.max(0, (run.tasks || []).length - 1));

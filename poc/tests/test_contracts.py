@@ -318,6 +318,77 @@ class ReviewContractTests(unittest.TestCase):
             with self.subTest(case=case), self.assertRaisesRegex(ValueError, message):
                 run.validate_review(review, task, {"proposals": []})
 
+    def test_rejects_unsupported_claims(self):
+        task = sample_task()
+        cases = []
+
+        no_episodes = sample_review()
+        no_episodes["episodes"] = []
+        no_episodes["steps"][0]["episode_refs"] = []
+        cases.append(("issues without episodes", no_episodes, "requires at least one episode"))
+
+        uncited_step = sample_review()
+        uncited_step["steps"][1]["evidence_refs"] = []
+        cases.append(("reviewed step without evidence", uncited_step, "cites no evidence"))
+
+        empty_partial = sample_review()
+        empty_partial["episodes"][0]["recovery"].update(status="partial", step_ids=[], evidence_refs=[])
+        cases.append(("partial recovery without steps", empty_partial, "Recovery needs a step and evidence"))
+
+        for status in ("none_observed", "not_assessed", "unknown"):
+            tagged = sample_review()
+            tagged["episodes"][0]["recovery"].update(status=status, step_ids=["s2"], evidence_refs=["event-2"])
+            cases.append((f"{status} with recovery steps", tagged, "cannot tag recovery steps"))
+
+        v1_duplicate = sample_review()
+        v1_duplicate["steps"][0]["evidence_refs"] = ["event-1", "event-1"]
+        cases.append(("v1 duplicate step evidence", v1_duplicate, "Duplicate reference"))
+
+        v1_duplicate_episode = sample_review()
+        v1_duplicate_episode["episodes"][0]["evidence_refs"] = ["event-1", "event-1"]
+        cases.append(("v1 duplicate episode evidence", v1_duplicate_episode, "Duplicate reference"))
+
+        for case, review, message in cases:
+            with self.subTest(case=case), self.assertRaisesRegex(ValueError, message):
+                run.validate_review(review, task, {"proposals": []})
+
+    def test_uncited_step_is_allowed_when_marked_insufficient_evidence(self):
+        task = sample_task()
+        review = sample_review()
+        review["steps"][1].update(review_status="insufficient_evidence", evidence_refs=[])
+        run.validate_review(review, task, {"proposals": []})
+
+    def test_all_retained_saved_reviews_satisfy_the_current_contract(self):
+        # latest is the fixture the platform seeds from; c522c is copied into the Docker image.
+        run_ids = ("latest", "20260926-225934-c522c", "20260926-224411-20aa4")
+        available = [run_id for run_id in run_ids if (POC_DIR / "runs" / run_id / "run.json").is_file()]
+        if not available:
+            self.skipTest("Saved POC runs are not present in this checkout")
+        for run_id in available:
+            manifest = json.loads((POC_DIR / "runs" / run_id / "run.json").read_text())
+            self.assertEqual(manifest["status"], "completed")
+            for saved_task in manifest["tasks"]:
+                with self.subTest(run_id=run_id, task_id=saved_task["task_id"]):
+                    task_path = POC_DIR / "runs" / manifest["run_id"] / saved_task["task_id"] / "input.json"
+                    task = json.loads(task_path.read_text())
+                    run.validate_review(saved_task["review"], task, manifest["taxonomy"])
+
+    def test_first_integration_run_is_rejected_only_for_tagged_unrecovered_steps(self):
+        # The retained first run (helper-schema integration failure) tagged recovery steps on a
+        # none_observed episode, which its prompt already forbade; the validator now catches it.
+        run_dir = POC_DIR / "runs" / "20260926-224125-3a464"
+        if not (run_dir / "run.json").is_file():
+            self.skipTest("Retained first integration run is not present in this checkout")
+        manifest = json.loads((run_dir / "run.json").read_text())
+        failures = {}
+        for saved_task in manifest["tasks"]:
+            task = json.loads((run_dir / saved_task["task_id"] / "input.json").read_text())
+            try:
+                run.validate_review(saved_task["review"], task, manifest["taxonomy"])
+            except ValueError as exc:
+                failures[saved_task["task_id"]] = str(exc)
+        self.assertEqual(list(failures.values()), ["Recovery status none_observed cannot tag recovery steps"])
+
     def test_saved_unversioned_reviews_still_validate(self):
         run_ids = ("20260926-224411-20aa4", "20260926-225934-c522c")
         available = [run_id for run_id in run_ids if (POC_DIR / "runs" / run_id / "run.json").is_file()]
@@ -336,6 +407,127 @@ class ReviewContractTests(unittest.TestCase):
                         review = saved_task["review"]
                         self.assertNotIn("schema_version", review)
                         run.validate_review(review, task, manifest["taxonomy"])
+
+
+class RunnerSafetyTests(unittest.TestCase):
+    def test_portable_paths_hide_repo_and_home_locations(self):
+        repo_path = str(run.REPO / "poc" / "prompts" / "system.txt")
+        home_path = str(Path.home() / ".codex" / "config.toml")
+        self.assertEqual(run.portable(f"-c model_instructions_file={repo_path}"),
+                         "-c model_instructions_file=./poc/prompts/system.txt")
+        self.assertEqual(run.portable(f"warning in {home_path}"), "warning in ~/.codex/config.toml")
+
+    def test_committed_run_artifacts_contain_no_host_home_paths(self):
+        # OSWorld task text legitimately mentions VM paths such as /home/user; host paths must not leak.
+        leaked = [str(path.relative_to(POC_DIR)) for path in (POC_DIR / "runs").rglob("*")
+                  if path.is_file() and path.suffix in (".json", ".jsonl", ".yaml", ".log", ".txt")
+                  and "/Users/" in path.read_text(errors="ignore")]
+        self.assertEqual(leaked, [])
+
+    def test_terminate_children_stops_registered_process_groups(self):
+        process = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"],
+                                   start_new_session=True)
+        with run.CHILDREN_LOCK:
+            run.CHILDREN.add(process)
+        try:
+            run.terminate_children()
+            self.assertIsNotNone(process.poll())
+        finally:
+            with run.CHILDREN_LOCK:
+                run.CHILDREN.discard(process)
+            if process.poll() is None:
+                process.kill()
+                process.wait()
+
+
+class RunnerPublicationTests(unittest.TestCase):
+    """Drive run.main with mocked inference in a temporary POC root (no model calls)."""
+
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp_dir.name) / "poc"
+        (self.root / "data").mkdir(parents=True)
+        (self.root / "prompts").mkdir()
+        for prompt in (POC_DIR / "prompts").glob("*.txt"):
+            (self.root / "prompts" / prompt.name).write_text(prompt.read_text())
+        task = sample_task()
+        task.update(title="Sample", steps=[{"step_id": "s1", "evidence_refs": ["event-1"]},
+                                           {"step_id": "s2", "evidence_refs": ["event-2"]}])
+        self.batch = self.root / "data" / "batch.json"
+        self.batch.write_text(json.dumps({"batch_id": "b1", "tasks": [task]}))
+        self.saved = (run.ROOT, run.REPO, run.invoke, sys.argv)
+        run.ROOT, run.REPO = self.root, self.root.parent
+
+    def tearDown(self):
+        run.ROOT, run.REPO, run.invoke, sys.argv = self.saved
+        self.temp_dir.cleanup()
+
+    def main_with(self, review):
+        usage = {"input_tokens": 1, "cached_input_tokens": 0, "output_tokens": 1,
+                 "estimated_usd": 0.0, "estimated_credits": 0.0}
+        run.invoke = lambda *args, **kwargs: (copy.deepcopy(review), [], usage, None, 0.01)
+        sys.argv = ["run.py", "--batch", str(self.batch), "--limit", "1"]
+        try:
+            run.main()
+            code = 0
+        except SystemExit as exc:
+            code = exc.code
+        run_dir = next(path for path in (self.root / "runs").iterdir() if path.name != "latest")
+        return code, run_dir, json.loads((run_dir / "run.json").read_text())
+
+    def test_rejected_output_is_kept_apart_and_never_promoted(self):
+        invalid = sample_review_v2()
+        invalid["steps"][1]["evidence_refs"] = []  # A reviewed step without evidence.
+        code, run_dir, state = self.main_with(invalid)
+        task = state["tasks"][0]
+        self.assertEqual((code, state["status"], task["status"]), (1, "partial", "failed"))
+        self.assertIsNone(task["review"])
+        self.assertEqual(task["rejected_review"], invalid)
+        self.assertIn("cites no evidence", task["error"])
+        self.assertFalse((run_dir / task["task_id"] / "review.json").exists())
+        self.assertFalse((self.root / "runs" / "latest" / "run.json").exists())
+
+    def test_completed_run_is_promoted_to_latest(self):
+        clean = sample_review_v2()
+        clean.update(result="no_issue_observed", episodes=[])
+        clean["steps"][0]["episode_refs"] = []
+        code, run_dir, state = self.main_with(clean)
+        self.assertEqual((code, state["status"]), (0, "completed"))
+        self.assertTrue((run_dir / state["tasks"][0]["task_id"] / "review.json").exists())
+        self.assertEqual(json.loads((self.root / "runs" / "latest" / "run.json").read_text()), state)
+
+
+class ViewerServerTests(unittest.TestCase):
+    def test_get_and_head_share_the_allowlist(self):
+        import http.client
+        import serve
+        from functools import partial
+        from http.server import ThreadingHTTPServer
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), partial(serve.ViewerHandler, directory=str(serve.PROJECT)))
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            def status(method, path):
+                connection = http.client.HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
+                try:
+                    connection.request(method, path)
+                    response = connection.getresponse()
+                    response.read()
+                    return response.status
+                finally:
+                    connection.close()
+
+            for path in ("/.git/config", "/platform/compose.yaml", "/poc/run.py", "/poc/../platform/README.md"):
+                for method in ("GET", "HEAD"):
+                    with self.subTest(method=method, path=path):
+                        self.assertEqual(status(method, path), 404)
+            for method in ("GET", "HEAD"):
+                with self.subTest(method=method, path="/poc/viewer/"):
+                    self.assertEqual(status(method, "/poc/viewer/"), 200)
+        finally:
+            server.shutdown()
+            server.server_close()
 
 
 class DedupContractTests(unittest.TestCase):
