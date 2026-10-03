@@ -25,9 +25,14 @@ platform/web/dist
 # Inputs used only to regenerate the demo ZIPs on a host
 platform/demo-data/source
 
-# POC: keep schemas.py, data/ and the two retained runs the seed reads
+# Backend tests and tooling are not part of the runtime image
+platform/backend/tests
+platform/backend/requirements-dev.txt
+
+# POC: keep only data/ and the two retained runs the seed reads
+poc/*
+!poc/data
+!poc/runs
 poc/runs/*
 !poc/runs/latest
 !poc/runs/20260926-225934-c522c
-poc/tests
-poc/viewer
