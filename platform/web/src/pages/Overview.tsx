@@ -7,6 +7,7 @@ import WorkspacesRounded from "@mui/icons-material/WorkspacesRounded";
 import AddRounded from "@mui/icons-material/AddRounded";
 import { PageHeader, Panel, MetricCard, LoadingState, ErrorState, SectionTitle, StatusTag, formatDate, displayValue, runStatusLabel } from "../components";
 import { useApi } from "../hooks";
+import { CATALOG_PAGING } from "../pagination";
 
 interface OverviewData {
   counts?: Record<string, number>;
@@ -27,7 +28,7 @@ interface DatasetRows { items?: Record<string, unknown>[]; total?: number; }
 
 export function OverviewPage() {
   const state = useApi<OverviewData>("/overview");
-  const datasetsState = useApi<DatasetRows | Record<string, unknown>[]>("/datasets");
+  const datasetsState = useApi<DatasetRows | Record<string, unknown>[]>("/datasets", 0, CATALOG_PAGING);
   const raw = state.data;
   const counts: Record<string, number | undefined> | undefined = raw ? {
     ...(raw.counts || {}),

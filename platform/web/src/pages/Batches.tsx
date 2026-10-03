@@ -11,10 +11,11 @@ import Inventory2Rounded from "@mui/icons-material/Inventory2Rounded";
 import InsightsRounded from "@mui/icons-material/InsightsRounded";
 import { apiRequest } from "../api";
 import { useApi } from "../hooks";
+import { CATALOG_PAGING, RUN_TASK_PAGING } from "../pagination";
 import type { BatchRecord, ReviewJobRecord, TaskRecord, TaskReviewSummary } from "../types";
 import { RunComposer } from "../RunComposer";
 import { RunShares } from "./RunShares";
-import { BenchmarkResult, EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, benchmarkResultLabel, formatDate, displayValue, reviewProcessingError, runStatusLabel } from "../components";
+import { BenchmarkResult, EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, TruncationNote, benchmarkResultLabel, formatDate, displayValue, reviewProcessingError, runStatusLabel } from "../components";
 
 const linkedCardSx = {
   position: "relative", minWidth: 0, borderRadius: 2,
@@ -173,7 +174,7 @@ function promptText(workflow: Row): string {
 
 export function BatchesPage() {
   const [showArchived, setShowArchived] = useState(false);
-  const runs = useApi<{ items?: RunRecord[] } | RunRecord[]>(`/runs${showArchived ? "?include_archived=true" : ""}`);
+  const runs = useApi<{ items?: RunRecord[] } | RunRecord[]>(`/runs${showArchived ? "?include_archived=true" : ""}`, 0, CATALOG_PAGING);
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const [composerOpen, setComposerOpen] = useState(false);
@@ -226,7 +227,7 @@ export function BatchDetailPage() {
   const navigate = useNavigate();
   const archiveQuery = includeArchived ? "?include_archived=true" : "";
   const detail = useApi<RunDetailResponse>(id ? `/runs/${encodeURIComponent(id)}${archiveQuery}` : null);
-  const tasksState = useApi<{ items?: RunTask[]; total?: number } | RunTask[]>(id ? `/runs/${encodeURIComponent(id)}/tasks${archiveQuery}` : null);
+  const tasksState = useApi<{ items?: RunTask[]; total?: number } | RunTask[]>(id ? `/runs/${encodeURIComponent(id)}/tasks${archiveQuery}` : null, 0, RUN_TASK_PAGING);
   const [composerOpen, setComposerOpen] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [busy, setBusy] = useState("");
@@ -284,6 +285,7 @@ export function BatchDetailPage() {
         <Panel><SectionTitle title="Task results" subtitle="Benchmark results describe the original task. Review processing describes the queue. Review assessment describes issues and evidence." />
           {tasksState.loading && <LoadingState label="Loading task results…" />}{tasksState.error && <ErrorState message={tasksState.error} onRetry={tasksState.reload} />}
           {!tasksState.loading && !tasksState.error && !tasks.length && <Typography color="text.secondary">No tasks are included in this run.</Typography>}
+          <TruncationNote list={tasksState.data} noun="tasks" />
           {!!tasks.length && <Stack gap={1.2}>{tasks.map((task, index) => {
             const taskId = String(task.task_id || task.id || "");
             const memberId = String(task.member_id || task.run_member_id || "");

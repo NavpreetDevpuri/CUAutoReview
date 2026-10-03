@@ -5,6 +5,7 @@ import TuneRounded from "@mui/icons-material/TuneRounded";
 import { apiRequest } from "./api";
 import { ModelPicker, preferredModel, suggestedBudget, type ModelCatalog } from "./ModelPicker";
 import { useApi } from "./hooks";
+import { CATALOG_PAGING } from "./pagination";
 import { ErrorState, LoadingState, Panel, countLabel } from "./components";
 import { type Catalog, type Selection, SelectionDialog, emptySelection } from "./SelectionDialog";
 
@@ -21,7 +22,7 @@ export function RunComposer({ open, onClose, initialDatasetIds = [], initialTask
   const catalog = useApi<Catalog>(open ? "/catalog" : null);
   const workflows = useApi<{ items: Workflow[] }>(open ? "/workflows" : null);
   const providers = useApi<{ backends: Provider[] }>(open ? "/providers" : null);
-  const savedPresets = useApi<{ items: SavedExecution[] }>(open ? "/presets" : null);
+  const savedPresets = useApi<{ items: SavedExecution[] }>(open ? "/presets" : null, 0, CATALOG_PAGING);
   const [savedPresetId, setSavedPresetId] = useState("");
   const source = useApi<Run>(open && sourceRunId ? `/runs/${sourceRunId}` : null);
   const [personSearch, setPersonSearch] = useState("");

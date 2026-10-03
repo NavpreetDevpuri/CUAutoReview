@@ -47,6 +47,13 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   return <Alert severity="error" action={onRetry ? <Button color="inherit" startIcon={<RefreshRounded />} onClick={onRetry}>Retry</Button> : undefined}>{message}</Alert>;
 }
 
+/** Explains when a paged list stopped before the server's total, instead of silently hiding records. */
+export function TruncationNote({ list, noun }: { list: unknown; noun: string }) {
+  const page = list as { items?: unknown[]; total?: number; truncated?: boolean } | null;
+  if (!page?.truncated || !Array.isArray(page.items)) return null;
+  return <Alert severity="info" sx={{ mb: 2 }}>Showing the first {page.items.length} of {page.total} {noun}.</Alert>;
+}
+
 export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
   return <Panel sx={{ py: 5, textAlign: "center", bgcolor: "background.default", borderStyle: "dashed" }}>
     <Typography variant="h3">{title}</Typography><Typography color="text.secondary" sx={{ mt: 1, maxWidth: 570, mx: "auto" }}>{description}</Typography>

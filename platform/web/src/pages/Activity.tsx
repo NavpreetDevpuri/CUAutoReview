@@ -3,7 +3,8 @@ import { Alert, Box, Button, Chip, Grid, Stack, Table, TableBody, TableCell, Tab
 import RefreshRounded from "@mui/icons-material/RefreshRounded";
 import { useApi } from "../hooks";
 import type { ReviewAttemptRecord, ReviewJobRecord } from "../types";
-import { EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, displayValue, formatDate, reviewProcessingError } from "../components";
+import { EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, TruncationNote, displayValue, formatDate, reviewProcessingError } from "../components";
+import { LATEST_PAGE } from "../pagination";
 
 type Row = Record<string, unknown>;
 function object(value: unknown): Row { return value && typeof value === "object" && !Array.isArray(value) ? value as Row : {}; }
@@ -50,13 +51,14 @@ function costSummary(job: Row): string {
 }
 
 export function ActivityPage() {
-  const state = useApi<RowsResponse | Row[]>("/activity");
+  const state = useApi<RowsResponse | Row[]>("/activity", 0, LATEST_PAGE);
   const entries = rowsFrom(state.data, "activity");
   return <>
     <PageHeader eyebrow="AUDIT TRAIL" title="Activity" description="Append-only workspace events for membership, dataset, run, review, and taxonomy changes." action={<Button variant="outlined" startIcon={<RefreshRounded />} onClick={state.reload}>Refresh</Button>} />
     {state.loading && <LoadingState label="Loading workspace activity…" />}
     {state.error && <ErrorState message={state.error} onRetry={state.reload} />}
     {!state.loading && !state.error && !entries.length && <EmptyState title="No activity recorded" description="Workspace changes and review actions will appear here when they are recorded by the API." />}
+    <TruncationNote list={state.data} noun="events (newest first)" />
     {!!entries.length && <Panel><SectionTitle title="Workspace events" subtitle={`${entries.length} events returned by the activity API`} /><Stack gap={0} divider={<Box sx={{ borderBottom: "1px solid", borderColor: "divider" }} />}>
       {entries.map((entry, index) => <Grid key={rowId(entry, index)} container spacing={1.3} alignItems="flex-start" sx={{ py: 1.5 }}>
         <Grid size={{ xs: 12, sm: 2.4 }}><Typography color="text.secondary" sx={{ fontSize: 13 }}>{formatDate(entry.created_at || entry.timestamp)}</Typography></Grid>
@@ -68,13 +70,14 @@ export function ActivityPage() {
 }
 
 export function JobsPage() {
-  const state = useApi<RowsResponse | Row[]>("/jobs");
+  const state = useApi<RowsResponse | Row[]>("/jobs", 0, LATEST_PAGE);
   const jobs = rowsFrom(state.data, "jobs");
   return <>
     <PageHeader eyebrow="PROCESSING QUEUE" title="Jobs" description="Authoritative job state, attempts, ownership, and usage are reported by the local queue API." action={<Button variant="outlined" startIcon={<RefreshRounded />} onClick={state.reload}>Refresh</Button>} />
     {state.loading && <LoadingState label="Loading jobs…" />}
     {state.error && <ErrorState message={state.error} onRetry={state.reload} />}
     {!state.loading && !state.error && !jobs.length && <EmptyState title="No jobs in the queue" description="Run tasks appear here after a run is explicitly started. Execution settings and saved evidence stay linked to each job." />}
+    <TruncationNote list={state.data} noun="jobs (newest first)" />
     {!!jobs.length && <Panel><SectionTitle title="Review processing jobs" subtitle={`${jobs.length} records returned by the queue API. Job state describes processing, not the original benchmark result or the review assessment.`} />
       <Box sx={{ overflowX: "auto" }}><Table size="medium"><TableHead><TableRow><TableCell>Job</TableCell><TableCell>Review processing</TableCell><TableCell>Attempts</TableCell><TableCell>Usage / cost</TableCell><TableCell>Updated</TableCell><TableCell align="right">Action</TableCell></TableRow></TableHead><TableBody>
         {jobs.map((job, index) => {

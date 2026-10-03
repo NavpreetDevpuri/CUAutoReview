@@ -13,6 +13,7 @@ import CloseRounded from "@mui/icons-material/CloseRounded";
 import OpenInNewRounded from "@mui/icons-material/OpenInNewRounded";
 import { apiRequest } from "../api";
 import { useApi } from "../hooks";
+import { RUN_TASK_PAGING } from "../pagination";
 import type { BatchRecord, Episode, ReviewEvidenceProvenance, TaskRecord, TrajectoryStep } from "../types";
 import { BenchmarkResult, EmptyState, ErrorState, LoadingState, PageBreadcrumbs, PageHeader, Panel, SectionTitle, StatusTag, displayValue, formatDate, reviewProcessingError } from "../components";
 
@@ -211,7 +212,7 @@ export function TrajectoryPage() {
   const requestedStepId = searchParams.get("step_id") || "";
   const batch = useApi<{ run?: BatchRecord; batch?: BatchRecord }>(batchId ? `/runs/${encodeURIComponent(batchId)}` : null);
   const taxonomyState = useApi<{ releases?: AnyRecord[]; labels?: AnyRecord[]; proposals?: AnyRecord[] }>("/taxonomy");
-  const tasksState = useApi<{ items?: BatchTaskRow[]; total?: number } | BatchTaskRow[]>(batchId ? `/runs/${encodeURIComponent(batchId)}/tasks` : null);
+  const tasksState = useApi<{ items?: BatchTaskRow[]; total?: number } | BatchTaskRow[]>(batchId ? `/runs/${encodeURIComponent(batchId)}/tasks` : null, 0, RUN_TASK_PAGING);
   const memberQuery = memberId ? `?member_id=${encodeURIComponent(memberId)}` : "";
   const detailState = useApi<TrajectoryResponse>(batchId && taskId ? `/runs/${encodeURIComponent(batchId)}/tasks/${encodeURIComponent(taskId)}${memberQuery}` : null);
   const tasks = Array.isArray(tasksState.data) ? tasksState.data : tasksState.data?.items || [];

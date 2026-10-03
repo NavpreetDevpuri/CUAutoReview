@@ -10,6 +10,7 @@ import { DatasetShares } from "./DatasetShares";
 import { apiRequest } from "../api";
 import { TaskImportPicker, importSummary, uploadPreparedImport, useTaskImport } from "../TaskImport";
 import { useApi } from "../hooks";
+import { CATALOG_PAGING } from "../pagination";
 import type { DatasetRecord, DatasetTaskModelSummary, DatasetTaskSummary, TaskRecord } from "../types";
 import { BenchmarkResult, PageHeader, PageBreadcrumbs, Panel, LoadingState, ErrorState, EmptyState, SectionTitle, StatusTag, formatDate, displayValue, reviewProcessingError, runStatusLabel } from "../components";
 
@@ -33,7 +34,7 @@ function quantity(count: number | undefined, singular: string, plural = `${singu
 
 export function DatasetsPage() {
   const [showArchived, setShowArchived] = useState(false);
-  const list = useApi<{ items?: DatasetRecord[] } | DatasetRecord[]>(`/datasets${showArchived ? "?include_archived=true" : ""}`);
+  const list = useApi<{ items?: DatasetRecord[] } | DatasetRecord[]>(`/datasets${showArchived ? "?include_archived=true" : ""}`, 0, CATALOG_PAGING);
   const datasets = Array.isArray(list.data) ? list.data : list.data?.items || [];
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
