@@ -1,5 +1,6 @@
 import type { AuthProvider, DataProvider } from "react-admin";
 import type { ApiErrorShape, ListResult, SessionUser } from "./types";
+import { endsSession } from "./sessionErrors";
 
 export class ApiError extends Error {
   status: number;
@@ -104,8 +105,8 @@ export const dataProvider: DataProvider = {
     return { data: params.ids };
   },
   async delete(resource, params) {
-    const old = await apiRequest<Record<string, unknown>>(`/${resource}/${encodeURIComponent(String(params.id))}`, { method: "DELETE" }).catch(() => ({}));
-    return { data: { ...(params.previousData || old), id: params.id } } as any;
+    const old = await apiRequest<Record<string, unknown> | null>(`/${resource}/${encodeURIComponent(String(params.id))}`, { method: "DELETE" });
+    return { data: { ...(params.previousData || old || {}), id: params.id } } as any;
   },
   async deleteMany(resource, params) {
     await Promise.all(params.ids.map(id => apiRequest(`/${resource}/${encodeURIComponent(String(id))}`, { method: "DELETE" })));
@@ -124,7 +125,7 @@ export const authProvider: AuthProvider = {
     await apiRequest<SessionUser>("/auth/me");
   },
   async checkError(error) {
-    if (error instanceof ApiError && (error.status === 401 || error.status === 403)) throw error;
+    if (endsSession(error)) throw error;
   },
   async getIdentity() {
     return apiRequest<SessionUser>("/auth/me");

@@ -8,15 +8,17 @@ import { apiRequest } from "../api";
 import { useResourceList } from "../hooks";
 import { EmptyState, ErrorState, LoadingState, PageHeader, Panel, SectionTitle, StatusTag } from "../components";
 
-interface Member { id?: string; user_id?: string; name?: string; email?: string; role?: string; active?: boolean; [key: string]: unknown }
+// Member emails are only returned to roles that may manage people; others see names and roles.
+interface Member { id?: string; user_id?: string; name?: string; email?: string | null; role?: string; active?: boolean; [key: string]: unknown }
 interface Team { id: string; name: string; description?: string; members?: Member[]; [key: string]: unknown }
 interface UserRow { id: string; name?: string; email?: string; role?: string; active?: boolean; [key: string]: unknown }
 
 export function TeamsPage() {
   const teams = useResourceList<Team>("teams");
-  const users = useResourceList<UserRow>("users");
   const identity = useGetIdentity();
   const isAdmin = identity.data?.role === "admin" || identity.data?.role === "workspace_admin";
+  // The user directory is admin-only; other roles never request it.
+  const users = useResourceList<UserRow>(isAdmin ? "users" : null);
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -63,7 +65,7 @@ export function TeamsPage() {
       return <Grid key={team.id} size={{ xs: 12, md: 6, xl: 4 }}><Panel>
         <Stack direction="row" justifyContent="space-between" gap={1}><Box sx={{ minWidth: 0 }}><Typography sx={{ fontSize: 15, fontWeight: 700, overflowWrap: "anywhere" }}>{team.name}</Typography><Typography color="text.secondary" sx={{ mt: .5, fontSize: 14 }}>{team.description || "No description recorded."}</Typography></Box><StatusTag value={`${members.length} members`} /></Stack>
         <SectionTitle title="Members" subtitle="Workspace membership" />
-        <Stack gap={.75} sx={{ mb: 1.8 }}>{members.map((member, index) => { const userId = String(member.user_id || member.id || ""); return <Stack key={userId || index} direction="row" justifyContent="space-between" alignItems="center" gap={1} sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 2 }}><Box sx={{ minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13, overflowWrap: "anywhere" }}>{member.name || member.email || userId}</Typography><Typography color="text.secondary" sx={{ fontSize: 12, overflowWrap: "anywhere" }}>{member.email || userId} · {member.role || "workspace member"}</Typography></Box><IconButton aria-label={`Remove ${member.name || member.email || userId} from ${team.name}`} size="small" color="error" disabled={!isAdmin || busy === `remove:${team.id}:${userId}`} onClick={() => void removeMember(team.id, userId)}><DeleteOutlineRounded fontSize="small" /></IconButton></Stack>; })}{!members.length && <Typography color="text.secondary" sx={{ fontSize: 14 }}>No members yet.</Typography>}</Stack>
+        <Stack gap={.75} sx={{ mb: 1.8 }}>{members.map((member, index) => { const userId = String(member.user_id || member.id || ""); return <Stack key={userId || index} direction="row" justifyContent="space-between" alignItems="center" gap={1} sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 2 }}><Box sx={{ minWidth: 0 }}><Typography sx={{ fontWeight: 700, fontSize: 13, overflowWrap: "anywhere" }}>{member.name || member.email || userId}</Typography><Typography color="text.secondary" sx={{ fontSize: 12, overflowWrap: "anywhere" }}>{[member.email, member.role || "workspace member"].filter(Boolean).join(" · ")}</Typography></Box><IconButton aria-label={`Remove ${member.name || member.email || userId} from ${team.name}`} size="small" color="error" disabled={!isAdmin || busy === `remove:${team.id}:${userId}`} onClick={() => void removeMember(team.id, userId)}><DeleteOutlineRounded fontSize="small" /></IconButton></Stack>; })}{!members.length && <Typography color="text.secondary" sx={{ fontSize: 14 }}>No members yet.</Typography>}</Stack>
         <Stack direction={{ xs: "column", sm: "row" }} gap={1}>
           <FormControl size="small" fullWidth><Select displayEmpty value={targetByTeam[team.id] || ""} onChange={event => setTargetByTeam(current => ({ ...current, [team.id]: event.target.value }))}><MenuItem value=""><em>Select a workspace user</em></MenuItem>{available.map(user => <MenuItem key={user.id} value={user.id}>{user.name || user.email} · {user.role || "viewer"}</MenuItem>)}</Select></FormControl>
           <Button variant="outlined" startIcon={<PersonAddAlt1Rounded />} disabled={!isAdmin || !targetByTeam[team.id] || busy === `add:${team.id}`} onClick={() => void addMember(team.id)}>Add</Button>
