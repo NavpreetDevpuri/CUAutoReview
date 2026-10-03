@@ -106,9 +106,22 @@ EXPECTED_ROUTES = {
 }
 
 
+def _flatten(routes):
+    """Yield leaf routes; newer FastAPI keeps included routers as nested router objects."""
+    for route in routes:
+        nested = getattr(route, "original_router", None)
+        if nested is not None:
+            yield from _flatten(nested.routes)
+        else:
+            yield route
+
+
 def registered_routes():
     return {
-        f"{method} {route.path}" for route in app.routes if hasattr(route, "methods") for method in route.methods or ()
+        f"{method} {route.path}"
+        for route in _flatten(app.routes)
+        if hasattr(route, "methods")
+        for method in route.methods or ()
     }
 
 
