@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from dataclasses import replace
 from datetime import timedelta
 import uuid
@@ -16,6 +17,11 @@ from app.models import Batch, BatchMember, Job, JobAttempt, OutboxEvent, ReviewR
 ORIGIN = {"Origin": "http://testserver"}
 
 
+@asynccontextmanager
+async def no_lifespan(_app):
+    yield
+
+
 @pytest.fixture
 def app_clients(tmp_path, monkeypatch):
     engine = make_engine("sqlite:///:memory:")
@@ -29,17 +35,14 @@ def app_clients(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "PROJECT_ROOT", tmp_path)
     dependency = main.get_db
     main.app.dependency_overrides[dependency] = session_dependency(factory)
-    startup, shutdown = main.app.router.on_startup[:], main.app.router.on_shutdown[:]
-    main.app.router.on_startup.clear()
-    main.app.router.on_shutdown.clear()
+    # Skip the production lifespan (database init, S3 bucket check, outbox loop) in tests.
+    monkeypatch.setattr(main.app.router, "lifespan_context", no_lifespan)
     with TestClient(main.app) as admin:
         response = admin.post("/api/auth/signup", json={"name": "Admin", "email": "admin@example.test",
                                   "password": "test-password-123"})
         assert response.status_code == 200, response.text
         yield {"admin": admin, "factory": factory, "engine": engine, "tmp_path": tmp_path}
     main.app.dependency_overrides.pop(dependency, None)
-    main.app.router.on_startup[:] = startup
-    main.app.router.on_shutdown[:] = shutdown
     engine.dispose()
 
 
@@ -575,3 +578,16 @@ def test_import_validates_steps_and_never_trusts_imported_screenshot_urls(app_cl
     detail = client.get(f"/api/datasets/{dataset['id']}")
     assert detail.status_code == 200
     assert 'screenshot_url' not in detail.json()['tasks'][0]['steps'][0]
+
+
+def test_lifespan_runs_startup_and_shutdown(monkeypatch):
+    calls = []
+
+    async def fake_shutdown():
+        calls.append("shutdown")
+
+    monkeypatch.setattr(main, "startup", lambda: calls.append("startup"))
+    monkeypatch.setattr(main, "shutdown", fake_shutdown)
+    with TestClient(main.app):
+        assert calls == ["startup"]
+    assert calls == ["startup", "shutdown"]

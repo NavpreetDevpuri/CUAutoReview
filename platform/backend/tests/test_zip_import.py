@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from dataclasses import replace
 from io import BytesIO
 import json
@@ -27,6 +28,11 @@ def png_bytes(color):
 PNG = png_bytes((20, 40, 60))
 
 
+@asynccontextmanager
+async def no_lifespan(_app):
+    yield
+
+
 @pytest.fixture
 def zip_clients(tmp_path, monkeypatch):
     engine = make_engine("sqlite:///:memory:")
@@ -39,17 +45,14 @@ def zip_clients(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "PROJECT_ROOT", tmp_path)
     dependency = main.get_db
     main.app.dependency_overrides[dependency] = session_dependency(factory)
-    startup, shutdown = main.app.router.on_startup[:], main.app.router.on_shutdown[:]
-    main.app.router.on_startup.clear()
-    main.app.router.on_shutdown.clear()
+    # Skip the production lifespan (database init, S3 bucket check, outbox loop) in tests.
+    monkeypatch.setattr(main.app.router, "lifespan_context", no_lifespan)
     with TestClient(main.app) as admin:
         response = admin.post("/api/auth/signup", json={"name": "ZIP Admin", "email": "zip-admin@example.test",
             "password": "test-password-123"})
         assert response.status_code == 200, response.text
         yield {"admin": admin, "factory": factory, "engine": engine}
     main.app.dependency_overrides.pop(dependency, None)
-    main.app.router.on_startup[:] = startup
-    main.app.router.on_shutdown[:] = shutdown
     engine.dispose()
 
 

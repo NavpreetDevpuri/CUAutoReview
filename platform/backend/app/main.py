@@ -50,7 +50,18 @@ from .zip_import import IMAGE_TYPES, MAX_ARCHIVE_BYTES, ZipDatasetError, copy_re
 engine = make_engine(settings.database_url)
 SessionLocal = make_session_factory(engine)
 get_db = session_dependency(SessionLocal)
-app = FastAPI(title="CU AutoReview local API", version="1.0.0")
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    startup()
+    try:
+        yield
+    finally:
+        await shutdown()
+
+
+app = FastAPI(title="CU AutoReview local API", version="1.0.0", lifespan=lifespan)
 ROLE_ORDER = {"viewer": 0, "reviewer": 1, "manager": 2, "admin": 3}
 MAX_IMPORT_BYTES = 32 * 1024 * 1024
 _signup_lock = threading.Lock()
@@ -1230,7 +1241,6 @@ def seed_first_workspace(db: Session, user: User):
              task_count=len(tasks), run_id=run.get("run_id"), saved_replay=True, inference_calls=0)
 
 
-@app.on_event("startup")
 def startup():
     init_db(engine)
     if settings.object_store_backend == "s3":
@@ -1261,7 +1271,6 @@ async def _outbox_background_loop():
         await asyncio.sleep(1)
 
 
-@app.on_event("shutdown")
 async def shutdown():
     task = getattr(app.state, "outbox_relay_task", None)
     if task:
