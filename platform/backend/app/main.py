@@ -3711,17 +3711,12 @@ def _allowed(db: Session, batch_id: str, user: User) -> bool:
 
 
 def visible_batch_ids(db: Session, user: User) -> set[str]:
-    """Return batches the user can read without granting workspace-wide visibility."""
-    batches = select(Batch.id).where(Batch.workspace_id == user.workspace_id)
-    if user.role in ("admin", "manager"):
-        return set(db.scalars(batches).all())
-    team_ids = db.scalars(select(TeamMember.team_id).where(TeamMember.user_id == user.id)).all()
-    target_grant = BatchGrant.user_id == user.id
-    if team_ids:
-        target_grant = or_(target_grant, BatchGrant.team_id.in_(team_ids))
-    statement = (select(distinct(BatchGrant.batch_id)).join(Batch, Batch.id == BatchGrant.batch_id)
-                 .where(Batch.workspace_id == user.workspace_id, target_grant))
-    return set(db.scalars(statement).all())
+    """Return runs the user can read, including archived ones, by the same rules as get_batch.
+
+    Direct and team grants and dataset shares all count, so job lists and the
+    overview match what the run pages already show.
+    """
+    return {batch.id for batch in visible_batches(db, user, include_archived=True)}
 
 
 @app.exception_handler(IntegrityError)
