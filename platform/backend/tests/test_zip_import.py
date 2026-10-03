@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
-from dataclasses import replace
-from io import BytesIO
 import json
+from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
-from PIL import Image
 import pytest
+from conftest import isolate
 from fastapi.testclient import TestClient
+from PIL import Image
 from sqlalchemy import func, select
 
 from app import main
-from app.database import make_engine, make_session_factory, session_dependency
-from app.models import Batch, StoredArtifact, TaskDefinition, TaskRevision
-
+from app.models import StoredArtifact, TaskDefinition, TaskRevision
 
 ORIGIN = {"Origin": "http://testserver"}
 
@@ -28,42 +25,32 @@ def png_bytes(color):
 PNG = png_bytes((20, 40, 60))
 
 
-@asynccontextmanager
-async def no_lifespan(_app):
-    yield
-
-
 @pytest.fixture
 def zip_clients(tmp_path, monkeypatch):
-    engine = make_engine("sqlite:///:memory:")
-    factory = make_session_factory(engine)
-    main.init_db(engine)
-    monkeypatch.setattr(main, "engine", engine)
-    monkeypatch.setattr(main, "SessionLocal", factory)
-    monkeypatch.setattr(main, "settings", replace(main.settings, seed_poc=False,
-        object_store_backend="local", local_artifact_dir=tmp_path / "artifacts"))
-    monkeypatch.setattr(main, "PROJECT_ROOT", tmp_path)
-    dependency = main.get_db
-    main.app.dependency_overrides[dependency] = session_dependency(factory)
-    # Skip the production lifespan (database init, S3 bucket check, outbox loop) in tests.
-    monkeypatch.setattr(main.app.router, "lifespan_context", no_lifespan)
+    engine, factory = isolate(tmp_path, monkeypatch)
     with TestClient(main.app) as admin:
-        response = admin.post("/api/auth/signup", json={"name": "ZIP Admin", "email": "zip-admin@example.test",
-            "password": "test-password-123"})
+        response = admin.post(
+            "/api/auth/signup",
+            json={"name": "ZIP Admin", "email": "zip-admin@example.test", "password": "test-password-123"},
+        )
         assert response.status_code == 200, response.text
         yield {"admin": admin, "factory": factory, "engine": engine}
-    main.app.dependency_overrides.pop(dependency, None)
     engine.dispose()
 
 
 def manifest_task(task_id="zip-task", outcome="passed", screenshot="assets/shot.png"):
-    step = {"step_id": "step-1", "action": "click", "observation": "Button displayed",
-            "evidence_refs": ["event-1"]}
+    step = {"step_id": "step-1", "action": "click", "observation": "Button displayed", "evidence_refs": ["event-1"]}
     if screenshot is not None:
         step["screenshot"] = screenshot
-    return {"task_id": task_id, "title": "ZIP fixture task", "instruction": "Click the visible button",
-            "outcome": outcome, "score": 1 if outcome == "passed" else 0, "source": {"dataset": "fixture"},
-            "steps": [step]}
+    return {
+        "task_id": task_id,
+        "title": "ZIP fixture task",
+        "instruction": "Click the visible button",
+        "outcome": outcome,
+        "score": 1 if outcome == "passed" else 0,
+        "source": {"dataset": "fixture"},
+        "steps": [step],
+    }
 
 
 def archive_bytes(tasks=None, *, manifest="dataset.json", members=None):
@@ -89,8 +76,12 @@ def test_validate_and_import_zip_persists_scoped_artifact_and_revision_hashes_as
     assert preview.status_code == 200, preview.text
     assert preview.json()["valid"] is True
     assert preview.json()["task_count"] == 1 and preview.json()["screenshot_count"] == 1
-    assert preview.json()["tasks"][0] == {"task_id": "zip-task", "title": "ZIP fixture task",
-        "step_count": 1, "outcome": "passed"}
+    assert preview.json()["tasks"][0] == {
+        "task_id": "zip-task",
+        "title": "ZIP fixture task",
+        "step_count": 1,
+        "outcome": "passed",
+    }
     with zip_clients["factory"]() as db:
         assert db.scalar(select(func.count(TaskDefinition.id))) == 0
 
@@ -126,20 +117,37 @@ def test_zip_artifacts_are_copied_to_batch_members_and_revocation_is_immediate(z
     dataset = admin.post("/api/datasets", json={"name": "ZIP batch fixture"}, headers=ORIGIN).json()
     imported = zip_post(admin, f"/api/datasets/{dataset['id']}/import-zip", archive_bytes())
     assert imported.status_code == 200, imported.text
-    preset = admin.post("/api/presets", headers=ORIGIN, json={"name": "Saved fixture",
-        "backend": "saved_replay", "reasoning": "none", "budget_usd": 0}).json()
+    preset = admin.post(
+        "/api/presets",
+        headers=ORIGIN,
+        json={"name": "Saved fixture", "backend": "saved_replay", "reasoning": "none", "budget_usd": 0},
+    ).json()
     team = admin.post("/api/teams", headers=ORIGIN, json={"name": "ZIP reviewers"}).json()
     viewer = TestClient(main.app)
-    created = viewer.post("/api/auth/signup", headers=ORIGIN, json={"name": "ZIP Viewer",
-        "email": "zip-viewer@example.test", "password": "viewer-password"}).json()
+    created = viewer.post(
+        "/api/auth/signup",
+        headers=ORIGIN,
+        json={"name": "ZIP Viewer", "email": "zip-viewer@example.test", "password": "viewer-password"},
+    ).json()
     forbidden_preview = zip_post(viewer, "/api/imports/zip/validate", archive_bytes())
     forbidden_import = zip_post(viewer, f"/api/datasets/{dataset['id']}/import-zip", archive_bytes())
     assert forbidden_preview.status_code == forbidden_import.status_code == 403
-    assert admin.post(f"/api/teams/{team['id']}/members", headers=ORIGIN,
-        json={"user_id": created["id"]}).status_code == 200
-    batch = admin.post("/api/batches", headers=ORIGIN, json={"dataset_id": dataset["id"],
-        "name": "ZIP batch", "mode": "fixed", "preset_id": preset["id"],
-        "task_ids": ["zip-task"], "team_ids": [team["id"]]}).json()
+    assert (
+        admin.post(f"/api/teams/{team['id']}/members", headers=ORIGIN, json={"user_id": created["id"]}).status_code
+        == 200
+    )
+    batch = admin.post(
+        "/api/batches",
+        headers=ORIGIN,
+        json={
+            "dataset_id": dataset["id"],
+            "name": "ZIP batch",
+            "mode": "fixed",
+            "preset_id": preset["id"],
+            "task_ids": ["zip-task"],
+            "team_ids": [team["id"]],
+        },
+    ).json()
     detail = viewer.get(f"/api/batches/{batch['id']}/tasks/zip-task")
     assert detail.status_code == 200, detail.text
     step = detail.json()["task"]["steps"][0]
@@ -155,26 +163,53 @@ def test_zip_artifacts_are_copied_to_batch_members_and_revocation_is_immediate(z
 
 
 def test_zip_validation_reports_warnings_for_unknown_outcomes_and_unused_files(zip_clients):
-    payload = archive_bytes(tasks=[manifest_task("unknown-task", "unknown", screenshot=None)], members={
-        "README.md": b"Harmless documentation", "assets/unused.png": PNG})
+    payload = archive_bytes(
+        tasks=[manifest_task("unknown-task", "unknown", screenshot=None)],
+        members={"README.md": b"Harmless documentation", "assets/unused.png": PNG},
+    )
     response = zip_post(zip_clients["admin"], "/api/imports/zip/validate", payload)
     assert response.status_code == 200, response.text
     codes = {item["code"] for item in response.json()["warnings"]}
     assert {"unknown_outcome", "screenshots_absent", "unused_screenshot", "unused_file"} <= codes
 
 
-@pytest.mark.parametrize("payload,code", [
-    (archive_bytes(members={"../escape.png": PNG}), "unsafe_path"),
-    (archive_bytes(tasks=[manifest_task(screenshot="assets/missing.png")], members={}), "missing_screenshot_asset"),
-    (archive_bytes(tasks=[manifest_task("duplicate"), manifest_task("duplicate")]), "duplicate_task_id"),
-    (archive_bytes(tasks=[{**manifest_task(), "steps": [
-        {"step_id": "same", "action": "a", "observation": "a"},
-        {"step_id": "same", "action": "b", "observation": "b"}]}]), "duplicate_step_id"),
-    (archive_bytes(tasks=[{**manifest_task(), "steps": [
-        {"step_id": " same ", "action": "a", "observation": "a"},
-        {"step_id": "same", "action": "b", "observation": "b"}]}]), "duplicate_step_id"),
-    (archive_bytes(members={"assets/bad.svg": b"<svg></svg>"}), "unsupported_attachment"),
-])
+@pytest.mark.parametrize(
+    "payload,code",
+    [
+        (archive_bytes(members={"../escape.png": PNG}), "unsafe_path"),
+        (archive_bytes(tasks=[manifest_task(screenshot="assets/missing.png")], members={}), "missing_screenshot_asset"),
+        (archive_bytes(tasks=[manifest_task("duplicate"), manifest_task("duplicate")]), "duplicate_task_id"),
+        (
+            archive_bytes(
+                tasks=[
+                    {
+                        **manifest_task(),
+                        "steps": [
+                            {"step_id": "same", "action": "a", "observation": "a"},
+                            {"step_id": "same", "action": "b", "observation": "b"},
+                        ],
+                    }
+                ]
+            ),
+            "duplicate_step_id",
+        ),
+        (
+            archive_bytes(
+                tasks=[
+                    {
+                        **manifest_task(),
+                        "steps": [
+                            {"step_id": " same ", "action": "a", "observation": "a"},
+                            {"step_id": "same", "action": "b", "observation": "b"},
+                        ],
+                    }
+                ]
+            ),
+            "duplicate_step_id",
+        ),
+        (archive_bytes(members={"assets/bad.svg": b"<svg></svg>"}), "unsupported_attachment"),
+    ],
+)
 def test_invalid_zip_import_is_structured_and_atomic(zip_clients, payload, code):
     admin = zip_clients["admin"]
     dataset = admin.post("/api/datasets", headers=ORIGIN, json={"name": f"Invalid {code}"}).json()
@@ -192,28 +227,35 @@ def test_zip_rejects_symlinks_and_non_zip_content_type(zip_clients):
     with ZipFile(stream, "w") as archive:
         info = ZipInfo("assets/link.png")
         info.create_system = 3
-        info.external_attr = (0o120777 << 16)
+        info.external_attr = 0o120777 << 16
         archive.writestr(info, "target.png")
-        archive.writestr("dataset.json", json.dumps({"format": "cuautoreview", "tasks": [manifest_task(screenshot=None)]}))
+        archive.writestr(
+            "dataset.json", json.dumps({"format": "cuautoreview", "tasks": [manifest_task(screenshot=None)]})
+        )
     symlink = zip_post(zip_clients["admin"], "/api/imports/zip/validate", stream.getvalue())
     assert symlink.status_code == 422
     assert any(item["code"] == "unsafe_file_type" for item in symlink.json()["detail"]["errors"])
 
-    wrong_type = zip_post(zip_clients["admin"], "/api/imports/zip/validate", archive_bytes(), content_type="application/json")
+    wrong_type = zip_post(
+        zip_clients["admin"], "/api/imports/zip/validate", archive_bytes(), content_type="application/json"
+    )
     assert wrong_type.status_code == 422
     assert wrong_type.json()["detail"]["errors"][0]["code"] == "unsupported_media_type"
 
 
 def test_zip_rejects_truncated_image_with_valid_signature(zip_clients):
-    response = zip_post(zip_clients["admin"], "/api/imports/zip/validate",
-        archive_bytes(members={"assets/shot.png": PNG[:12]}))
+    response = zip_post(
+        zip_clients["admin"], "/api/imports/zip/validate", archive_bytes(members={"assets/shot.png": PNG[:12]})
+    )
     assert response.status_code == 422
     assert any(item["code"] == "invalid_image_content" for item in response.json()["detail"]["errors"])
 
 
 def test_zip_rejects_duplicate_json_object_keys(zip_clients):
-    duplicate_keys = (b'{"format":"cuautoreview","format":"cuautoreview","tasks":['
-        b'{"task_id":"duplicate-json-key","title":"Task","instruction":"Do work","steps":[]}]}')
+    duplicate_keys = (
+        b'{"format":"cuautoreview","format":"cuautoreview","tasks":['
+        b'{"task_id":"duplicate-json-key","title":"Task","instruction":"Do work","steps":[]}]}'
+    )
     stream = BytesIO()
     with ZipFile(stream, "w", ZIP_DEFLATED) as archive:
         archive.writestr("dataset.json", duplicate_keys)
@@ -224,15 +266,16 @@ def test_zip_rejects_duplicate_json_object_keys(zip_clients):
 
 def test_zip_caps_diagnostics_and_rejects_pathological_manifest_nesting(zip_clients):
     admin = zip_clients["admin"]
-    bad_tasks = [{"task_id": f"bad-{i}", "title": "", "instruction": "", "steps": []}
-                 for i in range(300)]
+    bad_tasks = [{"task_id": f"bad-{i}", "title": "", "instruction": "", "steps": []} for i in range(300)]
     too_many_errors = zip_post(admin, "/api/imports/zip/validate", archive_bytes(tasks=bad_tasks))
     assert too_many_errors.status_code == 422
     assert len(too_many_errors.json()["detail"]["errors"]) <= 100
     assert too_many_errors.json()["detail"]["errors"][-1]["code"] == "diagnostics_truncated"
 
     nested = "[" * 2000 + "0" + "]" * 2000
-    yaml_payload = b"format: cuautoreview\ntasks:\n  - task_id: x\n    title: x\n    instruction: x\n    steps: " + nested.encode()
+    yaml_payload = (
+        b"format: cuautoreview\ntasks:\n  - task_id: x\n    title: x\n    instruction: x\n    steps: " + nested.encode()
+    )
     stream = BytesIO()
     with ZipFile(stream, "w", ZIP_DEFLATED) as archive:
         archive.writestr("dataset.yaml", yaml_payload)

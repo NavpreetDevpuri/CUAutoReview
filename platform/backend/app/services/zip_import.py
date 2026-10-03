@@ -4,26 +4,26 @@ Archives are read in memory without extraction. Validation caps the archive at
 32 MiB, expanded content at 128 MiB, and decoded screenshots at 16 million
 pixels; API diagnostics are capped at 100 errors and 100 warnings per response.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import posixpath
 import re
 import stat
 import unicodedata
 import warnings as python_warnings
+from dataclasses import dataclass
+from io import BytesIO
 from typing import Any
 from zipfile import BadZipFile, ZipFile
-from io import BytesIO
 
 import yaml
 from PIL import Image, UnidentifiedImageError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .models import BatchMember, StoredArtifact, TaskRevision
-
+from app.models import BatchMember, StoredArtifact, TaskRevision
 
 MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
 MAX_EXPANDED_BYTES = 128 * 1024 * 1024
@@ -153,15 +153,14 @@ def _is_harmless_file(path: str) -> bool:
     return basename in HARMLESS_NAMES or (suffix in (".md", ".txt") and stem not in ("", "."))
 
 
-def _image_content_type(path: str, data: bytes) -> str | None:
+def image_content_type(path: str, data: bytes) -> str | None:
     suffix = "." + path.rsplit(".", 1)[-1].lower() if "." in path else ""
     content_type = IMAGE_TYPES.get(suffix)
     if content_type == "image/png" and data.startswith(b"\x89PNG\r\n\x1a\n"):
         return content_type
     if content_type == "image/jpeg" and data.startswith(b"\xff\xd8\xff"):
         return content_type
-    if (content_type == "image/webp" and len(data) >= 12 and data[:4] == b"RIFF" and
-            data[8:12] == b"WEBP"):
+    if content_type == "image/webp" and len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
         return content_type
     return None
 
@@ -191,7 +190,7 @@ def _check_json_nesting(raw: bytes) -> None:
 
 def _validate_decodable_image(path: str, data: bytes) -> bool:
     """Verify format, dimensions, and a complete bounded pixel decode."""
-    expected_type = _image_content_type(path, data)
+    expected_type = image_content_type(path, data)
     if expected_type is None:
         return False
     expected_format = {"image/png": "PNG", "image/jpeg": "JPEG", "image/webp": "WEBP"}[expected_type]
@@ -213,8 +212,14 @@ def _validate_decodable_image(path: str, data: bytes) -> bool:
                     return False
                 image.load()
         return True
-    except (Image.DecompressionBombError, Image.DecompressionBombWarning,
-            UnidentifiedImageError, OSError, SyntaxError, ValueError):
+    except (
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+        UnidentifiedImageError,
+        OSError,
+        SyntaxError,
+        ValueError,
+    ):
         return False
 
 
@@ -222,8 +227,11 @@ def _parse_manifest(raw: bytes, name: str) -> dict[str, Any]:
     try:
         if name.endswith(".json"):
             _check_json_nesting(raw)
-            value = json.loads(raw, object_pairs_hook=_unique_json_object,
-                               parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+            value = json.loads(
+                raw,
+                object_pairs_hook=_unique_json_object,
+                parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)),
+            )
         else:
             value = yaml.load(raw, Loader=_UniqueKeySafeLoader)
     except (json.JSONDecodeError, yaml.YAMLError, UnicodeDecodeError, ValueError, RecursionError) as exc:
@@ -266,7 +274,6 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
                 path = _canonical_member_name(info.filename, directory=info.is_dir())
             except ValueError as exc:
                 _fail(info.filename[:300] or "archive", str(exc), "unsafe_path", warnings)
-            canonical = path + ("/" if info.is_dir() else "")
             duplicate_key = path.casefold()
             if duplicate_key in seen:
                 _fail(path, "ZIP contains duplicate paths", "duplicate_path", warnings)
@@ -288,7 +295,12 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
             elif path.startswith("assets/"):
                 suffix = "." + path.rsplit(".", 1)[-1].lower() if "." in path else ""
                 if suffix not in IMAGE_TYPES:
-                    _fail(path, "Only PNG, JPEG, and WebP screenshots are allowed under assets/", "unsupported_attachment", warnings)
+                    _fail(
+                        path,
+                        "Only PNG, JPEG, and WebP screenshots are allowed under assets/",
+                        "unsupported_attachment",
+                        warnings,
+                    )
                 if info.file_size > MAX_SCREENSHOT_BYTES:
                     _fail(path, "Screenshot exceeds the 10 MB per-file limit", "screenshot_too_large", warnings)
                 image_infos[path] = info
@@ -297,17 +309,32 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
                     _fail(path, "Unused documentation file exceeds the 1 MB limit", "harmless_file_too_large", warnings)
                 harmless_paths.append(path)
             else:
-                _fail(path, "Only the root manifest, screenshot assets, and harmless documentation files are allowed", "unsupported_attachment", warnings)
+                _fail(
+                    path,
+                    "Only the root manifest, screenshot assets, and harmless documentation files are allowed",
+                    "unsupported_attachment",
+                    warnings,
+                )
 
         if len(manifests) != 1:
-            _fail("archive", "ZIP must contain exactly one root dataset.json or dataset.yaml manifest", "manifest_count", warnings)
+            _fail(
+                "archive",
+                "ZIP must contain exactly one root dataset.json or dataset.yaml manifest",
+                "manifest_count",
+                warnings,
+            )
         manifest_info = manifests[0]
         if manifest_info.file_size > MAX_MANIFEST_BYTES:
             _fail(manifest_info.filename, "Manifest exceeds the 32 MB limit", "manifest_too_large", warnings)
         try:
             manifest_bytes = _read_member(archive, manifest_info, MAX_MANIFEST_BYTES)
         except (BadZipFile, OSError, RuntimeError, ValueError) as exc:
-            _fail(manifest_info.filename, f"Manifest could not be read safely: {type(exc).__name__}", "invalid_manifest_member", warnings)
+            _fail(
+                manifest_info.filename,
+                f"Manifest could not be read safely: {type(exc).__name__}",
+                "invalid_manifest_member",
+                warnings,
+            )
         manifest = _parse_manifest(manifest_bytes, manifest_info.filename)
 
         assets: dict[str, bytes] = {}
@@ -315,10 +342,16 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
             try:
                 image = _read_member(archive, info, MAX_SCREENSHOT_BYTES)
             except (BadZipFile, OSError, RuntimeError, ValueError) as exc:
-                _fail(path, f"Screenshot could not be read safely: {type(exc).__name__}", "invalid_screenshot", warnings)
+                _fail(
+                    path, f"Screenshot could not be read safely: {type(exc).__name__}", "invalid_screenshot", warnings
+                )
             if not _validate_decodable_image(path, image):
-                _fail(path, f"Screenshot is corrupt, unreadable, mismatched, or exceeds {MAX_IMAGE_PIXELS} decoded pixels",
-                      "invalid_image_content", warnings)
+                _fail(
+                    path,
+                    f"Screenshot is corrupt, unreadable, mismatched, or exceeds {MAX_IMAGE_PIXELS} decoded pixels",
+                    "invalid_image_content",
+                    warnings,
+                )
             assets[path] = image
 
     errors: list[dict[str, str]] = []
@@ -336,41 +369,88 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
         task_record = json.loads(json.dumps(raw_task, ensure_ascii=False, allow_nan=False))
         task_id = task_record.get("task_id")
         if not isinstance(task_id, str) or not task_id.strip() or len(task_id) > 160:
-            _append_diagnostic(errors, _issue(f"{task_path}.task_id", "task_id must be a non-empty string of at most 160 characters", "invalid_task_id"))
+            _append_diagnostic(
+                errors,
+                _issue(
+                    f"{task_path}.task_id",
+                    "task_id must be a non-empty string of at most 160 characters",
+                    "invalid_task_id",
+                ),
+            )
             continue
         task_id = task_id.strip()
         task_record["task_id"] = task_id
         if task_id in seen_task_ids:
-            _append_diagnostic(errors, _issue(f"{task_path}.task_id", "task_id must be unique within the archive", "duplicate_task_id"))
+            _append_diagnostic(
+                errors, _issue(f"{task_path}.task_id", "task_id must be unique within the archive", "duplicate_task_id")
+            )
         seen_task_ids.add(task_id)
         for field, maximum in (("title", 2000), ("instruction", 20000)):
             value = task_record.get(field)
             if not isinstance(value, str) or not value.strip() or len(value) > maximum:
-                _append_diagnostic(errors, _issue(f"{task_path}.{field}", f"{field} must be a non-empty string of at most {maximum} characters", "invalid_task_field"))
+                _append_diagnostic(
+                    errors,
+                    _issue(
+                        f"{task_path}.{field}",
+                        f"{field} must be a non-empty string of at most {maximum} characters",
+                        "invalid_task_field",
+                    ),
+                )
         outcome = task_record.get("outcome")
-        if outcome is None or outcome == "unknown" or (isinstance(outcome, str) and outcome not in ("passed", "failed")):
+        if (
+            outcome is None
+            or outcome == "unknown"
+            or (isinstance(outcome, str) and outcome not in ("passed", "failed"))
+        ):
             if outcome is not None and not isinstance(outcome, str):
-                _append_diagnostic(errors, _issue(f"{task_path}.outcome", "outcome must be a string", "invalid_outcome"))
+                _append_diagnostic(
+                    errors, _issue(f"{task_path}.outcome", "outcome must be a string", "invalid_outcome")
+                )
             else:
                 task_record["outcome"] = "unknown"
-                _append_diagnostic(warnings, _issue(f"{task_path}.outcome", "Outcome is unknown; this task will wait for manual review", "unknown_outcome"))
+                _append_diagnostic(
+                    warnings,
+                    _issue(
+                        f"{task_path}.outcome",
+                        "Outcome is unknown; this task will wait for manual review",
+                        "unknown_outcome",
+                    ),
+                )
         elif outcome not in ("passed", "failed"):
-            _append_diagnostic(errors, _issue(f"{task_path}.outcome", "outcome must be passed, failed, or unknown", "invalid_outcome"))
+            _append_diagnostic(
+                errors, _issue(f"{task_path}.outcome", "outcome must be passed, failed, or unknown", "invalid_outcome")
+            )
         elif isinstance(outcome, str) and len(outcome) > 80:
             task_record["outcome"] = "unknown"
-            _append_diagnostic(warnings, _issue(f"{task_path}.outcome", "Outcome is unknown; this task will wait for manual review", "unknown_outcome"))
+            _append_diagnostic(
+                warnings,
+                _issue(
+                    f"{task_path}.outcome",
+                    "Outcome is unknown; this task will wait for manual review",
+                    "unknown_outcome",
+                ),
+            )
         source = task_record.get("source")
         if source is not None and not isinstance(source, dict):
-            _append_diagnostic(errors, _issue(f"{task_path}.source", "source must be an object when provided", "invalid_source"))
+            _append_diagnostic(
+                errors, _issue(f"{task_path}.source", "source must be an object when provided", "invalid_source")
+            )
         steps = task_record.get("steps")
         if not isinstance(steps, list):
             _append_diagnostic(errors, _issue(f"{task_path}.steps", "steps must be an array", "invalid_steps"))
             continue
         if len(steps) > MAX_STEPS_PER_TASK:
-            _append_diagnostic(errors, _issue(f"{task_path}.steps", f"A task may contain at most {MAX_STEPS_PER_TASK} steps", "too_many_steps"))
+            _append_diagnostic(
+                errors,
+                _issue(
+                    f"{task_path}.steps", f"A task may contain at most {MAX_STEPS_PER_TASK} steps", "too_many_steps"
+                ),
+            )
         total_steps += len(steps)
         if total_steps > MAX_TOTAL_STEPS:
-            _append_diagnostic(errors, _issue("tasks", f"Archive exceeds the {MAX_TOTAL_STEPS}-step limit", "too_many_steps"))
+            _append_diagnostic(
+                errors, _issue("tasks", f"Archive exceeds the {MAX_TOTAL_STEPS}-step limit", "too_many_steps")
+            )
         ids = set()
         task_assets = []
         for step_index, step in enumerate(steps):
@@ -380,30 +460,75 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
                 continue
             step_id = step.get("step_id")
             if not isinstance(step_id, str) or not step_id.strip() or len(step_id) > 160:
-                _append_diagnostic(errors, _issue(f"{step_path}.step_id", "step_id must be a non-empty string of at most 160 characters", "invalid_step_id"))
+                _append_diagnostic(
+                    errors,
+                    _issue(
+                        f"{step_path}.step_id",
+                        "step_id must be a non-empty string of at most 160 characters",
+                        "invalid_step_id",
+                    ),
+                )
             elif step_id.strip() in ids:
-                _append_diagnostic(errors, _issue(f"{step_path}.step_id", "step_id must be unique within its task", "duplicate_step_id"))
+                _append_diagnostic(
+                    errors,
+                    _issue(f"{step_path}.step_id", "step_id must be unique within its task", "duplicate_step_id"),
+                )
             else:
                 step_id = step_id.strip()
                 ids.add(step_id)
                 step["step_id"] = step_id
             refs = step.get("evidence_refs", [])
             if not isinstance(refs, list) or any(not isinstance(ref, str) or len(ref) > 500 for ref in refs):
-                _append_diagnostic(errors, _issue(f"{step_path}.evidence_refs", "evidence_refs must be an array of short strings", "invalid_evidence_refs"))
+                _append_diagnostic(
+                    errors,
+                    _issue(
+                        f"{step_path}.evidence_refs",
+                        "evidence_refs must be an array of short strings",
+                        "invalid_evidence_refs",
+                    ),
+                )
             screenshot = step.get("screenshot")
             if screenshot is not None:
                 if not isinstance(screenshot, str):
-                    _append_diagnostic(errors, _issue(f"{step_path}.screenshot", "screenshot must be a relative asset path", "invalid_screenshot_reference"))
+                    _append_diagnostic(
+                        errors,
+                        _issue(
+                            f"{step_path}.screenshot",
+                            "screenshot must be a relative asset path",
+                            "invalid_screenshot_reference",
+                        ),
+                    )
                 else:
                     try:
                         path = _canonical_member_name(screenshot, directory=False)
                     except ValueError:
-                        _append_diagnostic(errors, _issue(f"{step_path}.screenshot", "screenshot must be a safe relative POSIX path under assets/", "invalid_screenshot_reference"))
+                        _append_diagnostic(
+                            errors,
+                            _issue(
+                                f"{step_path}.screenshot",
+                                "screenshot must be a safe relative POSIX path under assets/",
+                                "invalid_screenshot_reference",
+                            ),
+                        )
                         path = ""
                     if path and not path.startswith("assets/"):
-                        _append_diagnostic(errors, _issue(f"{step_path}.screenshot", "screenshot references must stay under assets/", "invalid_screenshot_reference"))
+                        _append_diagnostic(
+                            errors,
+                            _issue(
+                                f"{step_path}.screenshot",
+                                "screenshot references must stay under assets/",
+                                "invalid_screenshot_reference",
+                            ),
+                        )
                     elif path and path not in assets:
-                        _append_diagnostic(errors, _issue(f"{step_path}.screenshot", "Referenced screenshot is missing from the ZIP archive", "missing_screenshot_asset"))
+                        _append_diagnostic(
+                            errors,
+                            _issue(
+                                f"{step_path}.screenshot",
+                                "Referenced screenshot is missing from the ZIP archive",
+                                "missing_screenshot_asset",
+                            ),
+                        )
                     elif path:
                         task_assets.append(path)
                         referenced_assets.add(path)
@@ -413,53 +538,98 @@ def validate_zip_dataset(data: bytes) -> ValidatedZipDataset:
             for field in ("action", "observation", "intent"):
                 value = step.get(field)
                 if value is not None and (not isinstance(value, str) or len(value) > 20000):
-                    _append_diagnostic(errors, _issue(f"{step_path}.{field}", f"{field} must be text of at most 20000 characters", "invalid_step_field"))
+                    _append_diagnostic(
+                        errors,
+                        _issue(
+                            f"{step_path}.{field}",
+                            f"{field} must be text of at most 20000 characters",
+                            "invalid_step_field",
+                        ),
+                    )
         task_record.pop("raw_url", None)
         task_record.pop("artifacts", None)
         review = task_record.get("review")
         if review is not None:
-            if not isinstance(review, dict) or not isinstance(review.get("steps", []), list) or any(not isinstance(step, dict) for step in review.get("steps", [])):
-                _append_diagnostic(errors, _issue(f"{task_path}.review", "review must contain an array of step records", "invalid_review"))
+            if (
+                not isinstance(review, dict)
+                or not isinstance(review.get("steps", []), list)
+                or any(not isinstance(step, dict) for step in review.get("steps", []))
+            ):
+                _append_diagnostic(
+                    errors,
+                    _issue(f"{task_path}.review", "review must contain an array of step records", "invalid_review"),
+                )
             elif isinstance(review.get("steps", []), list):
                 for review_step in review.get("steps", []):
                     review_step.pop("screenshot_url", None)
                     review_step.pop("artifact_status", None)
         try:
-            if len(json.dumps(task_record, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")) > MAX_TASK_RECORD_BYTES:
+            if (
+                len(json.dumps(task_record, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8"))
+                > MAX_TASK_RECORD_BYTES
+            ):
                 _append_diagnostic(errors, _issue(task_path, "Task record exceeds the 512 KB limit", "task_too_large"))
         except (TypeError, ValueError):
-            _append_diagnostic(errors, _issue(task_path, "Task record contains values that cannot be represented as JSON", "invalid_task_value"))
+            _append_diagnostic(
+                errors,
+                _issue(
+                    task_path, "Task record contains values that cannot be represented as JSON", "invalid_task_value"
+                ),
+            )
         tasks.append(task_record)
         assets_by_task[task_id] = sorted(set(task_assets))
-        summaries.append({"task_id": task_id, "title": task_record.get("title") or task_id,
-                          "step_count": len(steps), "outcome": task_record.get("outcome", "unknown")})
+        summaries.append(
+            {
+                "task_id": task_id,
+                "title": task_record.get("title") or task_id,
+                "step_count": len(steps),
+                "outcome": task_record.get("outcome", "unknown"),
+            }
+        )
         if not task_assets:
-            _append_diagnostic(warnings, _issue(f"{task_path}.steps", "No screenshot assets are attached to this task", "screenshots_absent"))
+            _append_diagnostic(
+                warnings,
+                _issue(f"{task_path}.steps", "No screenshot assets are attached to this task", "screenshots_absent"),
+            )
 
     if errors:
         raise ZipDatasetError(errors, warnings)
     for path in sorted(set(assets) - referenced_assets):
-        _append_diagnostic(warnings, _issue(path, "Screenshot is not referenced by any task and will not be imported", "unused_screenshot"))
+        _append_diagnostic(
+            warnings,
+            _issue(path, "Screenshot is not referenced by any task and will not be imported", "unused_screenshot"),
+        )
     for path in harmless_paths:
         _append_diagnostic(warnings, _issue(path, "Harmless file is unused by the dataset manifest", "unused_file"))
-    return ValidatedZipDataset(tasks=tasks, assets=assets, assets_by_task=assets_by_task,
-                               warnings=warnings, summaries=summaries)
+    return ValidatedZipDataset(
+        tasks=tasks, assets=assets, assets_by_task=assets_by_task, warnings=warnings, summaries=summaries
+    )
 
 
-def copy_revision_artifacts_to_member(db: Session, workspace_id: str, revision: TaskRevision,
-                                      member: BatchMember) -> None:
+def copy_revision_artifacts_to_member(
+    db: Session, workspace_id: str, revision: TaskRevision, member: BatchMember
+) -> None:
     """Propagate dataset revision evidence into a batch-scoped authorization record."""
-    source_rows = db.scalars(select(StoredArtifact).where(
-        StoredArtifact.task_revision_id == revision.id, StoredArtifact.member_id.is_(None))).all()
-    existing = set(db.scalars(select(StoredArtifact.relative_path).where(
-        StoredArtifact.member_id == member.id)).all())
-    existing.update(item.relative_path for item in db.new
-                    if isinstance(item, StoredArtifact) and item.member_id == member.id)
+    source_rows = db.scalars(
+        select(StoredArtifact).where(StoredArtifact.task_revision_id == revision.id, StoredArtifact.member_id.is_(None))
+    ).all()
+    existing = set(db.scalars(select(StoredArtifact.relative_path).where(StoredArtifact.member_id == member.id)).all())
+    existing.update(
+        item.relative_path for item in db.new if isinstance(item, StoredArtifact) and item.member_id == member.id
+    )
     for source in source_rows:
         if source.relative_path in existing:
             continue
-        db.add(StoredArtifact(workspace_id=workspace_id, task_revision_id=revision.id,
-            member_id=member.id, relative_path=source.relative_path, media_type=source.media_type,
-            object_key=source.object_key, sha256=source.sha256,
-            source_relative_path=source.source_relative_path))
+        db.add(
+            StoredArtifact(
+                workspace_id=workspace_id,
+                task_revision_id=revision.id,
+                member_id=member.id,
+                relative_path=source.relative_path,
+                media_type=source.media_type,
+                object_key=source.object_key,
+                sha256=source.sha256,
+                source_relative_path=source.source_relative_path,
+            )
+        )
         existing.add(source.relative_path)

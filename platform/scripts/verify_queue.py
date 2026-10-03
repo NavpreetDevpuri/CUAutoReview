@@ -20,7 +20,7 @@ def main():
     bid=previous['batch_id']; jid=previous['job_ids'][0]
     def current(): return next(j for j in client.call('GET','/jobs')['items'] if j['id']==jid)
     original=current()
-    duplicate_code=f"from app.queue import run_review\nrun_review.apply_async(args=[{jid!r},{original['generation']}])\nrun_review.apply_async(args=[{jid!r},0])\n"
+    duplicate_code=f"from app.worker.queue import run_review\nrun_review.apply_async(args=[{jid!r},{original['generation']}])\nrun_review.apply_async(args=[{jid!r},0])\n"
     container(duplicate_code)
     time.sleep(1)
     assert current()['attempt_count']==original['attempt_count']
@@ -31,7 +31,7 @@ def main():
         assert retry['generation']==original['generation']+1
         sent=False
         for _ in range(12):
-            result=container(f"from app.main import SessionLocal\nfrom app.models import OutboxEvent\nfrom sqlalchemy import select\nwith SessionLocal() as s:\n e=s.scalar(select(OutboxEvent).where(OutboxEvent.job_id=={jid!r},OutboxEvent.generation=={retry['generation']}))\n print(e.status if e else 'missing')\n")
+            result=container(f"from app.core.database import SessionLocal\nfrom app.models import OutboxEvent\nfrom sqlalchemy import select\nwith SessionLocal() as s:\n e=s.scalar(select(OutboxEvent).where(OutboxEvent.job_id=={jid!r},OutboxEvent.generation=={retry['generation']}))\n print(e.status if e else 'missing')\n")
             if result=='sent': sent=True; break
             time.sleep(.5)
         assert sent, 'Relay did not publish retry while worker stopped'
@@ -55,7 +55,7 @@ def main():
     assert job['cost_usd']==0
     checks.append('Delivered-before-pause message is safely recovered on resume')
     checks.append('Explicit retry appends one attempt and replay retains zero new cost')
-    state=container(f"from app.main import SessionLocal\nfrom app.models import Job, ReviewResult\nfrom sqlalchemy import select\nwith SessionLocal() as s:\n j=s.get(Job,{jid!r})\n r=s.scalars(select(ReviewResult).where(ReviewResult.job_id==j.id)).all()\n assert len(r)=={job['attempt_count']}\n assert len({{x.artifact_key for x in r}})==len(r)\n print(str(len(r))+' immutable result revisions and artifact keys')\n")
+    state=container(f"from app.core.database import SessionLocal\nfrom app.models import Job, ReviewResult\nfrom sqlalchemy import select\nwith SessionLocal() as s:\n j=s.get(Job,{jid!r})\n r=s.scalars(select(ReviewResult).where(ReviewResult.job_id==j.id)).all()\n assert len(r)=={job['attempt_count']}\n assert len({{x.artifact_key for x in r}})==len(r)\n print(str(len(r))+' immutable result revisions and artifact keys')\n")
     checks.append(state)
     result={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'provider_calls':0,'checks':checks}
     (ROOT/'platform/evidence/queue-verification.json').write_text(json.dumps(result,indent=2)+'\n')

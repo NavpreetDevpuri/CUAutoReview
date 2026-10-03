@@ -1,3 +1,5 @@
+"""Database engine and session state, the per-request session dependency and schema creation."""
+
 from collections.abc import Generator
 
 from sqlalchemy import create_engine, event
@@ -5,8 +7,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from .config import Settings
-from .models import Base
+from app.core import config
+from app.models import Base
 
 
 def make_engine(url: str) -> Engine:
@@ -35,15 +37,19 @@ def init_db(engine: Engine) -> None:
     Base.metadata.create_all(engine)
 
 
-def session_dependency(factory: sessionmaker[Session]):
-    def _get_db() -> Generator[Session, None, None]:
-        db = factory()
-        try:
-            yield db
-        except Exception:
-            db.rollback()
-            raise
-        finally:
-            db.close()
-    return _get_db
+# Process-wide state. Code reads these through the module (database.SessionLocal) so tests and
+# tooling can swap the engine in one place.
+engine = make_engine(config.settings.database_url)
+SessionLocal = make_session_factory(engine)
 
+
+def get_db() -> Generator[Session, None, None]:
+    """Yield one session per request; roll back on errors and always close."""
+    db = SessionLocal()
+    try:
+        yield db
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()

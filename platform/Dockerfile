@@ -29,8 +29,7 @@ RUN ln -s /usr/local/lib/node_modules/@openai/codex/bin/codex.js /usr/local/bin/
 COPY platform/backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY platform/backend/ ./
-COPY platform/backend/app/gemini-deny-all.toml /etc/cuautoreview/gemini-deny-all.toml
-COPY poc/schemas.py /workspace/poc/schemas.py
+COPY platform/backend/app/worker/resources/gemini-deny-all.toml /etc/cuautoreview/gemini-deny-all.toml
 COPY poc/data/ /workspace/poc/data/
 COPY poc/runs/latest/ /workspace/poc/runs/latest/
 COPY poc/runs/20260926-225934-c522c/proposals.json /workspace/poc/runs/20260926-225934-c522c/proposals.json

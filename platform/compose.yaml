@@ -88,7 +88,7 @@ services:
       - /tmp:rw,noexec,nosuid,nodev,size=512m
     depends_on:
       app: {condition: service_healthy}
-    command: [celery, -A, app.queue:celery_app, worker, --loglevel=INFO, --concurrency=2, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.reviews]
+    command: [celery, -A, app.worker.queue:celery_app, worker, --loglevel=INFO, --concurrency=2, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.reviews]
     stop_grace_period: 180s
   cli-worker:
     image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
@@ -108,7 +108,7 @@ services:
       - /tmp:rw,noexec,nosuid,nodev,size=512m
     depends_on:
       app: {condition: service_healthy}
-    command: [celery, -A, app.queue:celery_app, worker, --loglevel=INFO, --concurrency=1, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.cli]
+    command: [celery, -A, app.worker.queue:celery_app, worker, --loglevel=INFO, --concurrency=1, --without-mingle, --without-gossip, --without-heartbeat, -Q, cuautoreview.cli]
     stop_grace_period: 150s
   seed:
     image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}

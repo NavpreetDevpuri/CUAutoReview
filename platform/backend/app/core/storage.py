@@ -1,17 +1,19 @@
 """Artifact storage with an explicit developer-local fallback and an S3 adapter."""
+
 from __future__ import annotations
 
 import hashlib
 import os
-from pathlib import Path
 import uuid
+from pathlib import Path
 from typing import Protocol
 
-from .config import Settings
+from app.core.config import Settings
 
 
 class ArtifactStore(Protocol):
     mode: str
+
     def put(self, key: str, data: bytes, content_type: str) -> str: ...
     def get(self, key: str) -> bytes: ...
 
@@ -48,12 +50,12 @@ class LocalArtifactStore:
                 os.link(temporary, destination)
             except FileExistsError:
                 if hashlib.sha256(destination.read_bytes()).hexdigest() != expected:
-                    raise ValueError("Immutable artifact key already contains different data")
+                    raise ValueError("Immutable artifact key already contains different data") from None
             finally:
                 temporary.unlink(missing_ok=True)
         except FileExistsError:
             if hashlib.sha256(destination.read_bytes()).hexdigest() != expected:
-                raise ValueError("Immutable artifact key already contains different data")
+                raise ValueError("Immutable artifact key already contains different data") from None
         return relative
 
     def get(self, key: str) -> bytes:
@@ -69,16 +71,22 @@ class S3ArtifactStore:
 
     def __init__(self, settings: Settings):
         import boto3
+
         self.bucket = settings.s3_bucket
-        self.client = boto3.client("s3", endpoint_url=settings.s3_endpoint_url,
-                                   region_name=settings.aws_region)
+        self.client = boto3.client("s3", endpoint_url=settings.s3_endpoint_url, region_name=settings.aws_region)
 
     def put(self, key: str, data: bytes, content_type: str = "application/octet-stream") -> str:
         key = safe_key(key)
         expected = hashlib.sha256(data).hexdigest()
         try:
-            self.client.put_object(Bucket=self.bucket, Key=key, Body=data, ContentType=content_type,
-                                   Metadata={"sha256": expected}, IfNoneMatch="*")
+            self.client.put_object(
+                Bucket=self.bucket,
+                Key=key,
+                Body=data,
+                ContentType=content_type,
+                Metadata={"sha256": expected},
+                IfNoneMatch="*",
+            )
         except Exception as exc:
             # S3-compatible stores use 412 for an existing immutable key. If the endpoint
             # cannot enforce conditional writes, fail closed rather than risk overwriting.
@@ -90,7 +98,7 @@ class S3ArtifactStore:
             existing = self.client.get_object(Bucket=self.bucket, Key=key)
             body = existing["Body"].read()
             if hashlib.sha256(body).hexdigest() != expected:
-                raise ValueError("Immutable artifact key already contains different data")
+                raise ValueError("Immutable artifact key already contains different data") from None
         return key
 
     def get(self, key: str) -> bytes:

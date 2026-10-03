@@ -1,10 +1,12 @@
 """Environment-backed configuration; secrets are never returned by API routes."""
-from dataclasses import dataclass
+
 import os
+from dataclasses import dataclass
 from pathlib import Path
 
-
-PROJECT_ROOT = Path(os.getenv("CUAUTOREVIEW_PROJECT_ROOT", Path(__file__).resolve().parents[3])).resolve()
+PROJECT_ROOT = Path(os.getenv("CUAUTOREVIEW_PROJECT_ROOT", Path(__file__).resolve().parents[4])).resolve()
+# Largest JSON import body; the global request cap sits above it so imports keep their specific errors.
+MAX_IMPORT_BYTES = 32 * 1024 * 1024
 
 
 @dataclass(frozen=True)

@@ -1,4 +1,5 @@
 """Transaction-scoped serialization for workspace taxonomy changes."""
+
 from __future__ import annotations
 
 import hashlib

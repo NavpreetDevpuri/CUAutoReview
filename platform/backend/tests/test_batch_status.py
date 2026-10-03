@@ -1,46 +1,11 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
-from dataclasses import replace
-
 import pytest
-from fastapi.testclient import TestClient
 from sqlalchemy import select
 
-from app import main
-from app.database import make_engine, make_session_factory, session_dependency
 from app.models import Batch, BatchMember, Job, JobAttempt, ReviewResult, TaskRevision
 
-
 ORIGIN = {"Origin": "http://testserver"}
-
-
-@asynccontextmanager
-async def no_lifespan(_app):
-    yield
-
-
-@pytest.fixture
-def batch_app(tmp_path, monkeypatch):
-    engine = make_engine("sqlite:///:memory:")
-    factory = make_session_factory(engine)
-    main.init_db(engine)
-    monkeypatch.setattr(main, "engine", engine)
-    monkeypatch.setattr(main, "SessionLocal", factory)
-    monkeypatch.setattr(main, "settings", replace(main.settings, seed_poc=False,
-        object_store_backend="local", local_artifact_dir=tmp_path / "artifacts"))
-    monkeypatch.setattr(main, "PROJECT_ROOT", tmp_path)
-    dependency = main.get_db
-    main.app.dependency_overrides[dependency] = session_dependency(factory)
-    # Skip the production lifespan (database init, S3 bucket check, outbox loop) in tests.
-    monkeypatch.setattr(main.app.router, "lifespan_context", no_lifespan)
-    with TestClient(main.app) as client:
-        response = client.post("/api/auth/signup", json={
-            "name": "Admin", "email": "admin@example.test", "password": "test-password-123"})
-        assert response.status_code == 200, response.text
-        yield {"client": client, "factory": factory, "tmp_path": tmp_path}
-    main.app.dependency_overrides.pop(dependency, None)
-    engine.dispose()
 
 
 def post(client, path, body=None):
@@ -49,36 +14,56 @@ def post(client, path, body=None):
 
 def make_batch(client, *outcomes):
     dataset = post(client, "/api/datasets", {"name": "Status fixture", "description": ""}).json()
-    tasks = [{"task_id": f"task-{index}", "title": f"Task {index}", "instruction": "Review",
-        "outcome": outcome, "score": 1 if outcome == "passed" else 0,
-        "source": {"dataset": "fixture"}, "steps": []}
-        for index, outcome in enumerate(outcomes, start=1)]
-    imported = post(client, f"/api/datasets/{dataset['id']}/import", {
-        "format": "cuautoreview", "tasks": tasks})
+    tasks = [
+        {
+            "task_id": f"task-{index}",
+            "title": f"Task {index}",
+            "instruction": "Review",
+            "outcome": outcome,
+            "score": 1 if outcome == "passed" else 0,
+            "source": {"dataset": "fixture"},
+            "steps": [],
+        }
+        for index, outcome in enumerate(outcomes, start=1)
+    ]
+    imported = post(client, f"/api/datasets/{dataset['id']}/import", {"format": "cuautoreview", "tasks": tasks})
     assert imported.status_code == 200, imported.text
-    preset = post(client, "/api/presets", {"name": "Saved fixture", "backend": "saved_replay",
-        "model": None, "reasoning": "none", "budget_usd": 0, "configuration": {}})
+    preset = post(
+        client,
+        "/api/presets",
+        {
+            "name": "Saved fixture",
+            "backend": "saved_replay",
+            "model": None,
+            "reasoning": "none",
+            "budget_usd": 0,
+            "configuration": {},
+        },
+    )
     assert preset.status_code == 200, preset.text
-    response = post(client, "/api/batches", {"dataset_id": dataset["id"],
-        "name": "Status fixture", "mode": "fixed", "preset_id": preset.json()["id"]})
+    response = post(
+        client,
+        "/api/batches",
+        {"dataset_id": dataset["id"], "name": "Status fixture", "mode": "fixed", "preset_id": preset.json()["id"]},
+    )
     assert response.status_code == 200, response.text
     return response.json()
 
 
 def worker(app_state, monkeypatch, execute_review):
-    from app import queue, review_backends
+    from app.worker import queue, review_backends
 
-    monkeypatch.setattr(queue, "SessionLocal", app_state["factory"])
-    monkeypatch.setattr(queue, "settings", replace(queue.settings,
-        object_store_backend="local", local_artifact_dir=app_state["tmp_path"] / "worker-artifacts"))
     monkeypatch.setattr(review_backends, "execute_review", execute_review)
     return queue.run_review.run
 
 
 def success(**_kwargs):
-    return {"review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
+    return {
+        "review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
         "usage": {"kind": "saved_replay", "estimated_usd": 0, "billed": False},
-        "provenance": {"new_inference": False}, "proposals": []}
+        "provenance": {"new_inference": False},
+        "proposals": [],
+    }
 
 
 def batch_record(app_state, batch_id):
@@ -88,8 +73,10 @@ def batch_record(app_state, batch_id):
 
 def job_records(app_state, batch_id):
     with app_state["factory"]() as db:
-        return [(job.id, job.generation) for job in db.scalars(
-            select(Job).where(Job.batch_id == batch_id).order_by(Job.created_at)).all()]
+        return [
+            (job.id, job.generation)
+            for job in db.scalars(select(Job).where(Job.batch_id == batch_id).order_by(Job.created_at)).all()
+        ]
 
 
 def test_last_of_two_worker_completions_settles_batch(batch_app, monkeypatch):
@@ -112,7 +99,7 @@ def test_last_of_two_worker_completions_settles_batch(batch_app, monkeypatch):
 
 
 def test_failure_settles_and_retry_reopens_batch(batch_app, monkeypatch):
-    from app.review_backends import ReviewBackendError
+    from app.worker.review_backends import ReviewBackendError
 
     client = batch_app["client"]
     batch = make_batch(client, "passed")
@@ -144,8 +131,9 @@ def test_failure_settles_and_retry_reopens_batch(batch_app, monkeypatch):
 
 def test_retryable_provider_output_failures_are_bounded_and_keep_attempt_costs(batch_app, monkeypatch):
     from datetime import timedelta
-    from app import queue
-    from app.review_backends import ReviewBackendError
+
+    from app.worker import queue
+    from app.worker.review_backends import ReviewBackendError
 
     client = batch_app["client"]
     batch = make_batch(client, "passed")
@@ -187,7 +175,7 @@ def test_retryable_provider_output_failures_are_bounded_and_keep_attempt_costs(b
 
 
 def test_deterministic_auth_failure_is_terminal_without_automatic_retry(batch_app, monkeypatch):
-    from app.review_backends import ReviewBackendError
+    from app.worker.review_backends import ReviewBackendError
 
     client = batch_app["client"]
     batch = make_batch(client, "passed")
@@ -198,8 +186,10 @@ def test_deterministic_auth_failure_is_terminal_without_automatic_retry(batch_ap
     def auth_failure(**_kwargs):
         nonlocal calls
         calls += 1
-        raise ReviewBackendError("Provider authentication failed", usage={
-            "estimated_usd": None, "cli_diagnostic_category": "provider_auth_failed"})
+        raise ReviewBackendError(
+            "Provider authentication failed",
+            usage={"estimated_usd": None, "cli_diagnostic_category": "provider_auth_failed"},
+        )
 
     run = worker(batch_app, monkeypatch, auth_failure)
     assert run(job_id, generation)["status"] == "failed"
@@ -212,8 +202,9 @@ def test_deterministic_auth_failure_is_terminal_without_automatic_retry(batch_ap
 
 def test_retryable_failure_stops_after_four_total_attempts(batch_app, monkeypatch):
     from datetime import timedelta
-    from app import queue
-    from app.review_backends import ReviewBackendError
+
+    from app.worker import queue
+    from app.worker.review_backends import ReviewBackendError
 
     client = batch_app["client"]
     batch = make_batch(client, "passed")
@@ -224,8 +215,10 @@ def test_retryable_failure_stops_after_four_total_attempts(batch_app, monkeypatc
     def always_malformed(**_kwargs):
         nonlocal calls
         calls += 1
-        raise ReviewBackendError("Model response failed schema validation", usage={
-            "estimated_usd": 0.01, "review_error_category": "model_response_schema_invalid"})
+        raise ReviewBackendError(
+            "Model response failed schema validation",
+            usage={"estimated_usd": 0.01, "review_error_category": "model_response_schema_invalid"},
+        )
 
     monkeypatch.setattr(queue, "_retry_delay", lambda _attempt: timedelta(seconds=0))
     run = worker(batch_app, monkeypatch, always_malformed)
@@ -252,21 +245,45 @@ def test_dataset_task_summaries_separate_benchmark_status_and_reviews(batch_app,
     with batch_app["factory"]() as db:
         member = db.scalar(select(BatchMember).where(BatchMember.batch_id == batch["id"]))
         revision = db.get(TaskRevision, member.task_revision_id)
-        revision.content = {**revision.content, "steps": [
-            {"step_id": "step-1", "screenshot": "shot-1.png"},
-            {"step_id": "step-2", "screenshot_path": "shot-2.png"}]}
+        revision.content = {
+            **revision.content,
+            "steps": [
+                {"step_id": "step-1", "screenshot": "shot-1.png"},
+                {"step_id": "step-2", "screenshot_path": "shot-2.png"},
+            ],
+        }
         db.commit()
 
     def reviewed(**_kwargs):
-        return {"review": {"review_kind": "pass_recovery", "steps": [], "episodes": [{
-            "episode_id": "problem-1", "label_id": "navigation", "label_name": "Navigation",
-            "onset_step_ids": ["step-1"], "recovery": {"step_ids": ["step-2"]}}]},
+        return {
+            "review": {
+                "review_kind": "pass_recovery",
+                "steps": [],
+                "episodes": [
+                    {
+                        "episode_id": "problem-1",
+                        "label_id": "navigation",
+                        "label_name": "Navigation",
+                        "onset_step_ids": ["step-1"],
+                        "recovery": {"step_ids": ["step-2"]},
+                    }
+                ],
+            },
             "usage": {"kind": "provider_reported_tokens", "estimated_usd": 0.02},
-            "provenance": {"backend": "fixture", "model": "fixture-v1", "new_inference": True,
-                "evidence_mode": "images", "source_image_step_ids": ["step-1", "step-2"],
-                "supplied_image_step_ids": ["step-1"], "omitted_image_step_ids": ["step-2"],
-                "cited_image_step_ids": ["step-1"], "image_selection": "all",
-                "omitted_image_reason": "fixture capacity"}, "proposals": []}
+            "provenance": {
+                "backend": "fixture",
+                "model": "fixture-v1",
+                "new_inference": True,
+                "evidence_mode": "images",
+                "source_image_step_ids": ["step-1", "step-2"],
+                "supplied_image_step_ids": ["step-1"],
+                "omitted_image_step_ids": ["step-2"],
+                "cited_image_step_ids": ["step-1"],
+                "image_selection": "all",
+                "omitted_image_reason": "fixture capacity",
+            },
+            "proposals": [],
+        }
 
     run = worker(batch_app, monkeypatch, reviewed)
     assert run(job_id, generation)["status"] == "completed"
@@ -309,9 +326,17 @@ def test_analytics_separates_unknown_cost_jobs_from_attempts(batch_app):
         job.attempt_count = 2
         member.status = "failed"
         for number in (1, 2):
-            db.add(JobAttempt(job_id=job.id, attempt_number=number, generation=number,
-                fence_token=number, status="failed",
-                usage={"kind": "unknown", "estimated_usd": None}, cost_usd=None))
+            db.add(
+                JobAttempt(
+                    job_id=job.id,
+                    attempt_number=number,
+                    generation=number,
+                    fence_token=number,
+                    status="failed",
+                    usage={"kind": "unknown", "estimated_usd": None},
+                    cost_usd=None,
+                )
+            )
         db.commit()
 
     response = post(client, "/api/analytics/query", {"run_ids": [batch["id"]]})
@@ -347,7 +372,7 @@ def test_worker_completion_does_not_overwrite_pause(batch_app, monkeypatch):
 
 
 def test_retry_while_paused_does_not_resume_dispatch(batch_app, monkeypatch):
-    from app.review_backends import ReviewBackendError
+    from app.worker.review_backends import ReviewBackendError
 
     client = batch_app["client"]
     batch = make_batch(client, "passed", "passed")
@@ -433,7 +458,7 @@ def test_reconcile_keeps_unknown_outcome_waiting_for_review(batch_app):
 
 
 def test_start_after_manual_retry_does_not_duplicate_the_job(batch_app, monkeypatch):
-    from app.review_backends import ReviewBackendError
+    from app.worker.review_backends import ReviewBackendError
 
     client = batch_app["client"]
     batch = make_batch(client, "passed")

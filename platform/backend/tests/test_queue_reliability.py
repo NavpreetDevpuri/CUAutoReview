@@ -1,18 +1,18 @@
 """Regression tests for relay fairness, stranded dispatch and storage recovery."""
+
 from __future__ import annotations
 
 from datetime import timedelta
 
 from sqlalchemy import select
+from test_batch_status import job_records, make_batch, post, success, worker
 
 from app.models import Job, JobAttempt, OutboxEvent, ReviewResult, utcnow
-from test_batch_status import batch_app, job_records, make_batch, post, success, worker  # noqa: F401
 
 
 def relay(app_state, monkeypatch):
-    from app import queue
+    from app.worker import queue
 
-    monkeypatch.setattr(queue, "SessionLocal", app_state["factory"])
     sent = []
     monkeypatch.setattr(queue.run_review, "apply_async", lambda **kwargs: sent.append(kwargs))
     return queue.relay_outbox.run, sent
@@ -24,13 +24,44 @@ def event_for(db, job_id):
 
 def second_batch(client):
     dataset = post(client, "/api/datasets", {"name": "Second fixture", "description": ""}).json()
-    assert post(client, f"/api/datasets/{dataset['id']}/import", {"format": "cuautoreview", "tasks": [{
-        "task_id": "task-b", "title": "Task B", "instruction": "Review", "outcome": "passed", "score": 1,
-        "source": {"dataset": "fixture"}, "steps": []}]}).status_code == 200
-    preset = post(client, "/api/presets", {"name": "Saved second", "backend": "saved_replay", "model": None,
-                                           "reasoning": "none", "budget_usd": 0, "configuration": {}}).json()
-    response = post(client, "/api/batches", {"dataset_id": dataset["id"], "name": "Second fixture",
-                                             "mode": "fixed", "preset_id": preset["id"]})
+    assert (
+        post(
+            client,
+            f"/api/datasets/{dataset['id']}/import",
+            {
+                "format": "cuautoreview",
+                "tasks": [
+                    {
+                        "task_id": "task-b",
+                        "title": "Task B",
+                        "instruction": "Review",
+                        "outcome": "passed",
+                        "score": 1,
+                        "source": {"dataset": "fixture"},
+                        "steps": [],
+                    }
+                ],
+            },
+        ).status_code
+        == 200
+    )
+    preset = post(
+        client,
+        "/api/presets",
+        {
+            "name": "Saved second",
+            "backend": "saved_replay",
+            "model": None,
+            "reasoning": "none",
+            "budget_usd": 0,
+            "configuration": {},
+        },
+    ).json()
+    response = post(
+        client,
+        "/api/batches",
+        {"dataset_id": dataset["id"], "name": "Second fixture", "mode": "fixed", "preset_id": preset["id"]},
+    )
     assert response.status_code == 200, response.text
     return response.json()
 
@@ -73,8 +104,8 @@ class FlakyStore:
 
 
 def use_store(monkeypatch, app_state, failures):
-    from app import queue
-    from app.storage import LocalArtifactStore
+    from app.core.storage import LocalArtifactStore
+    from app.worker import queue
 
     store = FlakyStore(LocalArtifactStore(app_state["tmp_path"] / "worker-artifacts"), failures)
     monkeypatch.setattr(queue, "create_artifact_store", lambda _settings: store)
@@ -120,8 +151,9 @@ def test_storage_outage_keeps_paid_review_for_store_only_retry(batch_app, monkey
     use_store(monkeypatch, batch_app, failures=0)
     assert run(job_id, generation)["status"] == "completed"
     with batch_app["factory"]() as db:
-        attempts = db.scalars(select(JobAttempt).where(JobAttempt.job_id == job_id)
-                              .order_by(JobAttempt.attempt_number)).all()
+        attempts = db.scalars(
+            select(JobAttempt).where(JobAttempt.job_id == job_id).order_by(JobAttempt.attempt_number)
+        ).all()
         assert [attempt.cost_usd for attempt in attempts] == [0.04, 0]
         assert "unsaved_review" not in attempts[0].usage
         assert attempts[0].usage["unsaved_review_stored_by_attempt_id"] == attempts[1].id

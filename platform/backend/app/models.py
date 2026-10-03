@@ -1,23 +1,35 @@
 """SQLAlchemy records for the local review workspace."""
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import uuid
+from datetime import UTC, datetime
 
-from sqlalchemy import (Boolean, CheckConstraint, DateTime, Float, ForeignKey, Index,
-                        Integer, JSON, String, Text, UniqueConstraint)
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def as_utc(value: datetime) -> datetime:
     """Normalize timestamps read from databases that drop timezone metadata (e.g. SQLite)."""
     if value.tzinfo is None:
-        return value.replace(tzinfo=timezone.utc)
-    return value.astimezone(timezone.utc)
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
 
 
 def uid() -> str:
@@ -89,9 +101,12 @@ class Dataset(Base):
 
 class DatasetShare(Base):
     """Additive workspace/user/team grants for dataset and revision access."""
+
     __tablename__ = "dataset_shares"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False, index=True)
+    workspace_id: Mapped[str] = mapped_column(
+        ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     dataset_id: Mapped[str] = mapped_column(ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False, index=True)
     target_type: Mapped[str] = mapped_column(String(16), nullable=False)  # workspace, user, team
     target_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
@@ -99,16 +114,23 @@ class DatasetShare(Base):
     created_by: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     __table_args__ = (
-        CheckConstraint("(target_type = 'workspace' AND target_id IS NULL) OR (target_type IN ('user','team') AND target_id IS NOT NULL)", name="ck_dataset_share_target"),
+        CheckConstraint(
+            "(target_type = 'workspace' AND target_id IS NULL) OR (target_type IN ('user','team') AND target_id IS "
+            "NOT NULL)",
+            name="ck_dataset_share_target",
+        ),
         UniqueConstraint("dataset_id", "target_type", "target_id", name="uq_dataset_share_target"),
     )
 
 
 class ObjectArchive(Base):
     """Soft archive state for datasets, task definitions, and runs (batches)."""
+
     __tablename__ = "object_archives"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False, index=True)
+    workspace_id: Mapped[str] = mapped_column(
+        ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     object_type: Mapped[str] = mapped_column(String(24), nullable=False)
     object_id: Mapped[str] = mapped_column(String(36), nullable=False)
     archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
@@ -130,7 +152,9 @@ class TaskDefinition(Base):
 class TaskRevision(Base):
     __tablename__ = "task_revisions"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    task_definition_id: Mapped[str] = mapped_column(ForeignKey("task_definitions.id", ondelete="CASCADE"), nullable=False, index=True)
+    task_definition_id: Mapped[str] = mapped_column(
+        ForeignKey("task_definitions.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     revision: Mapped[int] = mapped_column(Integer, nullable=False)
     source_revision: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     content: Mapped[dict] = mapped_column(JSON, nullable=False)
@@ -169,6 +193,7 @@ class PresetRevision(Base):
 
 class ProviderModelCatalog(Base):
     """Secret-free snapshot of model IDs discovered from provider metadata APIs."""
+
     __tablename__ = "provider_model_catalog"
     workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id", ondelete="CASCADE"), primary_key=True)
     backend: Mapped[str] = mapped_column(String(80), primary_key=True)
@@ -198,6 +223,7 @@ class Batch(Base):
 
 class RunSource(Base):
     """Additional datasets covered by a run; Batch.dataset_id remains its legacy primary source."""
+
     __tablename__ = "run_sources"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     batch_id: Mapped[str] = mapped_column(ForeignKey("batches.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -209,9 +235,12 @@ class RunSource(Base):
 
 class RunConfiguration(Base):
     """Immutable workflow and execution snapshots associated with a run/batch."""
+
     __tablename__ = "run_configurations"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    batch_id: Mapped[str] = mapped_column(ForeignKey("batches.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    batch_id: Mapped[str] = mapped_column(
+        ForeignKey("batches.id", ondelete="CASCADE"), nullable=False, unique=True, index=True
+    )
     workflow_revision_id: Mapped[str] = mapped_column(String(160), nullable=False)
     workflow_snapshot: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     execution_snapshot: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
@@ -270,7 +299,9 @@ class Job(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), nullable=False, index=True)
     batch_id: Mapped[str] = mapped_column(ForeignKey("batches.id", ondelete="CASCADE"), nullable=False, index=True)
-    member_id: Mapped[str] = mapped_column(ForeignKey("batch_members.id", ondelete="CASCADE"), nullable=False, index=True)
+    member_id: Mapped[str] = mapped_column(
+        ForeignKey("batch_members.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     stage: Mapped[str] = mapped_column(String(32), default="review", nullable=False)
     review_kind: Mapped[str] = mapped_column(String(32), nullable=False)
     preset_revision_id: Mapped[str] = mapped_column(ForeignKey("preset_revisions.id"), nullable=False)
@@ -327,7 +358,9 @@ class OutboxEvent(Base):
 class ReviewResult(Base):
     __tablename__ = "review_results"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    member_id: Mapped[str] = mapped_column(ForeignKey("batch_members.id", ondelete="CASCADE"), nullable=False, index=True)
+    member_id: Mapped[str] = mapped_column(
+        ForeignKey("batch_members.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     job_id: Mapped[str | None] = mapped_column(ForeignKey("jobs.id"), nullable=True, index=True)
     revision: Mapped[int] = mapped_column(Integer, nullable=False)
     review_kind: Mapped[str] = mapped_column(String(32), nullable=False)
@@ -346,7 +379,9 @@ class ReviewResult(Base):
 class TaskFeedback(Base):
     __tablename__ = "task_feedback"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    member_id: Mapped[str] = mapped_column(ForeignKey("batch_members.id", ondelete="CASCADE"), nullable=False, index=True)
+    member_id: Mapped[str] = mapped_column(
+        ForeignKey("batch_members.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     author_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     step_id: Mapped[str | None] = mapped_column(String(160), nullable=True)
@@ -394,7 +429,9 @@ class TaxonomyProposal(Base):
 class ProposalRevision(Base):
     __tablename__ = "proposal_revisions"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    proposal_id: Mapped[str] = mapped_column(ForeignKey("taxonomy_proposals.id", ondelete="CASCADE"), nullable=False, index=True)
+    proposal_id: Mapped[str] = mapped_column(
+        ForeignKey("taxonomy_proposals.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     revision: Mapped[int] = mapped_column(Integer, nullable=False)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
@@ -410,7 +447,9 @@ class ProposalRevision(Base):
 class ProposalFeedback(Base):
     __tablename__ = "proposal_feedback"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
-    proposal_id: Mapped[str] = mapped_column(ForeignKey("taxonomy_proposals.id", ondelete="CASCADE"), nullable=False, index=True)
+    proposal_id: Mapped[str] = mapped_column(
+        ForeignKey("taxonomy_proposals.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     proposal_revision_id: Mapped[str] = mapped_column(ForeignKey("proposal_revisions.id"), nullable=False, index=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     created_by: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)

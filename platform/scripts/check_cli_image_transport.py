@@ -26,7 +26,7 @@ import zlib
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 sys.path.insert(0, "/workspace/platform/backend")
-from app.cli_backends import _clean_env, _gemini_command
+from app.worker.cli_backends import _clean_env, _gemini_command
 
 
 def png_1x1() -> bytes:

@@ -1,14 +1,12 @@
 """Job lists and the overview must follow the same run access rules as run pages."""
+
 from __future__ import annotations
 
-from dataclasses import replace
-
 import pytest
+from conftest import isolate
 from fastapi.testclient import TestClient
 
 from app import main
-from app.database import make_engine, make_session_factory, session_dependency
-
 
 ORIGIN = {"Origin": "http://testserver"}
 
@@ -21,42 +19,52 @@ def post(client, path, body=None):
 
 @pytest.fixture
 def admin(tmp_path, monkeypatch):
-    engine = make_engine("sqlite:///:memory:")
-    factory = make_session_factory(engine)
-    main.init_db(engine)
-    monkeypatch.setattr(main, "engine", engine)
-    monkeypatch.setattr(main, "SessionLocal", factory)
-    monkeypatch.setattr(main, "settings", replace(main.settings, seed_poc=False,
-        object_store_backend="local", local_artifact_dir=tmp_path / "artifacts"))
-    monkeypatch.setattr(main, "PROJECT_ROOT", tmp_path)
-    monkeypatch.setitem(main.app.dependency_overrides, main.get_db, session_dependency(factory))
+    engine, _factory = isolate(tmp_path, monkeypatch)
     # Without a context manager the client skips app startup (seeding, outbox relay).
     client = TestClient(main.app)
-    post(client, "/api/auth/signup", {"name": "Admin", "email": "admin@example.test",
-                                      "password": "test-password-123"})
+    post(client, "/api/auth/signup", {"name": "Admin", "email": "admin@example.test", "password": "test-password-123"})
     yield client
     engine.dispose()
 
 
 def dataset_with_task(admin, name):
     dataset = post(admin, "/api/datasets", {"name": name})
-    post(admin, f"/api/datasets/{dataset['id']}/import", {"format": "cuautoreview", "tasks": [{
-        "task_id": f"{name}-task", "title": name, "instruction": "Review", "outcome": "failed", "score": 0,
-        "source": {"dataset": "fixture"}, "steps": []}]})
+    post(
+        admin,
+        f"/api/datasets/{dataset['id']}/import",
+        {
+            "format": "cuautoreview",
+            "tasks": [
+                {
+                    "task_id": f"{name}-task",
+                    "title": name,
+                    "instruction": "Review",
+                    "outcome": "failed",
+                    "score": 0,
+                    "source": {"dataset": "fixture"},
+                    "steps": [],
+                }
+            ],
+        },
+    )
     return dataset
 
 
 def started_run(admin, name, dataset_ids):
-    run = post(admin, "/api/runs", {"name": name, "dataset_ids": dataset_ids,
-                                    "execution": {"backend": "saved_replay", "budget_usd": 0}})
+    run = post(
+        admin,
+        "/api/runs",
+        {"name": name, "dataset_ids": dataset_ids, "execution": {"backend": "saved_replay", "budget_usd": 0}},
+    )
     post(admin, f"/api/runs/{run['id']}/start", {})
     return run
 
 
 def signup(name):
     client = TestClient(main.app)
-    user = post(client, "/api/auth/signup", {"name": name, "email": f"{name}@example.test",
-                                             "password": f"{name}-password-123"})
+    user = post(
+        client, "/api/auth/signup", {"name": name, "email": f"{name}@example.test", "password": f"{name}-password-123"}
+    )
     return client, user
 
 
@@ -68,8 +76,11 @@ def test_dataset_share_reaches_jobs_and_overview_like_run_pages(admin):
     reviewer, reviewer_user = signup("reviewer")
     outsider, _outsider_user = signup("outsider")
     admin.patch(f"/api/users/{reviewer_user['id']}", headers=ORIGIN, json={"role": "reviewer"})
-    admin.put(f"/api/datasets/{dataset_a['id']}/shares", headers=ORIGIN, json={
-        "workspace_shared": False, "users": [{"target_id": reviewer_user["id"], "role": "viewer"}]})
+    admin.put(
+        f"/api/datasets/{dataset_a['id']}/shares",
+        headers=ORIGIN,
+        json={"workspace_shared": False, "users": [{"target_id": reviewer_user["id"], "role": "viewer"}]},
+    )
 
     # A multi-source run needs every source shared, so only the single-source run is visible.
     assert [run["id"] for run in reviewer.get("/api/runs").json()["items"]] == [run_a["id"]]
@@ -89,8 +100,7 @@ def test_dataset_share_reaches_jobs_and_overview_like_run_pages(admin):
     assert outsider.get("/api/overview").json()["batches"] == 0
 
     # Revoking the share removes the jobs again.
-    admin.put(f"/api/datasets/{dataset_a['id']}/shares", headers=ORIGIN,
-              json={"workspace_shared": False, "users": []})
+    admin.put(f"/api/datasets/{dataset_a['id']}/shares", headers=ORIGIN, json={"workspace_shared": False, "users": []})
     assert reviewer.get("/api/jobs").json()["total"] == 0
     assert reviewer.get("/api/overview").json()["batches"] == 0
 
@@ -100,9 +110,17 @@ def test_dataset_detail_reports_the_callers_access_role(admin):
     viewer, viewer_user = signup("viewer")
     lead, lead_user = signup("lead")
     outsider, _outsider_user = signup("stranger")
-    admin.put(f"/api/datasets/{dataset['id']}/shares", headers=ORIGIN, json={
-        "workspace_shared": False, "users": [{"target_id": viewer_user["id"], "role": "viewer"},
-                                             {"target_id": lead_user["id"], "role": "manager"}]})
+    admin.put(
+        f"/api/datasets/{dataset['id']}/shares",
+        headers=ORIGIN,
+        json={
+            "workspace_shared": False,
+            "users": [
+                {"target_id": viewer_user["id"], "role": "viewer"},
+                {"target_id": lead_user["id"], "role": "manager"},
+            ],
+        },
+    )
 
     assert admin.get(f"/api/datasets/{dataset['id']}").json()["access_role"] == "admin"
     assert lead.get(f"/api/datasets/{dataset['id']}").json()["access_role"] == "manager"

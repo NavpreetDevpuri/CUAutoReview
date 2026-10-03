@@ -1,49 +1,42 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
-from dataclasses import replace
 from datetime import timedelta
-import uuid
 
 import pytest
+from conftest import isolate
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
 from app import main
-from app.database import make_engine, make_session_factory, session_dependency
-from app.models import Batch, BatchMember, Job, JobAttempt, OutboxEvent, ReviewResult, TaskRevision, TaxonomyRelease, User, utcnow
-
+from app.api import middleware
+from app.api.routes import auth as auth_routes
+from app.core.security import DUMMY_PASSWORD_HASH
+from app.models import (
+    Job,
+    JobAttempt,
+    OutboxEvent,
+    ReviewResult,
+    TaxonomyRelease,
+    utcnow,
+)
+from app.services import taxonomy as taxonomy_service
+from app.services.execution import execution_snapshot, workflow_catalog
+from app.services.records import digest
 
 ORIGIN = {"Origin": "http://testserver"}
 PNG_BYTES = b"\x89PNG\r\n\x1a\nrecorded screenshot"
 
 
-@asynccontextmanager
-async def no_lifespan(_app):
-    yield
-
-
 @pytest.fixture
 def app_clients(tmp_path, monkeypatch):
-    engine = make_engine("sqlite:///:memory:")
-    factory = make_session_factory(engine)
-    main.init_db(engine)
-    monkeypatch.setattr(main, "engine", engine)
-    monkeypatch.setattr(main, "SessionLocal", factory)
-    monkeypatch.setattr(main, "settings", replace(main.settings, seed_poc=False,
-                                                    object_store_backend="local",
-                                                    local_artifact_dir=tmp_path / "artifacts"))
-    monkeypatch.setattr(main, "PROJECT_ROOT", tmp_path)
-    dependency = main.get_db
-    main.app.dependency_overrides[dependency] = session_dependency(factory)
-    # Skip the production lifespan (database init, S3 bucket check, outbox loop) in tests.
-    monkeypatch.setattr(main.app.router, "lifespan_context", no_lifespan)
+    engine, factory = isolate(tmp_path, monkeypatch)
     with TestClient(main.app) as admin:
-        response = admin.post("/api/auth/signup", json={"name": "Admin", "email": "admin@example.test",
-                                  "password": "test-password-123"})
+        response = admin.post(
+            "/api/auth/signup", json={"name": "Admin", "email": "admin@example.test", "password": "test-password-123"}
+        )
         assert response.status_code == 200, response.text
         yield {"admin": admin, "factory": factory, "engine": engine, "tmp_path": tmp_path}
-    main.app.dependency_overrides.pop(dependency, None)
     engine.dispose()
 
 
@@ -52,20 +45,34 @@ def post(client, path, **kwargs):
 
 
 def signup_viewer(client):
-    response = post(client, "/api/auth/signup", json={"name": "Viewer", "email": "viewer@example.test",
-                                                     "password": "viewer-password"})
+    response = post(
+        client,
+        "/api/auth/signup",
+        json={"name": "Viewer", "email": "viewer@example.test", "password": "viewer-password"},
+    )
     assert response.status_code == 200, response.text
     return response.json()
 
 
 def task(task_id="task-1", outcome="failed", screenshot=None):
-    step = {"step_id": "1", "intent": None, "action": "click", "observation": "Button displayed",
-            "evidence_refs": ["event_1", "frame_1"]}
+    step = {
+        "step_id": "1",
+        "intent": None,
+        "action": "click",
+        "observation": "Button displayed",
+        "evidence_refs": ["event_1", "frame_1"],
+    }
     if screenshot:
         step["screenshot"] = screenshot
-    return {"task_id": task_id, "title": f"Task {task_id}", "instruction": "Complete a local task",
-            "outcome": outcome, "score": 0 if outcome == "failed" else 1,
-            "source": {"dataset": "fixture"}, "steps": [step]}
+    return {
+        "task_id": task_id,
+        "title": f"Task {task_id}",
+        "instruction": "Complete a local task",
+        "outcome": outcome,
+        "score": 0 if outcome == "failed" else 1,
+        "source": {"dataset": "fixture"},
+        "steps": [step],
+    }
 
 
 def create_dataset(client, name="Fixture dataset"):
@@ -75,35 +82,48 @@ def create_dataset(client, name="Fixture dataset"):
 
 
 def import_tasks(client, dataset_id, *tasks):
-    return post(client, f"/api/datasets/{dataset_id}/import",
-                json={"format": "cuautoreview", "tasks": list(tasks)})
+    return post(client, f"/api/datasets/{dataset_id}/import", json={"format": "cuautoreview", "tasks": list(tasks)})
 
 
 def create_saved_preset(client):
-    response = post(client, "/api/presets", json={"name": "Saved fixture", "backend": "saved_replay",
-        "model": None, "reasoning": "none", "budget_usd": 0, "configuration": {}})
+    response = post(
+        client,
+        "/api/presets",
+        json={
+            "name": "Saved fixture",
+            "backend": "saved_replay",
+            "model": None,
+            "reasoning": "none",
+            "budget_usd": 0,
+            "configuration": {},
+        },
+    )
     assert response.status_code == 200, response.text
     return response.json()
 
 
 def create_batch(client, dataset, preset, **overrides):
-    body = {"dataset_id": dataset["id"], "name": "Fixture batch", "mode": "appendable",
-            "preset_id": preset["id"], **overrides}
+    body = {
+        "dataset_id": dataset["id"],
+        "name": "Fixture batch",
+        "mode": "appendable",
+        "preset_id": preset["id"],
+        **overrides,
+    }
     response = post(client, "/api/batches", json=body)
     assert response.status_code == 200, response.text
     return response.json()
 
 
 def test_execution_snapshot_defaults_and_bounds_image_delivery_at_32():
-    workflow = main.workflow_catalog()[0]
+    workflow = workflow_catalog()[0]
     base = {"backend": "saved_replay", "model": None, "budget_usd": 0, "configuration": {}}
-    defaulted = main.execution_snapshot(base, workflow)
+    defaulted = execution_snapshot(base, workflow)
     assert defaulted["configuration"]["max_images"] == 32
-    explicitly_bounded = main.execution_snapshot({**base,
-        "configuration": {"max_images": 32}}, workflow)
+    explicitly_bounded = execution_snapshot({**base, "configuration": {"max_images": 32}}, workflow)
     assert explicitly_bounded["configuration"]["max_images"] == 32
-    with pytest.raises(main.HTTPException):
-        main.execution_snapshot({**base, "configuration": {"max_images": 33}}, workflow)
+    with pytest.raises(HTTPException):
+        execution_snapshot({**base, "configuration": {"max_images": 33}}, workflow)
 
 
 def test_first_signup_and_workspace_role_enforcement(app_clients):
@@ -119,9 +139,15 @@ def test_first_signup_and_workspace_role_enforcement(app_clients):
 def test_provider_model_catalog_sync_is_admin_only_and_returns_safe_snapshot(app_clients):
     admin = app_clients["admin"]
     anonymous = TestClient(main.app)
-    snapshot = {"backend": "gemini_cli", "status": "available", "source": "google_models_api",
-        "fetched_at": "2026-09-27T09:00:00Z", "models": [{"id": "gemini-3.8-flash",
-        "display_name": "Gemini 3.8 Flash", "provider": "google", "recommended": True}]}
+    snapshot = {
+        "backend": "gemini_cli",
+        "status": "available",
+        "source": "google_models_api",
+        "fetched_at": "2026-09-27T09:00:00Z",
+        "models": [
+            {"id": "gemini-3.8-flash", "display_name": "Gemini 3.8 Flash", "provider": "google", "recommended": True}
+        ],
+    }
     assert anonymous.get("/api/providers/models", params={"backend": "gemini_cli"}).status_code == 401
     empty_catalog = admin.get("/api/providers/models", params={"backend": "gemini_cli"})
     assert empty_catalog.status_code == 200
@@ -147,7 +173,10 @@ def test_provider_model_catalog_sync_is_admin_only_and_returns_safe_snapshot(app
     invalid = {**snapshot, "models": [{"id": "gemini/gemini-3.8-flash", "provider": "google"}]}
     rejected = post(admin, "/api/providers/models/sync", json=invalid)
     assert rejected.status_code == 422
-    assert admin.get("/api/providers/models", params={"backend": "gemini_cli"}).json()["models"][0]["id"] == "gemini-3.8-flash"
+    assert (
+        admin.get("/api/providers/models", params={"backend": "gemini_cli"}).json()["models"][0]["id"]
+        == "gemini-3.8-flash"
+    )
 
 
 def test_task_history_includes_run_created_at(app_clients):
@@ -178,8 +207,17 @@ def test_appendable_sync_is_idempotent_and_fixed_batches_stay_frozen(app_clients
     assert first.json()["idempotent_replay"] is False
     assert second.json()["idempotent_replay"] is True
 
-    fixed = post(client, "/api/batches", json={"dataset_id": dataset["id"], "name": "Fixed batch",
-        "mode": "fixed", "preset_id": preset["id"], "task_ids": ["task-1"]}).json()
+    fixed = post(
+        client,
+        "/api/batches",
+        json={
+            "dataset_id": dataset["id"],
+            "name": "Fixed batch",
+            "mode": "fixed",
+            "preset_id": preset["id"],
+            "task_ids": ["task-1"],
+        },
+    ).json()
     changed = import_tasks(client, dataset["id"], task("task-1", "passed"), task("task-2", "failed"))
     assert changed.status_code == 200, changed.text
     synced = post(client, f"/api/batches/{appendable['id']}/sync")
@@ -226,8 +264,11 @@ def test_team_batch_access_is_revoked_server_side_and_artifacts_are_recorded(app
     assert len(viewer.get("/api/jobs").json()["items"]) == 1
     assert len(viewer_overview["recent_batches"]) == 1
     assert all(event["actor_id"] == user["id"] for event in viewer_overview["activity"])
-    feedback = viewer.post(f"/api/batches/{batch['id']}/tasks/task-1/feedback", headers=ORIGIN,
-                           json={"text": "Reviewer scoped activity event"})
+    feedback = viewer.post(
+        f"/api/batches/{batch['id']}/tasks/task-1/feedback",
+        headers=ORIGIN,
+        json={"text": "Reviewer scoped activity event"},
+    )
     assert feedback.status_code == 200, feedback.text
     scoped_activity = viewer.get("/api/activity").json()
     assert scoped_activity["items"] and all(event["actor_id"] == user["id"] for event in scoped_activity["items"])
@@ -236,27 +277,43 @@ def test_team_batch_access_is_revoked_server_side_and_artifacts_are_recorded(app
     assert client.delete(f"/api/teams/{team['id']}/members/{user['id']}", headers=ORIGIN).status_code == 204
     assert viewer.get(f"/api/batches/{batch['id']}/tasks/task-1").status_code == 403
     assert viewer.get(step["screenshot_url"]).status_code == 403
-    assert viewer.get(f"/api/artifacts/task-1/not-recorded.png").status_code == 404
+    assert viewer.get("/api/artifacts/task-1/not-recorded.png").status_code == 404
 
 
 def test_taxonomy_candidate_stales_after_feedback_and_publishes_exact_hash(app_clients):
     client = app_clients["admin"]
-    proposal = post(client, "/api/taxonomy/proposals", json={"name": "Wrong target",
-        "description": "A visible action reaches a different control.", "kind": "new_label",
-        "evidence_refs": ["event_1"]})
+    proposal = post(
+        client,
+        "/api/taxonomy/proposals",
+        json={
+            "name": "Wrong target",
+            "description": "A visible action reaches a different control.",
+            "kind": "new_label",
+            "evidence_refs": ["event_1"],
+        },
+    )
     assert proposal.status_code == 200, proposal.text
     candidate = post(client, "/api/taxonomy/consolidate", json={})
     assert candidate.status_code == 200, candidate.text
-    feedback = post(client, f"/api/taxonomy/proposals/{proposal.json()['id']}/feedback",
-                    json={"text": "Keep the definition concrete."})
+    feedback = post(
+        client,
+        f"/api/taxonomy/proposals/{proposal.json()['id']}/feedback",
+        json={"text": "Keep the definition concrete."},
+    )
     assert feedback.status_code == 200
-    stale = post(client, f"/api/taxonomy/candidates/{candidate.json()['id']}/approve",
-                 json={"expected_hash": candidate.json()["hash"], "version": candidate.json()["version"]})
+    stale = post(
+        client,
+        f"/api/taxonomy/candidates/{candidate.json()['id']}/approve",
+        json={"expected_hash": candidate.json()["hash"], "version": candidate.json()["version"]},
+    )
     assert stale.status_code == 409
 
     fresh = post(client, "/api/taxonomy/consolidate", json={}).json()
-    approved = post(client, f"/api/taxonomy/candidates/{fresh['id']}/approve",
-                    json={"expected_hash": fresh["hash"], "version": fresh["version"]})
+    approved = post(
+        client,
+        f"/api/taxonomy/candidates/{fresh['id']}/approve",
+        json={"expected_hash": fresh["hash"], "version": fresh["version"]},
+    )
     assert approved.status_code == 200, approved.text
     assert approved.json()["labels"][0]["status"] == "active"
     assert client.get("/api/taxonomy").json()["releases"]
@@ -264,74 +321,123 @@ def test_taxonomy_candidate_stales_after_feedback_and_publishes_exact_hash(app_c
 
 def test_rejected_candidate_cannot_be_published(app_clients):
     client = app_clients["admin"]
-    post(client, "/api/taxonomy/proposals", json={"name": "Draft", "description": "Draft definition",
-        "kind": "new_label"})
+    post(
+        client,
+        "/api/taxonomy/proposals",
+        json={"name": "Draft", "description": "Draft definition", "kind": "new_label"},
+    )
     candidate = post(client, "/api/taxonomy/consolidate", json={}).json()
     rejected = post(client, f"/api/taxonomy/candidates/{candidate['id']}/reject", json={"reason": "Not specific."})
     assert rejected.status_code == 200
     assert client.get("/api/taxonomy").json()["candidates"][0]["status"] == "rejected"
-    approved = post(client, f"/api/taxonomy/candidates/{candidate['id']}/approve",
-                    json={"expected_hash": candidate["hash"], "version": candidate["version"]})
+    approved = post(
+        client,
+        f"/api/taxonomy/candidates/{candidate['id']}/approve",
+        json={"expected_hash": candidate["hash"], "version": candidate["version"]},
+    )
     assert approved.status_code == 409
 
 
 def test_optional_taxonomy_curation_requires_budget_and_discards_stale_drafts(app_clients, monkeypatch):
-    from app import taxonomy_backend
+    from app.worker import taxonomy_backend
 
     client = app_clients["admin"]
-    proposal = post(client, "/api/taxonomy/proposals", json={"name": "Curated label",
-        "description": "A concrete observable mechanism.", "kind": "label"}).json()
-    preset = post(client, "/api/presets", json={"name": "Curation fixture", "backend": "litellm",
-        "model": "openai/gpt-test", "reasoning": "low", "budget_usd": 0.25,
-        "configuration": {}}).json()
+    proposal = post(
+        client,
+        "/api/taxonomy/proposals",
+        json={"name": "Curated label", "description": "A concrete observable mechanism.", "kind": "label"},
+    ).json()
+    preset = post(
+        client,
+        "/api/presets",
+        json={
+            "name": "Curation fixture",
+            "backend": "litellm",
+            "model": "openai/gpt-test",
+            "reasoning": "low",
+            "budget_usd": 0.25,
+            "configuration": {},
+        },
+    ).json()
     preset_revision_id = preset["revisions"][0]["id"]
     calls = []
 
     def fake_curation(*, preset_revision, base_content, proposals):
         calls.append((preset_revision, proposals))
         label_id = proposals[0]["proposal_id"]
-        return {"content": {"labels": [{"id": label_id, "name": "Curated label",
-                "description": "A concrete observable mechanism.", "status": "active"}],
-                "mappings": [{"proposal_id": label_id, "canonical_label_id": label_id,
-                              "rationale": "The candidate preserves the exact proposal."}],
-                "unresolved": [], "draft_proposals": proposals},
-                "usage": {"kind": "provider_reported_tokens", "estimated_usd": 0.01},
-                "provenance": {"backend": "model_api", "human_approval_required": True}}
+        return {
+            "content": {
+                "labels": [
+                    {
+                        "id": label_id,
+                        "name": "Curated label",
+                        "description": "A concrete observable mechanism.",
+                        "status": "active",
+                    }
+                ],
+                "mappings": [
+                    {
+                        "proposal_id": label_id,
+                        "canonical_label_id": label_id,
+                        "rationale": "The candidate preserves the exact proposal.",
+                    }
+                ],
+                "unresolved": [],
+                "draft_proposals": proposals,
+            },
+            "usage": {"kind": "provider_reported_tokens", "estimated_usd": 0.01},
+            "provenance": {"backend": "model_api", "human_approval_required": True},
+        }
 
     monkeypatch.setattr(taxonomy_backend, "consolidate_drafts", fake_curation)
     monkeypatch.setenv("ALLOW_HOSTED_INFERENCE", "true")
     unconfirmed = post(client, "/api/taxonomy/consolidate", json={"preset_revision_id": preset_revision_id})
     assert unconfirmed.status_code == 409 and calls == []
 
-    confirmed = post(client, "/api/taxonomy/consolidate", json={"preset_revision_id": preset_revision_id,
-        "confirm_budget": True, "expected_budget_usd": 0.25})
+    confirmed = post(
+        client,
+        "/api/taxonomy/consolidate",
+        json={"preset_revision_id": preset_revision_id, "confirm_budget": True, "expected_budget_usd": 0.25},
+    )
     assert confirmed.status_code == 200, confirmed.text
     assert confirmed.json()["curation"]["usage"]["estimated_usd"] == 0.01
     assert calls and calls[-1][1][0]["proposal_id"] == proposal["id"]
 
     def mutate_head_during_request(**kwargs):
-        monkeypatch.setattr(main, "_taxonomy_proposal_snapshot",
-            lambda *_args, **_kwargs: ({"changed-head": "0" * 64}, kwargs["proposals"]))
+        monkeypatch.setattr(
+            taxonomy_service,
+            "_taxonomy_proposal_snapshot",
+            lambda *_args, **_kwargs: ({"changed-head": "0" * 64}, kwargs["proposals"]),
+        )
         return fake_curation(**kwargs)
 
     monkeypatch.setattr(taxonomy_backend, "consolidate_drafts", mutate_head_during_request)
-    stale = post(client, "/api/taxonomy/consolidate", json={"preset_revision_id": preset_revision_id,
-        "confirm_budget": True, "expected_budget_usd": 0.25})
+    stale = post(
+        client,
+        "/api/taxonomy/consolidate",
+        json={"preset_revision_id": preset_revision_id, "confirm_budget": True, "expected_budget_usd": 0.25},
+    )
     assert stale.status_code == 409
     assert client.get("/api/taxonomy").json()["candidates"][-1]["id"] == confirmed.json()["id"]
 
 
 def test_hosted_retry_rechecks_explicit_budget_confirmation(app_clients, monkeypatch):
-    from app import review_backends
+    from app.worker import review_backends
 
     client = app_clients["admin"]
     monkeypatch.setenv("ALLOW_HOSTED_INFERENCE", "true")
-    monkeypatch.setattr(review_backends, "provider_capabilities", lambda: [
-        {"id": "model_api", "configured": True, "execution_enabled": True}])
+    monkeypatch.setattr(
+        review_backends,
+        "provider_capabilities",
+        lambda: [{"id": "model_api", "configured": True, "execution_enabled": True}],
+    )
     dataset = create_dataset(client)
     assert import_tasks(client, dataset["id"], task()).status_code == 200
-    preset = post(client, "/api/presets", json={"name": "Retry confirmation", "backend": "litellm",
-        "model": "openai/gpt-test", "budget_usd": 0.25}).json()
+    preset = post(
+        client,
+        "/api/presets",
+        json={"name": "Retry confirmation", "backend": "litellm", "model": "openai/gpt-test", "budget_usd": 0.25},
+    ).json()
     batch = create_batch(client, dataset, preset, task_ids=["task-1"])
     planned = client.get(f"/api/batches/{batch['id']}").json()["progress"]
     assert planned["default_max_attempts"] == 4
@@ -339,16 +445,25 @@ def test_hosted_retry_rechecks_explicit_budget_confirmation(app_clients, monkeyp
 
     denied = post(client, f"/api/batches/{batch['id']}/start", json={})
     assert denied.status_code == 409
-    started = post(client, f"/api/batches/{batch['id']}/start", json={"confirm_budget": True,
-        "expected_budget_usd": 0.25})
+    started = post(
+        client, f"/api/batches/{batch['id']}/start", json={"confirm_budget": True, "expected_budget_usd": 0.25}
+    )
     assert started.status_code == 200 and started.json()["jobs_added"] == 1
     with app_clients["factory"]() as db:
         job = db.scalar(select(Job))
         job.status = "failed"
         job.attempt_count = 1
-        db.add(JobAttempt(job_id=job.id, attempt_number=1, generation=job.generation,
-            fence_token=job.fence_token, status="failed",
-            usage={"kind": "unknown", "estimated_usd": None}, cost_usd=None))
+        db.add(
+            JobAttempt(
+                job_id=job.id,
+                attempt_number=1,
+                generation=job.generation,
+                fence_token=job.fence_token,
+                status="failed",
+                usage={"kind": "unknown", "estimated_usd": None},
+                cost_usd=None,
+            )
+        )
         job_id = job.id
         db.commit()
 
@@ -360,16 +475,14 @@ def test_hosted_retry_rechecks_explicit_budget_confirmation(app_clients, monkeyp
     assert detail.json()["unknown_cost_attempts"] == 1
 
     unconfirmed = post(client, f"/api/jobs/{job_id}/retry", json={})
-    wrong_budget = post(client, f"/api/jobs/{job_id}/retry", json={"confirm_budget": True,
-        "expected_budget_usd": 0.20})
+    wrong_budget = post(client, f"/api/jobs/{job_id}/retry", json={"confirm_budget": True, "expected_budget_usd": 0.20})
     assert unconfirmed.status_code == wrong_budget.status_code == 409
-    retried = post(client, f"/api/jobs/{job_id}/retry", json={"confirm_budget": True,
-        "expected_budget_usd": 0.25})
+    retried = post(client, f"/api/jobs/{job_id}/retry", json={"confirm_budget": True, "expected_budget_usd": 0.25})
     assert retried.status_code == 200 and retried.json()["generation"] == 2
 
 
 def test_duplicate_worker_delivery_commits_one_review_revision(app_clients, monkeypatch):
-    from app import queue, review_backends
+    from app.worker import queue, review_backends
 
     client = app_clients["admin"]
     dataset = create_dataset(client)
@@ -383,13 +496,16 @@ def test_duplicate_worker_delivery_commits_one_review_revision(app_clients, monk
         assert job and job.status == "queued"
         job_id, generation = job.id, job.generation
 
-    monkeypatch.setattr(queue, "SessionLocal", app_clients["factory"])
-    monkeypatch.setattr(queue, "settings", replace(queue.settings, object_store_backend="local",
-        local_artifact_dir=app_clients["tmp_path"] / "worker-artifacts"))
-    monkeypatch.setattr(review_backends, "execute_review", lambda **_kwargs: {
-        "review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
-        "usage": {"kind": "saved_replay", "estimated_usd": 0, "billed": False},
-        "provenance": {"new_inference": False}, "proposals": []})
+    monkeypatch.setattr(
+        review_backends,
+        "execute_review",
+        lambda **_kwargs: {
+            "review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
+            "usage": {"kind": "saved_replay", "estimated_usd": 0, "billed": False},
+            "provenance": {"new_inference": False},
+            "proposals": [],
+        },
+    )
     first = queue.run_review.run(job_id, generation)
     duplicate = queue.run_review.run(job_id, generation)
     assert first["status"] == "completed"
@@ -419,8 +535,7 @@ def test_resume_rearms_sent_outbox_and_repeated_start_preserves_queued_work(app_
     resumed = post(client, f"/api/batches/{batch['id']}/resume")
     assert resumed.status_code == 200 and resumed.json()["status"] == "running"
     with app_clients["factory"]() as db:
-        event = db.scalar(select(OutboxEvent).where(OutboxEvent.job_id == job_id,
-            OutboxEvent.generation == generation))
+        event = db.scalar(select(OutboxEvent).where(OutboxEvent.job_id == job_id, OutboxEvent.generation == generation))
         assert event.status == "pending" and event.relay_owner is None
     repeated = post(client, f"/api/batches/{batch['id']}/start", json={})
     assert repeated.status_code == 200 and repeated.json()["jobs_added"] == 0
@@ -447,15 +562,21 @@ def test_cancelled_batches_cannot_restart_and_unknown_outcomes_wait_for_review(a
 
 
 def test_worker_refreshes_latest_drafts_over_batch_pinned_taxonomy(app_clients, monkeypatch):
-    from app import queue, review_backends
+    from app.worker import queue, review_backends
 
     client = app_clients["admin"]
     user = client.get("/api/auth/me").json()
-    pinned_content = {"labels": [{"id": "pinned-label", "name": "Pinned", "description": "Pinned definition",
-                                    "status": "active"}]}
+    pinned_content = {
+        "labels": [{"id": "pinned-label", "name": "Pinned", "description": "Pinned definition", "status": "active"}]
+    }
     with app_clients["factory"]() as db:
-        pinned = TaxonomyRelease(workspace_id=user["workspace_id"], version="1.0.0", content=pinned_content,
-            content_hash=main.digest(pinned_content), created_by=user["id"])
+        pinned = TaxonomyRelease(
+            workspace_id=user["workspace_id"],
+            version="1.0.0",
+            content=pinned_content,
+            content_hash=digest(pinned_content),
+            created_by=user["id"],
+        )
         db.add(pinned)
         db.commit()
         pinned_id = pinned.id
@@ -466,32 +587,47 @@ def test_worker_refreshes_latest_drafts_over_batch_pinned_taxonomy(app_clients, 
     batch = create_batch(client, dataset, preset, task_ids=["task-1"])
     assert batch["taxonomy_release_id"] == pinned_id
 
-    latest_content = {"labels": pinned_content["labels"] + [{"id": "latest-only", "name": "Unpinned",
-        "description": "Must not be substituted", "status": "active"}]}
+    latest_content = {
+        "labels": pinned_content["labels"]
+        + [{"id": "latest-only", "name": "Unpinned", "description": "Must not be substituted", "status": "active"}]
+    }
     with app_clients["factory"]() as db:
-        newer = TaxonomyRelease(workspace_id=user["workspace_id"], version="2.0.0", content=latest_content,
-            content_hash=main.digest(latest_content), created_by=user["id"], created_at=utcnow() + timedelta(seconds=1))
+        newer = TaxonomyRelease(
+            workspace_id=user["workspace_id"],
+            version="2.0.0",
+            content=latest_content,
+            content_hash=digest(latest_content),
+            created_by=user["id"],
+            created_at=utcnow() + timedelta(seconds=1),
+        )
         db.add(newer)
         db.commit()
 
-    proposal = post(client, "/api/taxonomy/proposals", json={"name": "Initial draft",
-        "description": "Original definition", "kind": "label"}).json()
+    proposal = post(
+        client,
+        "/api/taxonomy/proposals",
+        json={"name": "Initial draft", "description": "Original definition", "kind": "label"},
+    ).json()
     started = post(client, f"/api/batches/{batch['id']}/start", json={})
     assert started.status_code == 200 and started.json()["jobs_added"] == 1
-    edited = client.patch(f"/api/taxonomy/proposals/{proposal['id']}", headers=ORIGIN,
-        json={"name": "Fresh draft", "description": "Latest definition", "kind": "label"})
+    edited = client.patch(
+        f"/api/taxonomy/proposals/{proposal['id']}",
+        headers=ORIGIN,
+        json={"name": "Fresh draft", "description": "Latest definition", "kind": "label"},
+    )
     assert edited.status_code == 200, edited.text
 
     seen = {}
+
     def fake_review(*, preset_revision, **_kwargs):
         seen["labels"] = preset_revision["configuration"]["shared_labels"]
-        return {"review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
-                "usage": {"kind": "saved_replay", "estimated_usd": 0, "billed": False},
-                "provenance": {"new_inference": False}, "proposals": []}
+        return {
+            "review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
+            "usage": {"kind": "saved_replay", "estimated_usd": 0, "billed": False},
+            "provenance": {"new_inference": False},
+            "proposals": [],
+        }
 
-    monkeypatch.setattr(queue, "SessionLocal", app_clients["factory"])
-    monkeypatch.setattr(queue, "settings", replace(queue.settings, object_store_backend="local",
-        local_artifact_dir=app_clients["tmp_path"] / "snapshot-worker-artifacts"))
     monkeypatch.setattr(review_backends, "execute_review", fake_review)
     with app_clients["factory"]() as db:
         job = db.scalar(select(Job).where(Job.batch_id == batch["id"]))
@@ -508,7 +644,7 @@ def test_worker_refreshes_latest_drafts_over_batch_pinned_taxonomy(app_clients, 
 
 
 def test_worker_keeps_known_usage_when_artifact_publication_fails(app_clients, monkeypatch):
-    from app import queue, review_backends
+    from app.worker import queue, review_backends
 
     client = app_clients["admin"]
     dataset = create_dataset(client)
@@ -520,13 +656,16 @@ def test_worker_keeps_known_usage_when_artifact_publication_fails(app_clients, m
         job = db.scalar(select(Job))
         job_id, generation = job.id, job.generation
 
-    monkeypatch.setattr(queue, "SessionLocal", app_clients["factory"])
-    monkeypatch.setattr(queue, "settings", replace(queue.settings, object_store_backend="local",
-        local_artifact_dir=app_clients["tmp_path"] / "failed-publication-artifacts"))
-    monkeypatch.setattr(review_backends, "execute_review", lambda **_kwargs: {
-        "review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
-        "usage": {"kind": "provider_reported_tokens", "estimated_usd": 0.0123, "billed": True},
-        "provenance": {}, "proposals": []})
+    monkeypatch.setattr(
+        review_backends,
+        "execute_review",
+        lambda **_kwargs: {
+            "review": {"review_kind": "pass_recovery", "steps": [], "episodes": []},
+            "usage": {"kind": "provider_reported_tokens", "estimated_usd": 0.0123, "billed": True},
+            "provenance": {},
+            "proposals": [],
+        },
+    )
 
     class FailingStore:
         def put(self, *_args):
@@ -549,8 +688,7 @@ def test_worker_keeps_known_usage_when_artifact_publication_fails(app_clients, m
 
 def test_cookie_mutations_reject_cross_origin(app_clients):
     client = app_clients["admin"]
-    response = client.post("/api/teams", headers={"Origin": "http://attacker.invalid"},
-                           json={"name": "Cross origin"})
+    response = client.post("/api/teams", headers={"Origin": "http://attacker.invalid"}, json={"name": "Cross origin"})
     assert response.status_code == 403
 
 
@@ -573,30 +711,38 @@ def test_spa_fallback_serves_built_assets_and_rejects_missing_assets(app_clients
 
 
 def test_import_validates_steps_and_never_trusts_imported_screenshot_urls(app_clients):
-    client = app_clients['admin']
+    client = app_clients["admin"]
     dataset = create_dataset(client)
     broken = task()
-    broken['steps'] = [12]
-    assert import_tasks(client, dataset['id'], broken).status_code == 422
+    broken["steps"] = [12]
+    assert import_tasks(client, dataset["id"], broken).status_code == 422
     source = task()
-    source['steps'][0]['screenshot_url'] = 'https://example.invalid/untrusted-image'
-    assert import_tasks(client, dataset['id'], source).status_code == 200
+    source["steps"][0]["screenshot_url"] = "https://example.invalid/untrusted-image"
+    assert import_tasks(client, dataset["id"], source).status_code == 200
     detail = client.get(f"/api/datasets/{dataset['id']}")
     assert detail.status_code == 200
-    assert 'screenshot_url' not in detail.json()['tasks'][0]['steps'][0]
+    assert "screenshot_url" not in detail.json()["tasks"][0]["steps"][0]
 
 
 def signup_user(email):
     client = TestClient(main.app)
-    response = post(client, "/api/auth/signup", json={"name": email.split("@")[0], "email": email,
-                                                      "password": "member-password"})
+    response = post(
+        client, "/api/auth/signup", json={"name": email.split("@")[0], "email": email, "password": "member-password"}
+    )
     assert response.status_code == 200, response.text
     return client, response.json()
 
 
 def create_saved_run(client, dataset):
-    response = post(client, "/api/runs", json={"name": "Saved run", "dataset_ids": [dataset["id"]],
-        "execution": {"backend": "saved_replay", "model": None, "budget_usd": 0, "configuration": {}}})
+    response = post(
+        client,
+        "/api/runs",
+        json={
+            "name": "Saved run",
+            "dataset_ids": [dataset["id"]],
+            "execution": {"backend": "saved_replay", "model": None, "budget_usd": 0, "configuration": {}},
+        },
+    )
     assert response.status_code == 200, response.text
     return response.json()
 
@@ -609,8 +755,11 @@ def test_audit_events_record_ids_of_newly_created_objects(app_clients):
     dataset = create_dataset(client, "Audited dataset")
     post(client, "/api/taxonomy/proposals", json={"name": "Wrong target", "description": "Clicked the neighbour."})
     candidate = post(client, "/api/taxonomy/consolidate", json={}).json()
-    release = post(client, f"/api/taxonomy/candidates/{candidate['id']}/approve",
-                   json={"expected_hash": candidate["hash"], "version": candidate["version"]})
+    release = post(
+        client,
+        f"/api/taxonomy/candidates/{candidate['id']}/approve",
+        json={"expected_hash": candidate["hash"], "version": candidate["version"]},
+    )
     assert release.status_code == 200, release.text
     with app_clients["factory"]() as db:
         recorded = {row.action: row.object_id for row in db.scalars(select(ActivityEvent)).all()}
@@ -636,8 +785,11 @@ def test_rerun_keeps_grant_roles_and_skips_deactivated_users(app_clients):
     assert rerun.status_code == 200, rerun.text
     with app_clients["factory"]() as db:
         from app.models import BatchGrant
-        grants = {(row.user_id, row.role) for row in db.scalars(
-            select(BatchGrant).where(BatchGrant.batch_id == rerun.json()["id"])).all()}
+
+        grants = {
+            (row.user_id, row.role)
+            for row in db.scalars(select(BatchGrant).where(BatchGrant.batch_id == rerun.json()["id"])).all()
+        }
     assert grants == {(viewer_user["id"], "viewer")}
     feedback = post(viewer, f"/api/runs/{rerun.json()['id']}/tasks/task-1/feedback", json={"text": "Viewer note"})
     assert feedback.status_code == 403
@@ -645,8 +797,16 @@ def test_rerun_keeps_grant_roles_and_skips_deactivated_users(app_clients):
 
 def test_list_endpoints_reject_non_positive_pagination(app_clients):
     client = app_clients["admin"]
-    for path in ("/api/users", "/api/teams", "/api/datasets", "/api/presets", "/api/runs",
-                 "/api/batches", "/api/jobs", "/api/activity"):
+    for path in (
+        "/api/users",
+        "/api/teams",
+        "/api/datasets",
+        "/api/presets",
+        "/api/runs",
+        "/api/batches",
+        "/api/jobs",
+        "/api/activity",
+    ):
         assert client.get(path, params={"page": 0}).status_code == 422, path
         assert client.get(path, params={"per_page": -1}).status_code == 422, path
     for index in range(3):
@@ -658,17 +818,23 @@ def test_list_endpoints_reject_non_positive_pagination(app_clients):
 def test_json_import_registers_only_bundled_images_as_evidence(app_clients):
     client = app_clients["admin"]
     poc = app_clients["tmp_path"] / "poc"
-    for relative, body in (("runs/stderr.log", b"internal log line"),
-                           ("viewer/index.html", b"<script>alert(1)</script>"),
-                           ("data/source/fixture/fake.png", b"<html>not an image</html>"),
-                           ("data/source/fixture/real.png", PNG_BYTES)):
+    for relative, body in (
+        ("runs/stderr.log", b"internal log line"),
+        ("viewer/index.html", b"<script>alert(1)</script>"),
+        ("data/source/fixture/fake.png", b"<html>not an image</html>"),
+        ("data/source/fixture/real.png", PNG_BYTES),
+    ):
         (poc / relative).parent.mkdir(parents=True, exist_ok=True)
         (poc / relative).write_bytes(body)
     dataset = create_dataset(client)
-    imported = import_tasks(client, dataset["id"], task("log", screenshot="runs/stderr.log"),
-                            task("html", screenshot="viewer/index.html"),
-                            task("fake", screenshot="data/source/fixture/fake.png"),
-                            task("real", screenshot="data/source/fixture/real.png"))
+    imported = import_tasks(
+        client,
+        dataset["id"],
+        task("log", screenshot="runs/stderr.log"),
+        task("html", screenshot="viewer/index.html"),
+        task("fake", screenshot="data/source/fixture/fake.png"),
+        task("real", screenshot="data/source/fixture/real.png"),
+    )
     assert imported.status_code == 200, imported.text
     steps = {item["task_id"]: item["steps"][0] for item in client.get(f"/api/datasets/{dataset['id']}").json()["tasks"]}
     assert not any(steps[name].get("screenshot_url") for name in ("log", "html", "fake"))
@@ -679,11 +845,13 @@ def test_json_import_registers_only_bundled_images_as_evidence(app_clients):
 def test_presets_apply_run_execution_bounds_and_reject_secrets(app_clients):
     client = app_clients["admin"]
     base = {"name": "Bounded preset", "backend": "litellm", "model": "openai/gpt-test", "budget_usd": 0.25}
-    for change in ({"configuration": {"api_key": "sk-live-SECRET"}},
-                   {"configuration": {"nested": {"Authorization": "Bearer x"}}},
-                   {"configuration": {"timeout_seconds": 100000}},
-                   {"configuration": {"max_images": 10000}},
-                   {"budget_usd": 99}):
+    for change in (
+        {"configuration": {"api_key": "sk-live-SECRET"}},
+        {"configuration": {"nested": {"Authorization": "Bearer x"}}},
+        {"configuration": {"timeout_seconds": 100000}},
+        {"configuration": {"max_images": 10000}},
+        {"budget_usd": 99},
+    ):
         response = post(client, "/api/presets", json={**base, **change})
         assert response.status_code == 422, change
     assert "sk-live-SECRET" not in client.get("/api/presets").text
@@ -692,16 +860,26 @@ def test_presets_apply_run_execution_bounds_and_reject_secrets(app_clients):
 
 def test_proposal_label_ids_stay_unique_and_base_release_must_exist(app_clients):
     client = app_clients["admin"]
-    assert post(client, "/api/taxonomy/proposals", json={"name": "A", "description": "a", "label_id": "L1"}).status_code == 200
+    assert (
+        post(client, "/api/taxonomy/proposals", json={"name": "A", "description": "a", "label_id": "L1"}).status_code
+        == 200
+    )
     second = post(client, "/api/taxonomy/proposals", json={"name": "B", "description": "b", "label_id": "L2"}).json()
-    duplicate = client.patch(f"/api/taxonomy/proposals/{second['id']}", headers=ORIGIN,
-                             json={"name": "B", "description": "b", "label_id": "L1"})
+    duplicate = client.patch(
+        f"/api/taxonomy/proposals/{second['id']}",
+        headers=ORIGIN,
+        json={"name": "B", "description": "b", "label_id": "L1"},
+    )
     assert duplicate.status_code == 409
-    same_label = client.patch(f"/api/taxonomy/proposals/{second['id']}", headers=ORIGIN,
-                              json={"name": "B2", "description": "b", "label_id": "L2"})
+    same_label = client.patch(
+        f"/api/taxonomy/proposals/{second['id']}",
+        headers=ORIGIN,
+        json={"name": "B2", "description": "b", "label_id": "L2"},
+    )
     assert same_label.status_code == 200, same_label.text
-    unknown = post(client, "/api/taxonomy/proposals", json={"name": "C", "description": "c",
-                                                           "base_release_id": "missing-release"})
+    unknown = post(
+        client, "/api/taxonomy/proposals", json={"name": "C", "description": "c", "base_release_id": "missing-release"}
+    )
     assert unknown.status_code == 404
 
 
@@ -727,16 +905,18 @@ def test_admin_cannot_deactivate_own_account(app_clients):
 
 def test_login_verifies_a_password_hash_even_for_unknown_emails(app_clients, monkeypatch):
     checked = []
-    original = main.verify_password
-    monkeypatch.setattr(main, "verify_password", lambda password, encoded: checked.append(encoded) or original(password, encoded))
+    original = auth_routes.verify_password
+    monkeypatch.setattr(
+        auth_routes, "verify_password", lambda password, encoded: checked.append(encoded) or original(password, encoded)
+    )
     anonymous = TestClient(main.app)
     response = post(anonymous, "/api/auth/login", json={"email": "nobody@example.test", "password": "wrong-password"})
     assert response.status_code == 401
-    assert checked == [main.DUMMY_PASSWORD_HASH]
+    assert checked == [DUMMY_PASSWORD_HASH]
 
 
 def test_request_body_cap_rejects_declared_and_streamed_oversize(app_clients, monkeypatch):
-    monkeypatch.setattr(main, "MAX_REQUEST_BYTES", 1024)
+    monkeypatch.setattr(middleware, "MAX_REQUEST_BYTES", 1024)
     anonymous = TestClient(main.app)
     declared = anonymous.post("/api/auth/login", headers=ORIGIN, content=b"x" * 2048)
     assert declared.status_code == 413
@@ -745,8 +925,9 @@ def test_request_body_cap_rejects_declared_and_streamed_oversize(app_clients, mo
         for _ in range(4):
             yield b"y" * 512
 
-    streamed = anonymous.post("/api/auth/login", headers={**ORIGIN, "Content-Type": "application/json"},
-                              content=chunks())
+    streamed = anonymous.post(
+        "/api/auth/login", headers={**ORIGIN, "Content-Type": "application/json"}, content=chunks()
+    )
     assert streamed.status_code == 413
     small = post(anonymous, "/api/auth/login", json={"email": "nobody@example.test", "password": "wrong-password"})
     assert small.status_code == 401

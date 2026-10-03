@@ -93,8 +93,7 @@ class RunExecution(InputModel):
 
 class ProviderModel(InputModel):
     id: str = Field(min_length=1, max_length=160, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:/-]*$")
-    display_name: str | None = Field(default=None, max_length=120,
-                                     pattern=r"^[A-Za-z0-9][A-Za-z0-9 .()+_/-]*$")
+    display_name: str | None = Field(default=None, max_length=120, pattern=r"^[A-Za-z0-9][A-Za-z0-9 .()+_/-]*$")
     provider: Literal["google", "openai", "anthropic"]
     recommended: bool = False
     input_cost_per_million: float | None = Field(default=None, ge=0)
@@ -104,8 +103,9 @@ class ProviderModel(InputModel):
 class ProviderModelCatalogSync(InputModel):
     backend: Literal["model_api", "litellm", "codex", "gemini_cli", "claude_code"]
     status: Literal["available", "unavailable", "unknown"]
-    source: Literal["google_models_api", "openai_models_api", "anthropic_models_api",
-                    "provider_models_api", "runner_preflight"]
+    source: Literal[
+        "google_models_api", "openai_models_api", "anthropic_models_api", "provider_models_api", "runner_preflight"
+    ]
     fetched_at: datetime
     models: list[ProviderModel] = Field(max_length=500)
 
