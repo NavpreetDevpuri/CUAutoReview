@@ -67,6 +67,20 @@ class Session(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
 
+class LoginAttempt(Base):
+    """A failed sign-in, keyed by hashes so neither the email nor the client address is stored in clear."""
+
+    __tablename__ = "login_attempts"
+    __table_args__ = (
+        Index("ix_login_attempts_pair_created", "pair_hash", "created_at"),
+        Index("ix_login_attempts_ip_created", "ip_hash", "created_at"),
+    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    pair_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    ip_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False, index=True)
+
+
 class Team(Base):
     __tablename__ = "teams"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)

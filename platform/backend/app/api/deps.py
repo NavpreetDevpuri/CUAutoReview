@@ -27,6 +27,7 @@ def get_user(request: Request, db: Session = Depends(get_db)) -> User:
     user = db.get(User, session.user_id)
     if not user or not user.active:
         raise HTTPException(401, "Account inactive")
+    request.state.user_id = user.id  # read by the access log
     return user
 
 

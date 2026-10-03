@@ -9,6 +9,7 @@ EXPECTED_ROUTES = {
     "DELETE /api/teams/{team_id}/members/{user_id}",
     "GET /api/activity",
     "GET /api/artifacts/{task_id}/{relative_path:path}",
+    "GET /api/auth/config",
     "GET /api/auth/me",
     "GET /api/batches",
     "GET /api/batches/{batch_id}",
@@ -29,6 +30,7 @@ EXPECTED_ROUTES = {
     "GET /api/jobs/{job_id}",
     "GET /api/overview",
     "GET /api/presets",
+    "GET /api/ready",
     "GET /api/providers",
     "GET /api/providers/models",
     "GET /api/runs",
@@ -99,6 +101,7 @@ EXPECTED_ROUTES = {
     "POST /api/taxonomy/proposals/{proposal_id}/feedback",
     "POST /api/teams",
     "POST /api/teams/{team_id}/members",
+    "POST /api/users",
     "PUT /api/datasets/{dataset_id}/shares",
 }
 

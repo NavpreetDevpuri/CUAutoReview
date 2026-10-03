@@ -106,6 +106,33 @@ class S3ArtifactStore:
         return self.client.get_object(Bucket=self.bucket, Key=key)["Body"].read()
 
 
+def object_store_reachable(settings: Settings) -> bool:
+    """Cheap readiness check: the S3 bucket answers HEAD quickly, or the local directory is writable."""
+    if settings.object_store_backend == "local":
+        root = settings.local_artifact_dir
+        try:
+            root.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            return False
+        return os.access(root, os.W_OK)
+    if settings.object_store_backend != "s3":
+        return False
+    import boto3
+    from botocore.config import Config
+
+    client = boto3.client(
+        "s3",
+        endpoint_url=settings.s3_endpoint_url,
+        region_name=settings.aws_region,
+        config=Config(connect_timeout=2, read_timeout=2, retries={"max_attempts": 1}),
+    )
+    try:
+        client.head_bucket(Bucket=settings.s3_bucket)
+    except Exception:
+        return False
+    return True
+
+
 def create_artifact_store(settings: Settings) -> ArtifactStore:
     if settings.object_store_backend == "s3":
         return S3ArtifactStore(settings)

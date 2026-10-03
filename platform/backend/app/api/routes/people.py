@@ -9,8 +9,9 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_user, require_role
 from app.core.database import get_db
+from app.core.security import hash_password
 from app.models import Team, TeamMember, User, uid, utcnow
-from app.schemas import AddTeamMember, TeamCreate, TeamUpdate, UserUpdate
+from app.schemas import AddTeamMember, TeamCreate, TeamUpdate, UserCreate, UserUpdate
 from app.services.audit import activity
 from app.services.records import me_record, record
 
@@ -29,6 +30,29 @@ def users(
     size = min(per_page, 200)
     results = db.scalars(query.order_by(User.name).offset((page - 1) * size).limit(size)).all()
     return {"items": [me_record(u) for u in results], "total": total}
+
+
+@router.post("/api/users")
+def create_user(body: UserCreate, db: Session = Depends(get_db), user: User = Depends(require_role("admin"))):
+    """Create an account in the admin's workspace; the only way to add people when self-service sign-up is off."""
+    if db.scalar(select(User.id).where(User.email == body.email)):
+        raise HTTPException(409, "An account with this email already exists")
+    created = User(
+        id=uid(),
+        workspace_id=user.workspace_id,
+        name=body.name.strip(),
+        email=body.email,
+        password_hash=hash_password(body.password),
+        role=body.role,
+    )
+    db.add(created)
+    activity(db, user, "user.created", "user", created.id, role=body.role)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "An account with this email already exists") from None
+    return me_record(created)
 
 
 @router.patch("/api/users/{user_id}")

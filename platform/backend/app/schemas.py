@@ -29,6 +29,12 @@ class Login(InputModel):
     password: str
 
 
+class UserCreate(Signup):
+    """An administrator-created account; the admin shares the initial password out of band."""
+
+    role: Literal["admin", "manager", "reviewer", "viewer"] = "viewer"
+
+
 class TeamCreate(InputModel):
     name: str = Field(min_length=1, max_length=160)
     description: str = ""

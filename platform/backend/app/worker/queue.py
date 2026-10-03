@@ -12,11 +12,13 @@ from datetime import timedelta
 
 import yaml
 from celery import Celery
+from celery.signals import setup_logging
 from kombu import Exchange, Queue
 from sqlalchemy import func, select
 from sqlalchemy.orm import aliased
 
 from app.core import config, database
+from app.core.logs import configure_logging
 from app.core.storage import create_artifact_store
 from app.models import (
     Batch,
@@ -38,6 +40,14 @@ from app.models import (
 from app.services.taxonomy_lock import lock_taxonomy_workspace
 
 celery_app = Celery("cuautoreview", broker=config.settings.celery_broker_url)
+
+
+@setup_logging.connect
+def _worker_logging(**_kwargs):
+    """Workers log through the same text/JSON formatter as the API instead of Celery's own setup."""
+    configure_logging(config.settings.log_level, config.settings.log_format)
+
+
 review_exchange = Exchange("cuautoreview", type="direct", durable=True)
 dead_exchange = Exchange("cuautoreview.dlx", type="direct", durable=True)
 celery_app.conf.update(
