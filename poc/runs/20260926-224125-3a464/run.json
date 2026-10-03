@@ -556,7 +556,7 @@
         },
         {
           "type": "item.completed",
-          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/navpreetsinghdevpuri/.codex/config.toml.\"}}"
+          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in ~/.codex/config.toml.\"}}"
         },
         {
           "type": "turn.started",
@@ -993,7 +993,7 @@
         },
         {
           "type": "item.completed",
-          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/navpreetsinghdevpuri/.codex/config.toml.\"}}"
+          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in ~/.codex/config.toml.\"}}"
         },
         {
           "type": "turn.started",
@@ -1587,7 +1587,7 @@
         },
         {
           "type": "item.completed",
-          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/navpreetsinghdevpuri/.codex/config.toml.\"}}"
+          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in ~/.codex/config.toml.\"}}"
         },
         {
           "type": "turn.started",
@@ -2167,7 +2167,7 @@
         },
         {
           "type": "item.completed",
-          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/navpreetsinghdevpuri/.codex/config.toml.\"}}"
+          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in ~/.codex/config.toml.\"}}"
         },
         {
           "type": "turn.started",
@@ -2736,7 +2736,7 @@
         },
         {
           "type": "item.completed",
-          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in /Users/navpreetsinghdevpuri/.codex/config.toml.\"}}"
+          "text": "{\"type\": \"item.completed\", \"item\": {\"id\": \"item_0\", \"type\": \"error\", \"message\": \"Under-development features enabled: skip_host_skill_discovery. Under-development features are incomplete and may behave unpredictably. To suppress this warning, set `suppress_unstable_features_warning = true` in ~/.codex/config.toml.\"}}"
         },
         {
           "type": "turn.started",
