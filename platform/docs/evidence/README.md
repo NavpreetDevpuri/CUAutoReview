@@ -1,6 +1,6 @@
 # Verification evidence
 
-Machine-written reports from the verification scripts in [`platform/scripts`](../scripts). Each script overwrites its own report when rerun. [TEST-RESULTS.md](../TEST-RESULTS.md) explains what each check covers and its limits; a report existing here is not proof that a scenario currently passes.
+Machine-written reports from the verification scripts in [`platform/scripts`](../../scripts). Each script overwrites its own report when rerun. [TEST-RESULTS.md](../TEST-RESULTS.md) explains what each check covers and its limits; a report existing here is not proof that a scenario currently passes.
 
 | Report | Written by |
 |---|---|

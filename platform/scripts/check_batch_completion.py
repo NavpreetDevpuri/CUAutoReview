@@ -118,7 +118,7 @@ def main() -> None:
         "unknown_jobs_added": unknown_started["jobs_added"],
         "note": "Real-service saved-replay status checks, not model quality, scale, or production certification.",
     }
-    output = ROOT / "platform/evidence/batch-completion-verification.json"
+    output = ROOT / "platform/docs/evidence/batch-completion-verification.json"
     output.write_text(json.dumps(result, indent=2) + "\n")
     print(f"Saved {output.relative_to(ROOT)}")
     for item in result["checks"]:

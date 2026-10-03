@@ -18,7 +18,7 @@ Stop with `docker compose -f platform/compose.yaml down`; named volumes retain d
 
 If Docker reports `no space left on device` during a build, free unused build cache in Docker Desktop and retry. This occurred during local validation; the application data volumes were retained.
 
-Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](evidence/docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. The same checks now run on amd64 in CI on every push: the stack is built, seeded twice and verified after each seed ([workflow](../.github/workflows/ci.yml)).
+Validated on a separate fresh ARM64 Docker stack: all five logins, three teams, eight distinct tasks, authorized screenshots, zero review jobs and a repeat seed with unchanged identities/passwords/revisions. [Results](docs/evidence/docker-quickstart-verification.json) · [verification script](scripts/verify_docker_quickstart.py). The separate five-task POC remains available. The same checks now run on amd64 in CI on every push: the stack is built, seeded twice and verified after each seed ([workflow](../.github/workflows/ci.yml)).
 
 The Compose stack runs FastAPI and the built React-admin/MUI UI, a Celery worker, PostgreSQL, RabbitMQ and SeaweedFS with its S3-compatible API. Compose binds the application to loopback. The retained POC has its own run instructions and uses port 8765: [POC README](../poc/README.md).
 
@@ -46,7 +46,7 @@ python3 platform/scripts/seed_demo.py
 
 - Reruns reuse identities and passwords, restore missing demo memberships/grants, and remove no data. Changed account roles and unrelated email collisions stop the seed instead of being overwritten.
 - Empty workspace: creates the first admin. Existing workspace: uses the local test admin; otherwise pass `--admin-credentials /path/to/admin.json` containing an existing admin's `email` and `password`. A previously seeded demo admin can also bootstrap a rerun.
-- Verified: five logins, role boundaries, evidence/export access, team grants and repeat-run stability. [Seven seed checks](evidence/demo-verification.json), recorded against the earlier five-task example batch, passed with zero model calls. [Populated teams in the browser](screenshots/demo-teams.png).
+- Verified: five logins, role boundaries, evidence/export access, team grants and repeat-run stability. [Seven seed checks](docs/evidence/demo-verification.json), recorded against the earlier five-task example batch, passed with zero model calls. [Populated teams in the browser](docs/screenshots/demo-teams.png).
 
 ## Implemented local workflows
 
@@ -59,7 +59,7 @@ python3 platform/scripts/seed_demo.py
 - Screenshot evidence links and a trajectory/problem viewer. Missing evidence stays visible as missing rather than inferred from an arbitrary path.
 - Light/dark appearance with a browser-persisted preference, plus in-app Markdown guides for roles, teams, datasets, ZIP imports, batches, trajectories and taxonomy.
 
-Current verification: 121 backend, 27 POC and 10 frontend tests, run in CI on every push together with the production build and an amd64 Docker quickstart; plus five real-service ZIP checks and four batch-completion checks. Earlier evidence covers 11 real-service scenarios with five saved trajectories, four broker lifecycle checks and seven demo-seed checks. See [acceptance scenarios](ACCEPTANCE.md) and [test results](TEST-RESULTS.md). A checklist is not proof that a scenario passed. The local stack does not provide production HA, identity integrations, independently measured review quality, or capacity guarantees.
+Current verification: 121 backend, 27 POC and 10 frontend tests, run in CI on every push together with the production build and an amd64 Docker quickstart; plus five real-service ZIP checks and four batch-completion checks. Earlier evidence covers 11 real-service scenarios with five saved trajectories, four broker lifecycle checks and seven demo-seed checks. See [acceptance scenarios](docs/ACCEPTANCE.md) and [test results](docs/TEST-RESULTS.md). A checklist is not proof that a scenario passed. The local stack does not provide production HA, identity integrations, independently measured review quality, or capacity guarantees.
 
 ## Datasets, runs and comparisons
 
@@ -83,7 +83,7 @@ To reproduce the distinct demo after seeding accounts:
 python3 platform/scripts/seed_distinct_demo.py
 ```
 
-The Docker `seed` command already performs this import. Bundled ZIPs provide Office 3, Web 3 and Graphics 2 tasks without downloading the benchmark or making model calls. Repeating the import verifies eight distinct task IDs and preserves existing grants. Archiving named old fixtures requires explicit `--archive-fixtures`. To regenerate the ZIPs, run `python3 platform/scripts/prepare_distinct_demo.py`; it downloads bounded public ZIP ranges, not the full 3.4 GB archive. [Source manifest](demo-data/manifest.json) · [recorded import evidence](demo-data/import-report.json).
+The Docker `seed` command already performs this import. Bundled ZIPs provide Office 3, Web 3 and Graphics 2 tasks without downloading the benchmark or making model calls. Repeating the import verifies eight distinct task IDs and preserves existing grants. Archiving named old fixtures requires explicit `--archive-fixtures`. To regenerate the ZIPs, run `python3 platform/scripts/prepare_distinct_demo.py`; it downloads bounded public ZIP ranges, not the full 3.4 GB archive. [Source manifest](demo-data/manifest.json) · [recorded import evidence](docs/evidence/import-report.json).
 
 ## Import tasks
 
@@ -96,17 +96,17 @@ The Docker `seed` command already performs this import. Bundled ZIPs provide Off
 
 - Use the sun/moon button beside your account to switch light/dark mode. The choice survives refresh.
 - Open **Help and guides** at the bottom left for user documentation with a heading index. Source: [`web/src/docs`](web/src/docs).
-- [Current ZIP preview](screenshots/zip-import-preview.png) · [completed batch and dark appearance](screenshots/batch-completed.png).
-- [UX feedback and decisions](UX-FEEDBACK.md) records the requested improvements and why they were made.
+- [Current ZIP preview](docs/screenshots/zip-import-preview.png) · [completed batch and dark appearance](docs/screenshots/batch-completed.png).
+- [UX feedback and decisions](docs/UX-FEEDBACK.md) records the requested improvements and why they were made.
 
 - Search task cards by name, ID or plain-language label; inspect outcome, problem counts and linked steps before opening a task.
 - Keep numbered problems separate from recovery and related context. Definitions remain below screenshots without hover overlays.
 - Collapse navigation or steps to give evidence more room. Phones use a navigation drawer and full-screen step picker. Next/previous aligns the toolbar and screenshot, preserving the exact task revision.
 - Compact typography, consistent spacing and responsive task/run cards keep the interface readable on phones and desktops. Whole-card native links support keyboard navigation and opening a new tab; checkboxes, disclosures and job actions remain independent.
 
-![Desktop trajectory viewer with compact, aligned problem and review details.](screenshots/desktop-aligned-flags-20260927.png)
+![Desktop trajectory viewer with compact, aligned problem and review details.](docs/screenshots/desktop-aligned-flags-20260927.png)
 
-Actual browser captures: [mobile step picker](screenshots/mobile-step-picker-final-20260927.png) · [mobile evidence](screenshots/mobile-evidence-20260927.png) · [task card dialog](screenshots/task-picker.png). The frontend build passed; browser checks covered 320, 390, 768 and 1280px widths. No paid model calls were made for this UI work. Backend tests were not rerun for these layout changes; their earlier evidence is recorded above.
+Actual browser captures: [mobile step picker](docs/screenshots/mobile-step-picker-final-20260927.png) · [mobile evidence](docs/screenshots/mobile-evidence-20260927.png) · [task card dialog](docs/screenshots/task-picker.png). The frontend build passed; browser checks covered 320, 390, 768 and 1280px widths. No paid model calls were made for this UI work. Backend tests were not rerun for these layout changes; their earlier evidence is recorded above.
 
 ## Model execution and status
 
@@ -114,7 +114,7 @@ Saved replay is the default and makes no new inference calls. Hosted inference i
 
 Model dropdowns read a per-workspace cached provider metadata catalog. New workspaces start with unknown availability and no listed models; an authenticated admin sync stores only safe model IDs and metadata supplied by the credential-owning runner. The sync route makes no provider calls and never accepts or returns credentials.
 
-The bounded LiteLLM model API and native Codex and Gemini CLI adapters run in a separate worker with a temporary HOME/workspace, disabled tools and a wall-clock timeout. Gemini CLI 0.61.0 can receive selected screenshots as image attachments: the local fake-provider check ([script](scripts/check_cli_image_transport.py), [captured result](demo-data/cli-image-transport-verification-20260927.json)) verified exact PNG bytes, JSON response settings and structured output with outbound networking disabled. This validates transport only; a frame being attached or cited does not prove visual inspection or a correct visual conclusion. Codex image delivery is configured through its initial-image option but has not had the same fake-transport check. Each job is bounded at four total attempts; retryable errors can trigger automatic retries, and managers can explicitly retry failed or completed jobs while attempts remain. The configured task allowance applies per attempt, so the planned total can be up to four times that amount. Budgets are estimates, not hard CLI/provider billing caps, and a CLI may reconnect internally. Earlier text-only reviews and subsequent visual reviews are preserved in [LIVE-RESULTS.md](LIVE-RESULTS.md). The Docker image does not include the Claude CLI. A separate host-side [Opus 5.5 design/UI audit](../reviews/README.md) used the supplied API key and cost a CLI-reported $0.525; it does not enable a Claude runtime adapter. ACP is not wired into this platform build.
+The bounded LiteLLM model API and native Codex and Gemini CLI adapters run in a separate worker with a temporary HOME/workspace, disabled tools and a wall-clock timeout. Gemini CLI 0.61.0 can receive selected screenshots as image attachments: the local fake-provider check ([script](scripts/check_cli_image_transport.py), [captured result](docs/evidence/live-runs/cli-image-transport-verification-20260927.json)) verified exact PNG bytes, JSON response settings and structured output with outbound networking disabled. This validates transport only; a frame being attached or cited does not prove visual inspection or a correct visual conclusion. Codex image delivery is configured through its initial-image option but has not had the same fake-transport check. Each job is bounded at four total attempts; retryable errors can trigger automatic retries, and managers can explicitly retry failed or completed jobs while attempts remain. The configured task allowance applies per attempt, so the planned total can be up to four times that amount. Budgets are estimates, not hard CLI/provider billing caps, and a CLI may reconnect internally. Earlier text-only reviews and subsequent visual reviews are preserved in [LIVE-RESULTS.md](docs/LIVE-RESULTS.md). The Docker image does not include the Claude CLI. A separate host-side [Opus 5.5 design/UI audit](../docs/reviews/README.md) used the supplied API key and cost a CLI-reported $0.525; it does not enable a Claude runtime adapter. ACP is not wired into this platform build.
 
 Jev is unavailable: the configured free-credit balance request returned HTTP 403. No Jev inference was run, and the optional Jev adapter remains disabled. This does not affect saved replay or configured model API operation.
 
@@ -122,15 +122,15 @@ An optional one-shot API taxonomy curation route is integrated. It requires a co
 
 ## Live model evidence
 
-All eight distinct tasks now have completed visual reviews from **Gemini 3.8 Flash**; **GPT-6 Sol** completed the matched visual comparison. The new 11 attempts have an estimated **$0.36706550** cost, including one rejected-evidence response and one storage-recovery retry. Historical text-only results remain intact. [Per-task evidence, cost accounting and limits](LIVE-RESULTS.md).
+All eight distinct tasks now have completed visual reviews from **Gemini 3.8 Flash**; **GPT-6 Sol** completed the matched visual comparison. The new 11 attempts have an estimated **$0.36706550** cost, including one rejected-evidence response and one storage-recovery retry. Historical text-only results remain intact. [Per-task evidence, cost accounting and limits](docs/LIVE-RESULTS.md).
 
-[Model dropdown and default allowance](screenshots/model-picker-gemini38.png) · [Real comparison and saved feedback](screenshots/live-model-comparison.png) · [Populated analytics](screenshots/live-run-analytics.png).
+[Model dropdown and default allowance](docs/screenshots/model-picker-gemini38.png) · [Real comparison and saved feedback](docs/screenshots/live-model-comparison.png) · [Populated analytics](docs/screenshots/live-run-analytics.png).
 
 ## Configuration and evidence
 
 `platform/.env.example` documents provider opt-in and key names. Compose defaults `ALLOW_HOSTED_INFERENCE` to `false`; do not place credentials in source files or images. The default stack uses PostgreSQL, RabbitMQ and SeaweedFS. The explicit local file store is a developer fallback, not evidence of S3 verification.
 
-The detailed API contract is [CONTRACT.md](CONTRACT.md). Production acceptance gates and core test scenarios are in [ACCEPTANCE.md](ACCEPTANCE.md). Actual command results are recorded in [TEST-RESULTS.md](TEST-RESULTS.md); do not infer successful testing from the presence of this stack or checklist.
+The detailed API contract is [CONTRACT.md](docs/CONTRACT.md). Production acceptance gates and core test scenarios are in [ACCEPTANCE.md](docs/ACCEPTANCE.md). Actual command results are recorded in [TEST-RESULTS.md](docs/TEST-RESULTS.md); do not infer successful testing from the presence of this stack or checklist.
 
 ## Provider setup and local limits
 

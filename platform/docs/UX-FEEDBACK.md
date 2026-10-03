@@ -1,6 +1,6 @@
 # Platform UX feedback
 
-Concise record of requested changes and the reason for each. The earlier viewer history remains in [POC feedback](../poc/VIEWER-FEEDBACK.md).
+Concise record of requested changes and the reason for each. The earlier viewer history remains in [POC feedback](../../poc/docs/VIEWER-FEEDBACK.md).
 
 | Feedback | Change | Why |
 |---|---|---|
@@ -65,7 +65,7 @@ Uploads and validation never start review jobs. New taxonomy releases still need
 
 ## Independent audit follow-up: 27 September 2026
 
-[Opus report and verified decisions](../reviews/claude-audit-actions.md). These are audit suggestions checked against the user's earlier UX requirements, not new human feedback.
+[Opus report and verified decisions](../../docs/reviews/claude-audit-actions.md). These are audit suggestions checked against the user's earlier UX requirements, not new human feedback.
 
 | Observation | Change | Reason |
 |---|---|---|

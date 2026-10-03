@@ -6,7 +6,7 @@
 
 | Measure | Luna baseline | Sol rerun |
 |---|---:|---:|
-| Run | `20260926-224411-20aa4` | [20260926-225934-c522c](runs/20260926-225934-c522c/run.json) |
+| Run | `20260926-224411-20aa4` | [20260926-225934-c522c](../runs/20260926-225934-c522c/run.json) |
 | Model / reasoning | GPT-5.6 Luna / low | GPT-5.6 Sol / medium |
 | Completed reviews / actions | 5 / 69 | 5 / 69 |
 | Supplied screenshots | 15 | 15 |
@@ -39,7 +39,7 @@
 - [Official API rates](https://developers.openai.com/api/docs/pricing), checked 26 September 2026: GPT-5.6 Sol **$4 input, $0.40 cached input, $20 output per million tokens**. Successful preflight adds **$0.016308**, making this follow-up **$1.000219 API-equivalent**.
 - Estimated run usage: **24.59778 Codex credits**, at [100 / 10 / 500 credits per million tokens](https://learn.chatgpt.com/docs/pricing#token-rates). Actual ChatGPT allowance/charges are unavailable. API comparisons exclude unreported cache-write charges; rejected probes have no usage report.
 - The successful five-task Sol run alone is $0.983911 API-equivalent: $0.924195 across five reviewer sessions and $0.059716 for the separate final consolidator. Its average is $0.196782 per task after spreading that one consolidation across five tasks. Formula: `((input_tokens - cached_input_tokens) × $4 + cached_input_tokens × $0.40 + output_tokens × $20) / 1,000,000`. Cached tokens are a subset of input tokens.
-- The 1,000- and 10,000-task scenarios in the [POC README](README.md#measured-cost-and-scaling-scenarios) multiply the measured five-task average while retaining its workload, cache share and one consolidation per five tasks. These are simple planning extrapolations, not a guaranteed upper bound, capacity or accuracy forecast. Five sparse tasks, including only one pass, do not show that passing review is cheaper. Infrastructure, human review, retries, unreported cache-write charges, provider changes and larger-context effects are excluded.
+- The 1,000- and 10,000-task scenarios in the [POC README](../README.md#measured-cost-and-scaling-scenarios) multiply the measured five-task average while retaining its workload, cache share and one consolidation per five tasks. These are simple planning extrapolations, not a guaranteed upper bound, capacity or accuracy forecast. Five sparse tasks, including only one pass, do not show that passing review is cheaper. Infrastructure, human review, retries, unreported cache-write charges, provider changes and larger-context effects are excluded.
 - Compared with the sparse Luna baseline, Sol costs more and provides finer distinctions in these examples. The next quality gain may require additional screenshots and human adjudication, not only a different model.
 - All five outputs pass the same schema/reference checks. The 18 reviewer helper calls were ten label reads and eight proposals; no shell, browser, computer or checker execution appears in the logs.
 

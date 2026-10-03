@@ -1,6 +1,6 @@
 # 8. Local deployment and the dedicated queue
 
-**Implementation status:** The core local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. See [platform status](../platform/README.md), [test results](../platform/TEST-RESULTS.md) and [fresh Docker verification](../platform/evidence/docker-quickstart-verification.json) for completed checks and limits. This specification remains the broader design target. Production HA, cloud S3 parity and sustained capacity are unverified; bounded provider checks are recorded separately in [live results](../platform/LIVE-RESULTS.md). Research references below were checked **26 September 2026**.
+**Implementation status:** The core local Compose profile is implemented with PostgreSQL, RabbitMQ/Celery and SeaweedFS's S3-compatible endpoint. See [platform status](../../platform/README.md), [test results](../../platform/docs/TEST-RESULTS.md) and [fresh Docker verification](../../platform/docs/evidence/docker-quickstart-verification.json) for completed checks and limits. This specification remains the broader design target. Production HA, cloud S3 parity and sustained capacity are unverified; bounded provider checks are recorded separately in [live results](../../platform/docs/LIVE-RESULTS.md). Research references below were checked **26 September 2026**.
 
 ## Six services
 

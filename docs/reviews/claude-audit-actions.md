@@ -11,7 +11,7 @@
 | `reviewed` can be mistaken for visual inspection | Show whether this step's frame was sent, not sent or has unknown delivery, using existing recorded IDs. Citations remain model claims. Preserve historical result schemas; no backfilled claim that a model inspected a frame. |
 | Taxonomy evolution needs a fuller exercise | Keep approval tests and POC dedup evidence separate from a future merge/split/reclassification exercise. Do not rename historical labels or publish a new release from an audit recommendation. Test explicit successor-release counts before claiming full evolution coverage. |
 
-Additional UI fixes clarify task selections versus unique tasks, configured runtime settings versus health, per-run review counts, problem episodes versus affected steps, and singular/plural labels. [UX notes](../platform/UX-FEEDBACK.md) record the reasons.
+Additional UI fixes clarify task selections versus unique tasks, configured runtime settings versus health, per-run review counts, problem episodes versus affected steps, and singular/plural labels. [UX notes](../../platform/docs/UX-FEEDBACK.md) record the reasons.
 
 ## Qualifications to the audit
 
@@ -24,4 +24,4 @@ Additional UI fixes clarify task selections versus unique tasks, configured runt
 
 ## Verification
 
-Current checks for these changes are recorded in [test results](../platform/TEST-RESULTS.md). Earlier backend/Docker/live-model evidence remains dated separately. Human adjudication, a complete taxonomy-evolution exercise and production load testing remain open.
+Current checks for these changes are recorded in [test results](../../platform/docs/TEST-RESULTS.md). Earlier backend/Docker/live-model evidence remains dated separately. Human adjudication, a complete taxonomy-evolution exercise and production load testing remain open.

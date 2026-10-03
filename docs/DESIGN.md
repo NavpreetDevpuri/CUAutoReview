@@ -2,7 +2,7 @@
 
 **Goal:** turn raw computer-use rollouts in S3 into evidence-backed answers to five questions: why a rollout failed, where it went wrong, whether rollouts share a failure mode, which modes are most common, and which modes are new.
 
-This is the single entry point to the design. The [specs](../specs) hold the full contracts; this document states the decisions, the data model and the numbers. Sections marked **(built)** exist in the [local platform](../platform/README.md) or [POC](../poc/README.md). Everything else is target design.
+This is the single entry point to the design. The [specs](specs) hold the full contracts; this document states the decisions, the data model and the numbers. Sections marked **(built)** exist in the [local platform](../platform/README.md) or [POC](../poc/README.md). Everything else is target design.
 
 - [1. Assumptions](#1-assumptions)
 - [2. Architecture](#2-architecture)
@@ -75,7 +75,7 @@ flowchart LR
 | **Assignment worker** | Matching episodes to one pinned taxonomy release | Rewriting diagnoses or definitions |
 | **Curation job** | Clustering and consolidating proposals into a candidate release | Publishing; only a human approval publishes |
 
-The local stack runs the same shape in Docker Compose: app, review worker, CLI review worker, PostgreSQL, RabbitMQ and SeaweedFS's S3 API **(built)**. [Deployment details](../specs/08-local-deployment-and-queue.md).
+The local stack runs the same shape in Docker Compose: app, review worker, CLI review worker, PostgreSQL, RabbitMQ and SeaweedFS's S3 API **(built)**. [Deployment details](specs/08-local-deployment-and-queue.md).
 
 ## 3. Ingestion, processing and reprocessing
 
@@ -191,7 +191,7 @@ Aggregates count distinct `(rollout, mode)` pairs and report affected tasks. Dis
 2. A classifier prompt checks the episode's evidence against each candidate's inclusion and exclusion rules.
 3. Record `assigned` (one primary plus optional contributing modes), `ambiguous` (with the competing modes), `unclassified` or `insufficient_evidence`, along with the classifier recipe and a calibrated confidence.
 
-Automatic assignment is enabled only after measured error is ≤5% on held-out adjudicated episodes ([quality gates](../specs/04-evaluation-and-delivery.md#quality-benchmark)).
+Automatic assignment is enabled only after measured error is ≤5% on held-out adjudicated episodes ([quality gates](specs/04-evaluation-and-delivery.md#quality-benchmark)).
 
 **Discovery (slow path).** This runs after each run completes or daily, whichever comes first:
 
@@ -439,7 +439,7 @@ WHERE a.release_id = :release
 GROUP BY 1 ORDER BY 1;
 ```
 
-Reporting rules ([metric definitions](../specs/04-evaluation-and-delivery.md#metrics-and-denominators)):
+Reporting rules ([metric definitions](specs/04-evaluation-and-delivery.md#metrics-and-denominators)):
 
 - Failure-mode prevalence counts only failed rollouts. Passing recovery is reported separately.
 - Every rate ships with its denominator, coverage and pending count, plus the pinned run, recipe and release.
@@ -450,7 +450,7 @@ Reporting rules ([metric definitions](../specs/04-evaluation-and-delivery.md#met
 **Measured inputs:**
 
 - Single-call visual reviews took about 25–40 s each.
-- Nine saved reviews over eleven attempts cost **$0.367 estimated**, or **$0.0408 per saved review** with failed attempts included ([evidence](../platform/LIVE-RESULTS.md)).
+- Nine saved reviews over eleven attempts cost **$0.367 estimated**, or **$0.0408 per saved review** with failed attempts included ([evidence](../platform/docs/LIVE-RESULTS.md)).
 - That sample is tiny and short (about 13 steps per rollout). Treat it as arithmetic, not a forecast.
 
 | Component | 10k/day | 100k/day | 1M/day | What breaks first, and the mitigation |
@@ -486,7 +486,7 @@ Budgets are enforced by per-call reservations. Once a budget is reached, work is
 | Poison input | One repair attempt, then quarantine with the error visible; never an infinite loop |
 | Bad recipe deployed | Results are pinned to recipe hashes; roll back by selecting the previous run, since old results are untouched |
 
-Targets: 99.9% of valid manifests registered within 24 h, and P95 manifest-to-review within 15 min for live work under healthy providers. These are proposals to validate, not measurements. [Full failure drills](../specs/04-evaluation-and-delivery.md#reliability-and-operations).
+Targets: 99.9% of valid manifests registered within 24 h, and P95 manifest-to-review within 15 min for live work under healthy providers. These are proposals to validate, not measurements. [Full failure drills](specs/04-evaluation-and-delivery.md#reliability-and-operations).
 
 ## 9. Answering the five research questions
 
@@ -509,17 +509,17 @@ Targets: 99.9% of valid manifests registered within 24 h, and P95 manifest-to-re
 | PostgreSQL + RabbitMQ with an outbox | Transactional state with decoupled delivery | Two systems to operate | PostgreSQL-only queue is credible at 10k/day; SQS/Temporal at larger scale |
 | Immutable releases and pinned runs | Reproducible trends and rollback | Reassignment cost, unresolved splits | "Always latest": simpler, but hides whether a trend reflects the agent or the analyzer |
 
-More alternatives and when to revisit them: [decisions and trade-offs](../specs/03-decisions-and-tradeoffs.md).
+More alternatives and when to revisit them: [decisions and trade-offs](specs/03-decisions-and-tradeoffs.md).
 
 ## 11. What is built and what is not
 
 | Area | Status |
 |---|---|
-| Local platform | Workspaces, teams, roles and sharing; JSON/ZIP import with immutable task revisions; multi-dataset runs; outbox + RabbitMQ/Celery workers with fenced completion and bounded retries; trajectory viewer; analytics; same-revision comparison; taxonomy proposals with human approval. [Status](../platform/README.md) · [tests](../platform/TEST-RESULTS.md) |
+| Local platform | Workspaces, teams, roles and sharing; JSON/ZIP import with immutable task revisions; multi-dataset runs; outbox + RabbitMQ/Celery workers with fenced completion and bounded retries; trajectory viewer; analytics; same-revision comparison; taxonomy proposals with human approval. [Status](../platform/README.md) · [tests](../platform/docs/TEST-RESULTS.md) |
 | POC | Five OSWorld trajectories, 69 annotated steps, separate failure and recovery prompts, three parallel reviewers sharing draft labels, final consolidation. [Results](../poc/README.md) |
-| Live model evidence | 8 distinct tasks reviewed with screenshots by Gemini 3.8 Flash, plus one matched GPT-6 Sol review. [Results](../platform/LIVE-RESULTS.md) |
+| Live model evidence | 8 distinct tasks reviewed with screenshots by Gemini 3.8 Flash, plus one matched GPT-6 Sol review. [Results](../platform/docs/LIVE-RESULTS.md) |
 | Not built | Continuous S3 discovery, embeddings and density clustering, automatic assignment, cross-release crosswalk charts, parent-task grouping of K rollouts, multi-call checkpointed reviewer, load testing, production HA |
-| Not yet measured | Diagnosis accuracy against human adjudication (about 300 double-reviewed rollouts planned: [worksheet](../reviews/HUMAN-VALIDATION.md)), throughput, cost at scale |
+| Not yet measured | Diagnosis accuracy against human adjudication (about 300 double-reviewed rollouts planned: [worksheet](reviews/HUMAN-VALIDATION.md)), throughput, cost at scale |
 
 ## 12. Glossary
 

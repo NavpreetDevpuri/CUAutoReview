@@ -69,7 +69,7 @@ flowchart LR
 
 ## Demo and evidence
 
-- Three demo datasets contain eight distinct public OSWorld task IDs: Office 3, Web 3, Graphics 2. See [source manifest](../platform/demo-data/manifest.json).
+- Three demo datasets contain eight distinct public OSWorld task IDs: Office 3, Web 3, Graphics 2. See [source manifest](../../platform/demo-data/manifest.json).
 - Original acceptance fixtures are soft-archived from normal lists. Their results remain available through **Show archived**.
 - Raw source scores and screenshot association are preserved. Historical task/evaluator equivalence and human failure labels are not assumed.
-- Live checks and provider limits belong in [platform test evidence](../platform/TEST-RESULTS.md), not in a feature promise.
+- Live checks and provider limits belong in [platform test evidence](../../platform/docs/TEST-RESULTS.md), not in a feature promise.

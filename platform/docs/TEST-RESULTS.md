@@ -11,7 +11,7 @@ A full review of the backend, worker, frontend and POC code; each fix below has 
 | Backend suite, `python -m pytest -q` in `platform/backend` | **121 passed** (was 95) |
 | POC suite, `python -m pytest -q tests` in `poc` | **27 passed** (was 17), including validation of every retained saved review |
 | Frontend, `npm test` and `npm run build` in `platform/web` | **10 passed** (was 3); build passed |
-| Continuous integration | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs all three suites and the build on every push, then builds the Compose stack on amd64, seeds it twice and runs `verify_docker_quickstart.py` after each seed. First run passed all jobs: 8 distinct tasks, 5 logins, and identities and passwords stable across the reseed |
+| Continuous integration | [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) runs all three suites and the build on every push, then builds the Compose stack on amd64, seeds it twice and runs `verify_docker_quickstart.py` after each seed. First run passed all jobs: 8 distinct tasks, 5 logins, and identities and passwords stable across the reseed |
 | Browser pass | Headless Chrome against the merged app (SQLite and local file store, demo workspace seeded with `seed_workspace.py`): 14 routes as reviewer and as admin, with no failed requests, console errors or sign-outs |
 
 **Query counts per request**, 500 tasks across 2 runs, measured with a SQLAlchemy statement counter. `test_query_counts.py` asserts that counts stay flat as tasks grow.
@@ -68,7 +68,7 @@ A full review of the backend, worker, frontend and POC code; each fix below has 
 
 ## Opus audit follow-up: 27 September 2026
 
-- **Independent review:** one host Claude Code session, `claude-opus-5-5`, medium effort, 16 text inputs and four actual screenshots, tools disabled. CLI-reported **$0.5249934**, two turns including automatic continuation, within a $1.50 session limit. [Report, capture limitation and actions](../reviews/README.md). This is not human adjudication or a platform adapter test.
+- **Independent review:** one host Claude Code session, `claude-opus-5-5`, medium effort, 16 text inputs and four actual screenshots, tools disabled. CLI-reported **$0.5249934**, two turns including automatic continuation, within a $1.50 session limit. [Report, capture limitation and actions](../../docs/reviews/README.md). This is not human adjudication or a platform adapter test.
 - **Frontend build:** `npm --prefix platform/web run build` passed. Existing bundle advisory remains, approximately 1.38 MB before gzip.
 - **Focused regression checks:** `npm --prefix platform/web test`, **3 passed**. Exact display grouping preserves review-local problem IDs and every occurrence; different relationships stay separate; source presence or citations never imply frame delivery; explicit legacy text-only metadata is handled.
 - **Browser:** checked the 390px mobile step picker and 1280px desktop viewer, review-name disclosure, single/all-review filters, next/previous navigation and recovery/related groups. Overview displays actual runtime configuration and repeat-selection count scope. Dataset cards distinguish episodes/steps/reviews and render `1 label` correctly. Temporary viewport override reset.
@@ -122,7 +122,7 @@ Captures: [desktop flags](screenshots/desktop-aligned-flags-20260927.png), [mobi
 - Built the documented multi-stage Dockerfile and started Compose with `up --build -d --wait` on Linux ARM64. Used a separate project, empty volumes and port 18000; the existing workspace stayed healthy.
 - Ran the Docker `seed` service twice. Both checks passed: five logins/roles, three teams, three example datasets with eight distinct tasks, eight admin screenshot reads, three viewer screenshot reads and anonymous access denial. The separate saved POC dataset remained available.
 - The second seed preserved passwords, user/team/task IDs and task revisions. `--show-logins` rendered all five generated accounts; credentials are absent from published evidence. No analysis jobs or provider calls occurred.
-- [Machine-readable results](evidence/docker-quickstart-verification.json) and [portable verifier](scripts/verify_docker_quickstart.py) record the checks. Temporary test containers and volumes were removed after success. This pass checks setup/seeding, not model quality or queue execution; earlier queue tests remain separate. AMD64 image execution remains unverified.
+- [Machine-readable results](evidence/docker-quickstart-verification.json) and [portable verifier](../scripts/verify_docker_quickstart.py) record the checks. Temporary test containers and volumes were removed after success. This pass checks setup/seeding, not model quality or queue execution; earlier queue tests remain separate. AMD64 image execution remains unverified.
 - Environment fixes: added Docker Desktop's installed credential-helper directory to the build command's PATH, then cleared 13.64 GB of unused build cache after an image export exhausted Docker disk space. No existing data volumes or global account settings were changed.
 
 ## ZIP and batch-status regression checks
@@ -192,6 +192,6 @@ The matched Gemini 3.8 Flash / GPT-6 Sol pair completed with valid nine-step out
 ## Limits
 
 - These are functional checks, not model accuracy, load/HA, backup/restore, adversarial security or cloud-provider certification.
-- Earlier Gemini 3.8 Flash and GPT-6 Sol runs produced text-only reviews. New visual checks are recorded in LIVE-RESULTS.md. See the platform guide for tokens, estimates and failed setup attempts. These calls do not establish diagnosis accuracy. The separate [Opus 5.5 design/UI audit](../reviews/README.md) subsequently completed; it is not a trajectory-accuracy test. Jev's free-credit check returned 403.
+- Earlier Gemini 3.8 Flash and GPT-6 Sol runs produced text-only reviews. New visual checks are recorded in LIVE-RESULTS.md. See the platform guide for tokens, estimates and failed setup attempts. These calls do not establish diagnosis accuracy. The separate [Opus 5.5 design/UI audit](../../docs/reviews/README.md) subsequently completed; it is not a trajectory-accuracy test. Jev's free-credit check returned 403.
 - Test accounts/data are labeled as local acceptance fixtures. The local test administrator credentials are in ignored `platform/.local/test-account.json`; they are not embedded in source or reports.
 - Retained POC screenshots remain bundled, read-only evidence. Imported ZIP screenshots and new review YAML use S3. Additional benchmark adapters remain future work.

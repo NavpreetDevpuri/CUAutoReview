@@ -22,7 +22,7 @@ import urllib.request
 PROJECT = Path(__file__).resolve().parents[2]
 DEFAULT_ENV_FILE = PROJECT / 'platform/.env'
 ACCOUNT_FILE = PROJECT / 'platform/.local/test-account.json'
-REPORT_DIR = PROJECT / 'platform/demo-data'
+REPORT_DIR = PROJECT / 'platform/docs/evidence/live-runs'
 BASE = os.getenv('CUAUTOREVIEW_URL', 'http://127.0.0.1:8000')
 DATASET_ID = '7878c36d-88c6-44b8-9114-894c6e86b948'
 TASK_ID = '06fe7178-4491-4589-810f-2e2bc9502122'

@@ -1,6 +1,6 @@
 # Small human validation pass
 
-**Status: not started.** Use the nine saved visual reviews over eight distinct tasks from [live results](../platform/LIVE-RESULTS.md). This is a practical first check before the broader [evaluation plan](../specs/04-evaluation-and-delivery.md), not a representative benchmark.
+**Status: not started.** Use the nine saved visual reviews over eight distinct tasks from [live results](../../platform/docs/LIVE-RESULTS.md). This is a practical first check before the broader [evaluation plan](../specs/04-evaluation-and-delivery.md), not a representative benchmark.
 
 - Two people independently inspect source actions, screenshot pixels and the saved claims. Hide reviewer-model identity for the first pass. Preserve disagreements, then record adjudication separately.
 - Pin source revision, review-result ID and taxonomy release. The two model reviews of the same task are a matched pair, not independent tasks.

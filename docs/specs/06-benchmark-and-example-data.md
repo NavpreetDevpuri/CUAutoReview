@@ -31,7 +31,7 @@ Research-date stars: OSWorld **3,156**; WebArena **1,617**; BrowserGym **1,376**
 | Final score | The recorded outcome, not human-reviewed failure localization or explanation. |
 | Human episode annotation | Evidence-backed localization/diagnosis under a rubric, not absolute causal truth; retain disagreement. |
 
-The [public Verified dataset](https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs) contains `traj.jsonl`, screenshots, runtime logs, recordings and `result.txt`. Both original local samples score **0**; the [POC](../poc/RESULTS.md) adds two failures and one pass. Per-step `reward=0`/`done=false` do not replace terminal `result.txt`; preserve raw values and adapter-specific interpretation, never a universal “score below 1 means failure” rule.
+The [public Verified dataset](https://huggingface.co/datasets/xlangai/ubuntu_osworld_verified_trajs) contains `traj.jsonl`, screenshots, runtime logs, recordings and `result.txt`. Both original local samples score **0**; the [POC](../../poc/docs/RESULTS.md) adds two failures and one pass. Per-step `reward=0`/`done=false` do not replace terminal `result.txt`; preserve raw values and adapter-specific interpretation, never a universal “score below 1 means failure” rule.
 
 - No complete openly downloadable step-level human root-cause gold set was verified for Verified traces. “Verified” names the release, not human annotation of every mistake. WebArena human demonstrations likewise do not annotate agent mistakes.
 - The [OSWorld 2.0 paper](https://arxiv.org/html/2606.29537v1) describes model-generated behavioral annotations with human verification, plus selected exposure-attribution examples/failure walkthroughs. Its [project page](https://osworld-v2.xlang.ai/) shows cases; no complete ungated per-trajectory annotation artifact was verified, and V2 trajectories are auto-gated. Cite the research and annotation method; do not treat it as an independently double-reviewed gold set.
@@ -62,7 +62,7 @@ Both routes are **default**: known failures use `failure_analysis`; known passes
 
 ## Fixtures and gold annotations
 
-1. **Now:** retain the two original failures/current checkers and their provenance gaps. The completed [five-task POC](../poc/README.md) adds Chrome, Calc and a passing GIMP trace from the same pinned archive, exercises both review routes and consolidates draft labels. These are imported attempts; the desktop tasks/checkers were not rerun.
+1. **Now:** retain the two original failures/current checkers and their provenance gaps. The completed [five-task POC](../../poc/README.md) adds Chrome, Calc and a passing GIMP trace from the same pinned archive, exercises both review routes and consolidates draft labels. These are imported attempts; the desktop tasks/checkers were not rerun.
 2. **Next cohort:** expand to genuine passes with/without recovery, passing unresolved/ambiguous cases and diverse failures. Exercise scoring and both default routes. Missing evaluator/environment pins remain reproducibility gaps.
 3. **Gold set:** two reviewers annotate supported intervals, symptoms, alternatives, recovery/correction evidence, outcome contribution and uncertainty. Retain annotator IDs/rubric versions, disagreement/adjudication; machine grades remain distinct.
 4. **Fill missing coverage later:** pin harness, tasks/assets/environment, agent/preset, evaluator and seeds; save manifests, full actions/screenshots, final artifacts, checks and score. Label induced failures synthetic. Runner setup/execution remains future work.

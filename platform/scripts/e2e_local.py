@@ -150,7 +150,7 @@ def main():
     summary={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base_url':BASE,
         'provider_calls':0,'checks':RESULTS,'batch_id':bid,'job_ids':[j['id'] for j in jobs],
         'note':'Functional saved-replay checks, not model quality, scale or production certification.'}
-    (ROOT/'platform/evidence/verification.json').write_text(json.dumps(summary,indent=2)+'\n')
-    print('Saved platform/evidence/verification.json')
+    (ROOT/'platform/docs/evidence/verification.json').write_text(json.dumps(summary,indent=2)+'\n')
+    print('Saved platform/docs/evidence/verification.json')
 
 if __name__=='__main__': main()

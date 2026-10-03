@@ -23,7 +23,7 @@ Local checks on 27 September 2026. These are new provider calls, separate from s
 - **Quality follow-up:** an earlier automated, text/record-based spot-check reviewed JSON review text, action records and image provenance; it did not inspect screenshot pixels. It flagged the page-number review’s inferred recovery at step 6 and dialog claims at steps 11–12, 14 and 15. In a later limited visual inspection, the step 7 frame visibly shows the Bookmark dialog. The step 15 frame shows no dialog, only the upper portion of page 1, with the status bar at page 1 of 10; that frame cannot establish whether page numbers appear elsewhere or in the footer. The step 11–12 and step 14 dialog claims remain for human adjudication. The recorded review and outcome were preserved.
 - A review may analyze a text-only step without confirming its visual effect. All new step statuses happen to say `reviewed`; this must not be interpreted as complete visual coverage or calibrated confidence.
 
-[Per-task and job evidence](demo-data/visual-review-summary-20260927.json) · [Recovered canary](demo-data/recovered-canary-b24950d9-20260927.json) · [Seven-task report](demo-data/visual-review-remaining-20260927T051345Z.json) · [Codex report](demo-data/visual-review-codex-20260927T051346Z.json) · [Writer visual-QA clarification](demo-data/writer-visual-qa-clarification-20260927.json).
+[Per-task and job evidence](evidence/live-runs/visual-review-summary-20260927.json) · [Recovered canary](evidence/live-runs/recovered-canary-b24950d9-20260927.json) · [Seven-task report](evidence/live-runs/visual-review-remaining-20260927T051345Z.json) · [Codex report](evidence/live-runs/visual-review-codex-20260927T051346Z.json) · [Writer visual-QA clarification](evidence/live-runs/writer-visual-qa-clarification-20260927.json).
 
 [Open visual comparison](http://127.0.0.1:8000/#/compare?left=21b286f9-3761-4d8f-b6c4-d79de4918065&right=b4fbf973-64ec-4c14-9e9c-71a91b4973f4) · [Open completed seven-task run](http://127.0.0.1:8000/#/runs/06556e1b-ed9b-445c-9f01-ca35e7380c37).
 
@@ -45,7 +45,7 @@ Local checks on 27 September 2026. These are new provider calls, separate from s
 - A CLI budget is a planning allowance, not a hard billing cap. The application makes one invocation; a CLI may reconnect internally. Codex does not enforce the configured output-token estimate in this adapter.
 - Failed setup attempts are excluded from the successful-pair total. Their cost is unknown, so this is **not** the total spend for the session.
 
-[Open comparison](http://127.0.0.1:8000/#/compare?left=f2203913-b98c-48ca-9782-19a8b0f369f6&right=b19750b6-d08e-4fce-a211-04d2bb35662c) · [Raw result and usage evidence](demo-data/cli-model-comparison-20260927T043214Z.json).
+[Open comparison](http://127.0.0.1:8000/#/compare?left=f2203913-b98c-48ca-9782-19a8b0f369f6&right=b19750b6-d08e-4fce-a211-04d2bb35662c) · [Raw result and usage evidence](evidence/live-runs/cli-model-comparison-20260927T043214Z.json).
 
 ## Earlier text-only eight-task coverage
 
@@ -62,7 +62,7 @@ The matched pair was followed by one Gemini-only run covering the other seven ta
 - The seven-task run used a **$0.10/task planning allowance**, $0.70 total. The estimate includes its failed responses; actual invoice charges and earlier setup-attempt costs remain unverified.
 - This small text-only sample does not establish accuracy or production reliability. Failures and evidence gaps stay visible in analytics.
 
-[Open bulk run](http://127.0.0.1:8000/#/runs/f955f0b2-b9ac-4066-83c2-dd4c66093ca3) · [Per-task evidence](demo-data/gemini-3.8-flash-multidataset-20260927T043506Z.json).
+[Open bulk run](http://127.0.0.1:8000/#/runs/f955f0b2-b9ac-4066-83c2-dd4c66093ca3) · [Per-task evidence](evidence/live-runs/gemini-3.8-flash-multidataset-20260927T043506Z.json).
 
 ## What the comparison taught us
 
@@ -74,7 +74,7 @@ The matched pair was followed by one Gemini-only run covering the other seven ta
 
 ## Retained setup failures
 
-- Earlier attempts exposed CLI argument/configuration issues, structured-output parsing and an API key requiring OpenAI's US endpoint. Their reports remain under `demo-data/cli-model-comparison-*.json`.
+- Earlier attempts exposed CLI argument/configuration issues, structured-output parsing and an API key requiring OpenAI's US endpoint. Their reports remain under `platform/docs/evidence/live-runs/cli-model-comparison-*.json`.
 - An older failed Gemini report recorded 8,693 input tokens but incomplete output accounting. Its zero output field is not proof of zero output or zero charge.
 - Docker disk exhaustion was resolved by clearing unused build cache and restarting RabbitMQ with its existing volume. Database, broker queues and stored evidence were preserved.
 - Six failed setup runs are soft-archived and remain under **Show archived**. Ready Gemini/Codex execution presets were saved without starting any extra calls.

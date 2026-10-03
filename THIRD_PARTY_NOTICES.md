@@ -1,6 +1,6 @@
 # Third-party notices
 
-Bundled benchmark evidence is attributed separately from CUAutoReview code and generated reviews. These notices cover the material in `reference/examples/`, `poc/data/`, `platform/demo-data/`, and benchmark content visible in viewer screenshots. Dependencies installed through Python, npm and Docker retain their respective licenses.
+Bundled benchmark evidence is attributed separately from CUAutoReview code and generated reviews. These notices cover the material in `docs/reference/examples/`, `poc/data/`, `platform/demo-data/`, and benchmark content visible in viewer screenshots. Dependencies installed through Python, npm and Docker retain their respective licenses.
 
 ## OSWorld-Verified recorded trajectories
 
@@ -20,4 +20,4 @@ Bundled benchmark evidence is attributed separately from CUAutoReview code and g
 
 - Upstream dataset metadata does not individually itemize rights for third-party web content, documents, images or application interfaces visible in the evidence. This project does not claim broader rights over that content.
 - Recorded trajectories, model outputs and screenshots are evidence for inspecting this demonstration. They are not independently verified gold diagnoses or proof of general review accuracy.
-- Source-specific details and hashes remain in the bundled provenance files. [Benchmark selection and evidence limits](specs/06-benchmark-and-example-data.md) provide further context.
+- Source-specific details and hashes remain in the bundled provenance files. [Benchmark selection and evidence limits](docs/specs/06-benchmark-and-example-data.md) provide further context.

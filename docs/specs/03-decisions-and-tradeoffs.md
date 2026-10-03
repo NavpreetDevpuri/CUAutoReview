@@ -1,6 +1,6 @@
 # 3. Decisions and tradeoffs
 
-Our choices, their costs and when to reconsider them. The assignment asks for a design. A core local platform now exists alongside the focused local CLI POC; this document still includes design targets beyond that implementation. See [platform status](../platform/README.md) and [test results](../platform/TEST-RESULTS.md).
+Our choices, their costs and when to reconsider them. The assignment asks for a design. A core local platform now exists alongside the focused local CLI POC; this document still includes design targets beyond that implementation. See [platform status](../../platform/README.md) and [test results](../../platform/docs/TEST-RESULTS.md).
 
 ## Evidence and review
 

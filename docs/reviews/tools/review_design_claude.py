@@ -10,22 +10,22 @@ from pathlib import Path
 import re
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[1]
-REVIEW = ROOT / 'reviews'
+ROOT = Path(__file__).resolve().parents[3]  # docs/reviews/tools/<this file>
+REVIEW = ROOT / 'docs' / 'reviews'
 DOCUMENTS = [
-    'reference/SWE-Assignment.md', 'docs/SUBMISSION.md', 'README.md',
-    'specs/01-system-design.md', 'specs/02-data-and-contracts.md',
-    'specs/03-decisions-and-tradeoffs.md', 'specs/04-evaluation-and-delivery.md',
-    'specs/08-local-deployment-and-queue.md', 'specs/11-runs-navigation-and-comparison.md',
-    'platform/CONTRACT.md', 'platform/README.md', 'platform/LIVE-RESULTS.md',
-    'platform/UX-FEEDBACK.md', 'platform/web/src/StepFlag.tsx',
+    'docs/reference/SWE-Assignment.md', 'docs/SUBMISSION.md', 'README.md',
+    'docs/specs/01-system-design.md', 'docs/specs/02-data-and-contracts.md',
+    'docs/specs/03-decisions-and-tradeoffs.md', 'docs/specs/04-evaluation-and-delivery.md',
+    'docs/specs/08-local-deployment-and-queue.md', 'docs/specs/11-runs-navigation-and-comparison.md',
+    'platform/docs/CONTRACT.md', 'platform/README.md', 'platform/docs/LIVE-RESULTS.md',
+    'platform/docs/UX-FEEDBACK.md', 'platform/web/src/StepFlag.tsx',
     'platform/web/src/theme.tsx', 'platform/web/src/ModelPicker.tsx',
 ]
 SCREENSHOTS = [
-    'platform/screenshots/platform-overview-fullscreen-20260927.png',
-    'platform/screenshots/platform-dataset-fullscreen-20260927.png',
-    'platform/screenshots/platform-trajectory-fullscreen-20260927.png',
-    'platform/screenshots/mobile-step-picker-final-20260927.png',
+    'platform/docs/screenshots/platform-overview-fullscreen-20260927.png',
+    'platform/docs/screenshots/platform-dataset-fullscreen-20260927.png',
+    'platform/docs/screenshots/platform-trajectory-fullscreen-20260927.png',
+    'platform/docs/screenshots/mobile-step-picker-final-20260927.png',
 ]
 INSTRUCTIONS = """Review CUAutoReview independently as a senior system-design and product reviewer.
 The original assignment asks for a design, not production software. A local platform and preserved
@@ -53,10 +53,10 @@ Use plain language, concise bullets and no em dashes. Do not request tools, ques
 model calls. Write the audit text only; the caller will save your exact response in the repository.
 """
 SUBMISSION_DOCUMENTS = [
-    'docs/SUBMISSION.md', 'reference/SWE-Assignment.md',
-    'specs/01-system-design.md', 'specs/02-data-and-contracts.md',
-    'specs/03-decisions-and-tradeoffs.md', 'specs/04-evaluation-and-delivery.md',
-    'platform/CONTRACT.md', 'platform/README.md',
+    'docs/SUBMISSION.md', 'docs/reference/SWE-Assignment.md',
+    'docs/specs/01-system-design.md', 'docs/specs/02-data-and-contracts.md',
+    'docs/specs/03-decisions-and-tradeoffs.md', 'docs/specs/04-evaluation-and-delivery.md',
+    'platform/docs/CONTRACT.md', 'platform/README.md',
 ]
 SUBMISSION_INSTRUCTIONS = """Independently review docs/SUBMISSION.md as a senior system-design evaluator
 and technical editor. This is a focused second review of the submission document, not a repeat
@@ -218,7 +218,7 @@ def main():
                     result.stderr.replace(key, '[REDACTED]') or 'No review text returned')[:1000]
         (REVIEW / status_name).write_text(json.dumps(
             {**metadata, 'status': 'failed', 'error': error}, indent=2) + '\n')
-        raise SystemExit(f'Claude review failed; see reviews/{status_name}. No retry or model fallback made.')
+        raise SystemExit(f'Claude review failed; see docs/reviews/{status_name}. No retry or model fallback made.')
     metadata['capture_mode'] = 'all_visible_assistant_text'
     (REVIEW / f'{stem}-feedback.md').write_text('# Independent Claude Code review\n\n' + feedback + '\n')
     (REVIEW / f'{stem}-usage.json').write_text(json.dumps(metadata, indent=2) + '\n')
@@ -227,7 +227,7 @@ def main():
          'timestamp': metadata['timestamp'], 'total_cost_usd': metadata['total_cost_usd'],
          'num_turns': metadata['num_turns'], 'report': f'{stem}-feedback.md',
          'metadata': f'{stem}-usage.json'}, indent=2) + '\n')
-    print(json.dumps({'saved': f'reviews/{stem}-feedback.md',
+    print(json.dumps({'saved': f'docs/reviews/{stem}-feedback.md',
                       'cost_usd': metadata['total_cost_usd'], 'models': models}))
 
 

@@ -6,7 +6,7 @@
 
 ## Successful run
 
-- [Run `20260926-224411-20aa4`](runs/20260926-224411-20aa4/run.json), 26 September 2026, 22:44:11 to 22:46:04 IST: **113.4 seconds**.
+- [Run `20260926-224411-20aa4`](../runs/20260926-224411-20aa4/run.json), 26 September 2026, 22:44:11 to 22:46:04 IST: **113.4 seconds**.
 - Five distinct OSWorld-Verified tasks: four recorded failures and one pass; **69 actions** and 45 locally available screenshots. Only three frames per task were supplied to reviewers, 15 total.
 - Five independent Codex `gpt-5.6-luna` sessions, up to three concurrent; one final consolidation session using the same model.
 - All five review outputs and the final taxonomy candidate pass schema/reference checks. Every action has an annotation: **15 steps marked reviewed, 54 marked insufficient evidence**. The sparse image budget limits diagnosis coverage substantially.
@@ -23,7 +23,7 @@ These are model findings, not verified human causes. A failed recorded score alo
 
 ## Shared labels and consolidation
 
-- Six proposals became **five canonical draft labels** in [candidate YAML](runs/20260926-224411-20aa4/taxonomy-candidate.yaml).
+- Six proposals became **five canonical draft labels** in [candidate YAML](../runs/20260926-224411-20aa4/taxonomy-candidate.yaml).
   - `p004` GIMP targeting misses and `p005` Writer menu targeting were mapped to `c02`, **off-target UI targeting**.
   - Dialog dismissal, retrieval-path deviation, proxy access and numeric-field append were kept separate.
   - Recovery and outcome contribution remain episode attributes, not taxonomy categories.
@@ -58,7 +58,7 @@ These are model findings, not verified human causes. A failed recorded score alo
 
 ## What failed or remains uncertain
 
-- **Integration failure retained:** [first run](runs/20260926-224125-3a464/run.json) produced reviews, but every label proposal failed because the helper schema left `type` ambiguous. Models supplied mechanism names instead of `new`/`update`; consolidation was skipped.
+- **Integration failure retained:** [first run](../runs/20260926-224125-3a464/run.json) produced reviews, but every label proposal failed because the helper schema left `type` ambiguous. Models supplied mechanism names instead of `new`/`update`; consolidation was skipped.
   - Fixed the schema with an enum and explicit operation wording, added a regression test, then reran the five tasks once.
   - Its original `completed` status is misleading for the end-to-end experiment. Treat that run as incomplete integration evidence; raw artifacts are preserved. The controller now marks unclassified episodes as a partial run.
 - **GIMP localization:** the model identifies recovery and the final Square layer is visible, but recovery IDs start at step 8, omitting the shortcut at step 7. Individual intermediate click effects remain uncertain.

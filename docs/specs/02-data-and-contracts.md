@@ -108,7 +108,7 @@ episodes:
     onset_step_ids: ["s12"]
 ```
 
-The viewer labels the version 2 anchor “First observed at step X,” the anchor step “First observed here,” and any other explicitly linked onset “Also observed here.” Every related or recovery group shows the same problem number and first anchor; summary and detail buttons jump to that anchor. For existing unversioned records, preserve the saved artifact and derive a display-only legacy anchor from the earliest explicit `onset_step_ids` entry in source-trace order. Label it “First flagged at step X,” with “First flagged here” at that step and “Also flagged here” at other explicit onset IDs. If IDs are absent, do not infer an anchor or fill an intermediate step. See the [local POC viewer contract](../poc/README.md#problem-number-and-first-observed-contract).
+The viewer labels the version 2 anchor “First observed at step X,” the anchor step “First observed here,” and any other explicitly linked onset “Also observed here.” Every related or recovery group shows the same problem number and first anchor; summary and detail buttons jump to that anchor. For existing unversioned records, preserve the saved artifact and derive a display-only legacy anchor from the earliest explicit `onset_step_ids` entry in source-trace order. Label it “First flagged at step X,” with “First flagged here” at that step and “Also flagged here” at other explicit onset IDs. If IDs are absent, do not infer an anchor or fill an intermediate step. See the [local POC viewer contract](../../poc/README.md#problem-number-and-first-observed-contract).
 
 ## Work identity and publication
 

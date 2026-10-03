@@ -1,17 +1,33 @@
+# The image build context is the repository root (see platform/compose.yaml).
+# platform/Dockerfile copies only platform code, the bundled demo ZIPs and the
+# POC fixtures the platform seeds from; everything else stays out of the context.
+.git
+.github
 **/.env
 **/.env.*
 **/node_modules
 **/.venv
 **/__pycache__
 **/.pytest_cache
+**/.ruff_cache
 **/.DS_Store
-platform/web/dist
-platform/backend/var
+
+# Documentation, evidence and screenshots
+docs
+platform/docs
+poc/docs
+
+# Local state and build output
 platform/.local
+platform/backend/var
+platform/web/dist
+
+# Inputs used only to regenerate the demo ZIPs on a host
+platform/demo-data/source
+
+# POC: keep schemas.py, data/ and the two retained runs the seed reads
 poc/runs/*
 !poc/runs/latest
 !poc/runs/20260926-225934-c522c
-poc/screenshots
-reference
-reviews
-.git
+poc/tests
+poc/viewer

@@ -1,8 +1,8 @@
 # Internal implementation review
 
-Scope: read-only audit of `platform/backend/app/{main,queue,security,storage,models}.py` against `platform/CONTRACT.md`. This review is about the local implementation, not production certification. Findings below are limited to concrete authorization and taxonomy correctness issues.
+Scope: read-only audit of `platform/backend/app/{main,queue,security,storage,models}.py` against `platform/docs/CONTRACT.md`. This review is about the local implementation, not production certification. Findings below are limited to concrete authorization and taxonomy correctness issues.
 
-Status: Historical findings below were corrected in the local implementation. The [verification report](../platform/TEST-RESULTS.md) records 21 passing tests and real queue/storage checks. Member-bound artifacts no longer fall through to dataset access; taxonomy writes share a PostgreSQL transaction lock; rejected/stale/unresolved candidates cannot publish; merge suggestions require model/human resolution instead of becoming duplicate labels. Released labels have explicit active/retired status. The original source-audit observations and line references are retained below for traceability.
+Status: Historical findings below were corrected in the local implementation. The [verification report](../../platform/docs/TEST-RESULTS.md) records 21 passing tests and real queue/storage checks. Member-bound artifacts no longer fall through to dataset access; taxonomy writes share a PostgreSQL transaction lock; rejected/stale/unresolved candidates cannot publish; merge suggestions require model/human resolution instead of becoming duplicate labels. Released labels have explicit active/retired status. The original source-audit observations and line references are retained below for traceability.
 
 ## Findings
 

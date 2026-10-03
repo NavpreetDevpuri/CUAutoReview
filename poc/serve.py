@@ -13,7 +13,7 @@ def allowed_target(url_path):
     if target.is_dir(): target=target/'index.html'
     relative=target.relative_to(PROJECT) if target.is_relative_to(PROJECT) else None
     allowed=relative is not None and not any(part.startswith('.') for part in relative.parts)
-    allowed=allowed and (str(relative) in ('README.md','poc/README.md','poc/RESULTS.md','poc/RESULTS-SOL.md','poc/VIEWER-FEEDBACK.md') or str(relative).startswith(('specs/','poc/viewer/','poc/data/','poc/runs/','poc/screenshots/')))
+    allowed=allowed and (str(relative) in ('README.md','poc/README.md') or str(relative).startswith(('docs/','poc/docs/','poc/viewer/','poc/data/','poc/runs/')))
     allowed=allowed and target.suffix.lower() in ('.html','.css','.js','.json','.jsonl','.yaml','.md','.png','.jpg','.jpeg','.webp','.txt')
     return target if allowed and target.is_file() else None
 

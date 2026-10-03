@@ -20,7 +20,7 @@ poc/.venv/bin/python poc/serve.py
 
 Open **http://127.0.0.1:8765/poc/viewer/**. If it is already running, just open the link.
 
-![CUAutoReview local POC with the task overview, URL bar and red POC banner visible.](screenshots/poc-browser-overview.png)
+![CUAutoReview local POC with the task overview, URL bar and red POC banner visible.](docs/screenshots/poc-browser-overview.png)
 
 Actual Chrome capture, cropped to omit browser tabs.
 
@@ -33,13 +33,13 @@ Search by task name, ID or label, then open a task from its card.
 - **Problems by label** groups counts of linked problems. The collapsed **Steps by problem · N recorded problems** section opens numbered groups with labeled **First observed**, **First flagged**, **Also flagged** and **Recovery** step links; **Related steps** is a nested collapsed group.
 - Missing review or episode data is **Not recorded**, not zero or a confirmed no-issue result.
 
-![CUAutoReview local POC task-card popup with search, counts and URL bar visible.](screenshots/task-picker-popup.png)
+![CUAutoReview local POC task-card popup with search, counts and URL bar visible.](docs/screenshots/task-picker-popup.png)
 
 Actual Chrome capture, cropped to omit browser tabs.
 
 - **Trajectories:** choose a task and step; compare source screenshot/action with reviewer intent, observed UI, effect and assessment.
   - A collapsible task/step sidebar links each label to recorded onset, recovery or `step.episode_refs`. Each linked episode keeps the same task-local problem number across onset, related and recovery groups. The header scrolls away on normal page scroll; screenshots use the full content width with explanations below, and step navigation keeps the selected image aligned. A sticky **Screen ↑** shortcut returns to the selected screenshot.
-  - Larger text, plain names, consistently colored category chips and IDs make labels easier to scan. Definitions are always visible inline. Numbered problem groups give each step an independent role; counts reflect linked problems, and a compact summary jumps to the first-observed/first-flagged step or its episode card. Step role, failure category and recovery status remain separate. Missing evidence remains visibly insufficient or inconclusive. See the [viewer feedback log](VIEWER-FEEDBACK.md).
+  - Larger text, plain names, consistently colored category chips and IDs make labels easier to scan. Definitions are always visible inline. Numbered problem groups give each step an independent role; counts reflect linked problems, and a compact summary jumps to the first-observed/first-flagged step or its episode card. Step role, failure category and recovery status remain separate. Missing evidence remains visibly insufficient or inconclusive. See the [viewer feedback log](docs/VIEWER-FEEDBACK.md).
   - A badge distinguishes screenshots supplied to the model from source-only images.
   - **Review notes:** mistakes, recovery, outcome contribution, original/canonical draft labels and uncertainty.
   - **Agent trace / Raw data:** prompts, visible tool events, structured responses and YAML/JSON/JSONL artifacts. Hidden model reasoning is unavailable.
@@ -68,10 +68,10 @@ Successful-run API-equivalent costs from the saved run records. Five task-review
 | GPT-5.6 Luna | $0.038016 | $0.002012 | $0.040028 | $0.008006 | $8.01 | $80.06 |
 | GPT-5.6 Sol | $0.924195 | $0.059716 | $0.983911 | $0.196782 | $196.78 | $1,967.82 |
 
-- **Method:** `mean = successful five-task total / 5`; scenarios use `mean × task count`, keeping one consolidation per five tasks and the observed workload/cache share (Luna 68.8%, Sol 74.0%). [Rates and token formula](RESULTS-SOL.md#cost-and-availability).
+- **Method:** `mean = successful five-task total / 5`; scenarios use `mean × task count`, keeping one consolidation per five tasks and the observed workload/cache share (Luna 68.8%, Sol 74.0%). [Rates and token formula](docs/RESULTS-SOL.md#cost-and-availability).
 - **Limits:** five sparse tasks, four failed and one passed. This cannot establish pass-review savings or forecast the proposed 40% failed / 60% passed traffic. Figures are planning scenarios, not invoices, capacity/accuracy forecasts or upper bounds.
 - **Excluded:** infrastructure, human review, retries, unreported cache writes, provider changes and larger-context effects. Real costs vary with evidence and cache reuse.
-- **Known recorded experiment spend:** about **$1.083 API-equivalent**, including the failed Luna integration attempt and successful preflights. This excludes coding-assistant usage and rejected probes with no usage report. [Luna accounting](RESULTS.md#costs-and-model-availability) and [Sol accounting](RESULTS-SOL.md#cost-and-availability) retain their individual records.
+- **Known recorded experiment spend:** about **$1.083 API-equivalent**, including the failed Luna integration attempt and successful preflights. This excludes coding-assistant usage and rejected probes with no usage report. [Luna accounting](docs/RESULTS.md#costs-and-model-availability) and [Sol accounting](docs/RESULTS-SOL.md#cost-and-availability) retain their individual records.
 
 ## Problem number and first-observed contract
 
@@ -163,7 +163,7 @@ flowchart LR
 | `runs/<id>/` | Inputs, prompt hashes, commands, visible events, review YAML/JSON, proposals, candidate and usage |
 | `viewer/`, `serve.py` | No-build HTML/CSS/JS viewer and loopback artifact server |
 
-- **POC substitutions:** JSON batch/provider inputs and YAML outputs; local files replace object storage, a Python worker pool replaces RabbitMQ/Celery, SQLite stores draft proposals only. These do not change the [production queue decision](../specs/08-local-deployment-and-queue.md).
+- **POC substitutions:** JSON batch/provider inputs and YAML outputs; local files replace object storage, a Python worker pool replaces RabbitMQ/Celery, SQLite stores draft proposals only. These do not change the [production queue decision](../docs/specs/08-local-deployment-and-queue.md).
 - **Deferred:** teams/authentication, ongoing batches, taxonomy approval/feedback UI, durable queue/retries, Docker deployment, LiteLLM/ACP integrations, Jev, adaptive evidence rendering and a task execution harness.
 - **Evidence limits:** recorded evaluator scores were not rerun; pinned task definitions may differ from historical checkers. No human gold diagnoses. Three images per task can miss transitions, and label deduplication does not repair an incorrect diagnosis.
 - **Next useful experiment:** adjudicate these five cases, then expand to clean passes and diverse recoveries with matched evaluator versions. Compare sparse versus richer evidence before building platform services.

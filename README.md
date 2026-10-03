@@ -4,17 +4,17 @@
 
 **Explain where computer-use agents go wrong, whether they recover, and which failure patterns recur, across failed and passing rollouts.**
 
-A **rollout** is one attempt at a task: actions, screenshots, visible reasoning, logs and the evaluator's grade. The [original brief](reference/SWE-Assignment.md) asks for a system design. This repository contains that design, a working local platform and the POC that preceded it.
+A **rollout** is one attempt at a task: actions, screenshots, visible reasoning, logs and the evaluator's grade. The [original brief](docs/reference/SWE-Assignment.md) asks for a system design. This repository contains that design, a working local platform and the POC that preceded it.
 
 **Start here: [system design](docs/DESIGN.md).** One document covers the architecture, data model with example queries, failure clustering, taxonomy evolution, scale and cost. The [submission summary](docs/SUBMISSION.md) lists decisions, assumptions and limits in two pages.
 
 | | What it is |
 |---|---|
-| **Design** | [docs/DESIGN.md](docs/DESIGN.md) is the entry point; [specs/01–11](specs/01-system-design.md) hold the full contracts |
+| **Design** | [docs/DESIGN.md](docs/DESIGN.md) is the entry point; [specs/01–11](docs/specs/01-system-design.md) hold the full contracts |
 | **Local platform** | Docker app: JSON/ZIP import, multi-dataset runs, outbox + RabbitMQ/Celery workers, trajectory viewer, analytics, same-revision comparison, taxonomy proposals with human approval. [Status](platform/README.md) |
 | **POC** | Five OSWorld trajectories reviewed end to end, with parallel reviewers sharing draft labels and a final consolidation step. [Results](poc/README.md) |
-| **Evidence** | Backend, POC and frontend test suites run in CI on every push; real PostgreSQL/RabbitMQ/S3 checks; 8 screenshot-enabled live reviews for **$0.367 estimated**. [Tests](platform/TEST-RESULTS.md) · [live results](platform/LIVE-RESULTS.md) |
-| **Not yet proven** | Diagnosis accuracy against human adjudication, throughput at scale, production hardening. [Validation plan](reviews/HUMAN-VALIDATION.md) |
+| **Evidence** | Backend, POC and frontend test suites run in CI on every push; real PostgreSQL/RabbitMQ/S3 checks; 8 screenshot-enabled live reviews for **$0.367 estimated**. [Tests](platform/docs/TEST-RESULTS.md) · [live results](platform/docs/LIVE-RESULTS.md) |
+| **Not yet proven** | Diagnosis accuracy against human adjudication, throughput at scale, production hardening. [Validation plan](docs/reviews/HUMAN-VALIDATION.md) |
 
 **Five decisions that shape everything else**
 
@@ -24,7 +24,7 @@ A **rollout** is one attempt at a task: actions, screenshots, visible reasoning,
 4. **PostgreSQL decides, the broker delivers.** A transactional outbox, leases and fenced commits make duplicate deliveries harmless. Provider rate and spend limits, not infrastructure, are the expected bottleneck.
 5. **Trajectory content is untrusted.** Review agents get read-only evidence helpers, no shell or network, and credentials never enter prompts.
 
-Demo sign-ins: the Docker quickstart below creates five users, three teams and eight distinct tasks (admin: `admin@cuautoreview.test`; passwords are generated locally and never committed). [Independent design reviews and follow-up](reviews/README.md) · [benchmark attribution and third-party notices](THIRD_PARTY_NOTICES.md).
+Demo sign-ins: the Docker quickstart below creates five users, three teams and eight distinct tasks (admin: `admin@cuautoreview.test`; passwords are generated locally and never committed). [Independent design reviews and follow-up](docs/reviews/README.md) · [benchmark attribution and third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Run locally with Docker
 
@@ -40,16 +40,16 @@ docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins
 - Seeding imports bundled example tasks and saved POC evidence without model calls. Repeating it preserves account identities and passwords; new model reviews are opt-in.
 - Database, evidence and Docker seed credentials stay in local named volumes. Stop with `docker compose -f platform/compose.yaml down`; omit `-v` to retain them.
 - [Dockerfile](platform/Dockerfile) · [Compose services](platform/compose.yaml) · [setup, roles and provider configuration](platform/README.md).
-- [Fresh Docker verification](platform/evidence/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
+- [Fresh Docker verification](platform/docs/evidence/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
 
-![CUAutoReview platform overview with workspace totals and recent runs.](platform/screenshots/audit-overview-20260927.jpg)
+![CUAutoReview platform overview with workspace totals and recent runs.](platform/docs/screenshots/audit-overview-20260927.jpg)
 
 Actual full-viewport browser captures of the local platform. The overview connects workspace totals, recent runs and activity.
 
 <details>
 <summary>Dataset and task history</summary>
 
-![Dataset page with task records, review counts and related runs.](platform/screenshots/platform-dataset-fullscreen-20260927.png)
+![Dataset page with task records, review counts and related runs.](platform/docs/screenshots/platform-dataset-fullscreen-20260927.png)
 
 Task cards keep original source results, review history and related runs visible together.
 
@@ -58,7 +58,7 @@ Task cards keep original source results, review history and related runs visible
 <details>
 <summary>Analytics</summary>
 
-![Platform analytics with selection filters and review summaries.](platform/screenshots/platform-analytics-fullscreen-20260927.png)
+![Platform analytics with selection filters and review summaries.](platform/docs/screenshots/platform-analytics-fullscreen-20260927.png)
 
 Filter datasets, runs and tasks to inspect recorded reviews and recurring problems.
 
@@ -67,13 +67,13 @@ Filter datasets, runs and tasks to inspect recorded reviews and recurring proble
 <details>
 <summary>Trajectory evidence and review flags</summary>
 
-![Trajectory viewer with screenshot evidence and aligned problem, relationship, review and model fields.](platform/screenshots/audit-grouped-flags-20260927.jpg)
+![Trajectory viewer with screenshot evidence and aligned problem, relationship, review and model fields.](platform/docs/screenshots/audit-grouped-flags-20260927.jpg)
 
 Follow source steps and screenshot evidence alongside numbered problems and their review/model attribution.
 
 </details>
 
-[Mobile steps](platform/screenshots/audit-mobile-flags-20260927.jpg) · [mobile evidence](platform/screenshots/mobile-evidence-20260927.png) · [review counts](platform/screenshots/task-review-summary-20260927.png). Frontend build passed; layouts checked at 320, 390, 768 and 1280px widths. This UI update made no paid model calls; backend test evidence above comes from earlier checks. The original POC remains separate below.
+[Mobile steps](platform/docs/screenshots/audit-mobile-flags-20260927.jpg) · [mobile evidence](platform/docs/screenshots/mobile-evidence-20260927.png) · [review counts](platform/docs/screenshots/task-review-summary-20260927.png). Frontend build passed; layouts checked at 320, 390, 768 and 1280px widths. This UI update made no paid model calls; backend test evidence above comes from earlier checks. The original POC remains separate below.
 
 The sections below explain the full design target. The [local implementation guide](platform/README.md) identifies what is available now.
 
@@ -85,7 +85,7 @@ The sections below explain the full design target. The [local implementation gui
 - **Analytics** filters by dataset, run and task through a full-screen selector. Counts distinguish unique tasks, repeated reviews, problem episodes and missing evidence.
 - **Compare** aligns two reviews of the same task revision. Filter history by harness/model; flag disagreements as feedback on both reviews.
 - **Demo:** three datasets with **8 distinct tasks (3 + 3 + 2)**. Historical test fixtures remain under **Show archived**. The POC is preserved.
-- [Navigation and run decisions](specs/11-runs-navigation-and-comparison.md) · [Recorded UX feedback](platform/UX-FEEDBACK.md).
+- [Navigation and run decisions](docs/specs/11-runs-navigation-and-comparison.md) · [Recorded UX feedback](platform/docs/UX-FEEDBACK.md).
 
 
 ## Starting assumptions and deliberate choices
@@ -104,7 +104,7 @@ These are our choices, not assignment requirements.
 | **LiteLLM and ACP/acpx** | The design targets bounded API agent loops and eligible Codex/Claude Code/Gemini CLI sessions. Only the adapters identified in the [platform status](platform/README.md#model-execution-and-status) are enabled in the local implementation. |
 | **RabbitMQ + Celery** | Reuse durable delivery/worker tooling; PostgreSQL stores authoritative work state/results. |
 
-[Decisions, alternatives and costs](specs/03-decisions-and-tradeoffs.md).
+[Decisions, alternatives and costs](docs/specs/03-decisions-and-tradeoffs.md).
 
 ## Choose the review from the recorded outcome
 
@@ -151,7 +151,7 @@ episode_refs: [{episode_id: "e1", role: onset}]
 
 Evidence IDs resolve to exact events/frames. Full outputs cover every step plus episodes. Validated provider JSON may be serialized to YAML; YAML does not replace API protocols or PostgreSQL.
 
-[Agent/helpers](specs/01-system-design.md) · [contracts](specs/02-data-and-contracts.md).
+[Agent/helpers](docs/specs/01-system-design.md) · [contracts](docs/specs/02-data-and-contracts.md).
 
 ## Failure labels and recovery answer different questions
 
@@ -219,7 +219,7 @@ The bullets in this section describe the broader platform design. For local impl
   - Optional Harbor executes new attempts separately; OSWorld desktop needs Linux KVM and a compatible agent.
 - **Traceability:** report → versioned assignment → episode → step YAML → source evidence. Freeze membership/results; append corrections. Show denominators, coverage and task-balanced compatible-version comparisons.
 
-[Platform/UI](specs/05-platform-and-workflows.md) · [deployment/queue](specs/08-local-deployment-and-queue.md) · [reuse](specs/09-open-source-reuse.md) · [harness/auth](specs/10-harnesses-and-authentication.md) · [Jev](specs/07-jev-fast-analysis.md).
+[Platform/UI](docs/specs/05-platform-and-workflows.md) · [deployment/queue](docs/specs/08-local-deployment-and-queue.md) · [reuse](docs/specs/09-open-source-reuse.md) · [harness/auth](docs/specs/10-harnesses-and-authentication.md) · [Jev](docs/specs/07-jev-fast-analysis.md).
 
 ## Local POC
 
@@ -233,27 +233,27 @@ The bullets in this section describe the broader platform design. For local impl
 | GPT-5.6 Luna | $0.040028 | $0.008006 | $8.01 | $80.06 |
 | GPT-5.6 Sol | $0.983911 | $0.196782 | $196.78 | $1,967.82 |
 
-These are historical same-workload, same-cache-ratio POC projections, not invoice, capacity or accuracy forecasts. The newer visual sample cost $0.36706550 for nine saved reviews over eleven attempts, roughly $0.0408 per saved review with failed attempts included. [Current cost scenarios and human-effort assumptions](specs/04-evaluation-and-delivery.md#capacity-and-cost) · [POC breakdown](poc/README.md#measured-cost-and-scaling-scenarios).
+These are historical same-workload, same-cache-ratio POC projections, not invoice, capacity or accuracy forecasts. The newer visual sample cost $0.36706550 for nine saved reviews over eleven attempts, roughly $0.0408 per saved review with failed attempts included. [Current cost scenarios and human-effort assumptions](docs/specs/04-evaluation-and-delivery.md#capacity-and-cost) · [POC breakdown](poc/README.md#measured-cost-and-scaling-scenarios).
 
 - **Viewer:**
   - **Task cards:** search by task name, ID or label. Cards separate “Evaluator · Passed/Failed” (or “Outcome not recorded”) from review availability. They show recorded problems, unique explicitly flagged and recovery steps, problems by label, and labeled step links. Missing review or episode data reads “Not recorded,” not zero issues.
   - **Trajectory review:** use a collapsible task/step sidebar, larger text, full-width screenshots with explanations below, stable image alignment while navigating, inline taxonomy definitions, colored category chips and IDs, numbered problem groups with first-observed/first-flagged links, separate step roles and summaries that jump to the first step or episode card. “Screen ↑” returns to the selected screenshot. The header scrolls away; missing evidence stays visibly uncertain.
-  See the [viewer feedback log](poc/VIEWER-FEEDBACK.md).
+  See the [viewer feedback log](poc/docs/VIEWER-FEEDBACK.md).
 
-![CUAutoReview local POC with the task overview, URL bar and red POC banner visible.](poc/screenshots/poc-browser-overview.png)
+![CUAutoReview local POC with the task overview, URL bar and red POC banner visible.](poc/docs/screenshots/poc-browser-overview.png)
 
 Actual Chrome capture, cropped to omit browser tabs.
 
 - **Deliberate shortcuts:** local files, SQLite draft sharing and a small worker pool; existing Codex login; no RabbitMQ, platform services, teams, approvals, LiteLLM or ACP in this POC.
 
-[Run/view instructions](poc/README.md) · [Sol comparison](poc/RESULTS-SOL.md) · [Luna findings, failed integration attempt and cost method](poc/RESULTS.md).
+[Run/view instructions](poc/README.md) · [Sol comparison](poc/docs/RESULTS-SOL.md) · [Luna findings, failed integration attempt and cost method](poc/docs/RESULTS.md).
 
 ## What remains to be measured
 
-- **Evidence:** the POC extends the [two original OSWorld failures](reference/examples/README.md) to five scored tasks, including a pass. Human gold diagnoses and historical evaluator matches remain unverified. Expand beyond this small sample. [Source research](specs/06-benchmark-and-example-data.md).
+- **Evidence:** the POC extends the [two original OSWorld failures](docs/reference/examples/README.md) to five scored tasks, including a pass. Human gold diagnoses and historical evaluator matches remain unverified. Expand beyond this small sample. [Source research](docs/specs/06-benchmark-and-example-data.md).
 - **Sizing:** 50k stored, 10k/day, 40% failed/60% passed, 25 MB each: 250 GB/day; **4,000 failure + 6,000 passing reviews/day**.
   - Earlier fixed-call costs exclude passing review and this multi-call workflow. Measure every image, context, compaction, checking and classification call.
 - **Validation:** about 300 independently double-reviewed examples, split by task. Check explanation support, coverage, recovery, taxonomy fit and compact-view fidelity. Quick-review speed/accuracy remains unmeasured.
 - **Open decisions:** representative data, evaluator reliability, processing permissions, retention, latency/budget and reviewer hours. Test crashes, stale approvals, helper restrictions and API/harness compatibility before runtime claims.
 
-[Quality, cost and reliability checks](specs/04-evaluation-and-delivery.md).
+[Quality, cost and reliability checks](docs/specs/04-evaluation-and-delivery.md).
