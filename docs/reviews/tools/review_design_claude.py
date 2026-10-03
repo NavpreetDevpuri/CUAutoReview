@@ -18,8 +18,8 @@ DOCUMENTS = [
     'docs/specs/03-decisions-and-tradeoffs.md', 'docs/specs/04-evaluation-and-delivery.md',
     'docs/specs/08-local-deployment-and-queue.md', 'docs/specs/11-runs-navigation-and-comparison.md',
     'platform/docs/CONTRACT.md', 'platform/README.md', 'platform/docs/LIVE-RESULTS.md',
-    'platform/docs/UX-FEEDBACK.md', 'platform/web/src/StepFlag.tsx',
-    'platform/web/src/theme.tsx', 'platform/web/src/ModelPicker.tsx',
+    'platform/docs/UX-FEEDBACK.md', 'platform/web/src/components/StepFlag.tsx',
+    'platform/web/src/app/theme.tsx', 'platform/web/src/components/ModelPicker.tsx',
 ]
 SCREENSHOTS = [
     'platform/docs/screenshots/platform-overview-fullscreen-20260927.png',
