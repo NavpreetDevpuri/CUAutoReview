@@ -430,3 +430,22 @@ def test_reconcile_keeps_unknown_outcome_waiting_for_review(batch_app):
     assert repaired.status_code == 200 and repaired.json()["reconciled"] is True
     assert repaired.json()["status"] == "awaiting_review"
     assert repaired.json()["progress"]["awaiting_review"] == 1
+
+
+def test_start_after_manual_retry_does_not_duplicate_the_job(batch_app, monkeypatch):
+    from app.review_backends import ReviewBackendError
+
+    client = batch_app["client"]
+    batch = make_batch(client, "passed")
+    assert post(client, f"/api/batches/{batch['id']}/start", {}).status_code == 200
+    job_id, generation = job_records(batch_app, batch["id"])[0]
+
+    def terminal(**_kwargs):
+        raise ReviewBackendError("No retained review exists for this task.")
+
+    run = worker(batch_app, monkeypatch, terminal)
+    assert run(job_id, generation)["status"] == "failed"
+    assert post(client, f"/api/jobs/{job_id}/retry", {}).status_code == 200
+    restarted = post(client, f"/api/batches/{batch['id']}/start", {})
+    assert restarted.status_code == 200, restarted.text
+    assert [record[0] for record in job_records(batch_app, batch["id"])] == [job_id]

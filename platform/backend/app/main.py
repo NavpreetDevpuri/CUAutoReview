@@ -6,7 +6,6 @@ import asyncio
 import hashlib
 import json
 import logging
-import mimetypes
 import os
 import re
 import threading
@@ -41,10 +40,11 @@ from .schemas import (
     ProviderModelCatalogSync, RunConfigure, RunCreate, RunExecution, RunRerun, Signup, StartBatch,
     TaxonomyConsolidate, TaxonomyProposalCreate, TeamCreate, TeamUpdate, UserUpdate,
 )
-from .security import hash_password, new_session_token, token_digest, verify_password
+from .security import DUMMY_PASSWORD_HASH, hash_password, new_session_token, token_digest, verify_password
 from .storage import create_artifact_store
 from .taxonomy_lock import lock_taxonomy_workspace
-from .zip_import import IMAGE_TYPES, MAX_ARCHIVE_BYTES, ZipDatasetError, copy_revision_artifacts_to_member, validate_zip_dataset
+from .zip_import import (IMAGE_TYPES, MAX_ARCHIVE_BYTES, ZipDatasetError, _image_content_type,
+                         copy_revision_artifacts_to_member, validate_zip_dataset)
 
 
 engine = make_engine(settings.database_url)
@@ -64,6 +64,8 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(title="CU AutoReview local API", version="1.0.0", lifespan=lifespan)
 ROLE_ORDER = {"viewer": 0, "reviewer": 1, "manager": 2, "admin": 3}
 MAX_IMPORT_BYTES = 32 * 1024 * 1024
+# Global body cap, above the 32 MB import limits so those endpoints keep their specific errors.
+MAX_REQUEST_BYTES = MAX_IMPORT_BYTES + 8 * 1024 * 1024
 _signup_lock = threading.Lock()
 logger = logging.getLogger("cuautoreview.queue")
 
@@ -89,6 +91,51 @@ async def same_origin_cookie_writes(request: Request, call_next):
                 return Response(status_code=403, content=json.dumps({"detail": "Origin required for cookie-authenticated mutation"}),
                                 media_type="application/json")
     return await call_next(request)
+
+
+class RequestBodyLimit:
+    """Reject oversized bodies before FastAPI buffers them, including unauthenticated requests."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        limit = MAX_REQUEST_BYTES
+        too_large = Response(status_code=413, content=json.dumps({"detail": "Request body is too large"}),
+                             media_type="application/json")
+        declared = dict(scope.get("headers") or []).get(b"content-length")
+        if declared is not None and declared.isdigit() and int(declared) > limit:
+            return await too_large(scope, receive, send)
+        received, started, rejected = 0, False, False
+
+        async def limited_receive():
+            nonlocal received, rejected
+            if rejected:
+                return {"type": "http.disconnect"}
+            message = await receive()
+            if message["type"] == "http.request":
+                received += len(message.get("body", b""))
+                if received > limit:
+                    # Answer 413 here; the app then sees a disconnect and its own reply is discarded.
+                    rejected = True
+                    if not started:
+                        await too_large(scope, receive, send)
+                    return {"type": "http.disconnect"}
+            return message
+
+        async def guarded_send(message):
+            nonlocal started
+            if rejected:
+                return
+            started = started or message["type"] == "http.response.start"
+            await send(message)
+
+        await self.app(scope, limited_receive, guarded_send)
+
+
+app.add_middleware(RequestBodyLimit)
 
 
 def canonical(value: Any) -> bytes:
@@ -307,6 +354,16 @@ def _recorded_source_file(relative: str) -> Path | None:
     return None
 
 
+def _recorded_image_file(relative: str) -> tuple[bytes, str] | None:
+    """Bundled POC screenshots only: PNG/JPEG/WebP under poc/data whose bytes match the extension."""
+    path = _recorded_source_file(relative)
+    if not path or not path.is_relative_to((PROJECT_ROOT / "poc" / "data").resolve()):
+        return None
+    body = path.read_bytes()
+    media_type = _image_content_type(path.name, body)
+    return (body, media_type) if media_type else None
+
+
 def register_evidence(db: Session, user: User, task_revision: TaskRevision, member: BatchMember | None,
                       content: dict[str, Any]):
     existing = set()
@@ -315,17 +372,18 @@ def register_evidence(db: Session, user: User, task_revision: TaskRevision, memb
     steps = content.get("steps") or []
     for step in steps:
         relative = step.get("screenshot")
-        path = _recorded_source_file(relative) if relative else None
-        if not path:
+        image = _recorded_image_file(relative) if relative else None
+        if not image:
             continue
         normalized = Path(relative).as_posix()
         if normalized in existing:
             continue
+        body, media_type = image
         db.add(StoredArtifact(workspace_id=user.workspace_id, task_revision_id=task_revision.id,
                               member_id=member.id if member else None, relative_path=normalized,
-                              media_type=mimetypes.guess_type(path.name)[0] or "application/octet-stream",
+                              media_type=media_type,
                               source_relative_path=normalized if normalized.startswith("poc/") else f"poc/{normalized}",
-                              sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+                              sha256=hashlib.sha256(body).hexdigest()))
 
 
 def task_view(db: Session, content: dict[str, Any], revision_id: str, task_id: str,
@@ -1059,7 +1117,8 @@ def analytics_compare(body: AnalyticsCompare, db: Session = Depends(get_db), use
         "differences": differences, "verdict": None}
 
 
-def execution_snapshot(execution: dict[str, Any], workflow: dict[str, Any]) -> dict[str, Any]:
+def validate_execution(execution: dict[str, Any]) -> dict[str, Any]:
+    """Shared execution bounds for run snapshots and saved presets; returns a checked copy with defaults."""
     backend = execution.get("backend")
     model = execution.get("model")
     budget = execution.get("budget_usd")
@@ -1101,9 +1160,15 @@ def execution_snapshot(execution: dict[str, Any], workflow: dict[str, Any]) -> d
             raise HTTPException(422, "Execution configuration exceeds 64 KB")
     except (TypeError, ValueError):
         raise HTTPException(422, "Execution configuration must contain JSON data") from None
+    return {"backend": backend, "model": model, "budget_usd": budget, "configuration": config}
+
+
+def execution_snapshot(execution: dict[str, Any], workflow: dict[str, Any]) -> dict[str, Any]:
+    checked = validate_execution(execution)
+    backend, config = checked["backend"], checked["configuration"]
     config["workflow_snapshot"] = copy.deepcopy(workflow)
-    return {"backend": backend, "model": model, "reasoning": execution.get("reasoning") or "low",
-            "budget_usd": budget, "budget_kind": "none" if backend == "saved_replay" else "estimate_only",
+    return {"backend": backend, "model": checked["model"], "reasoning": execution.get("reasoning") or "low",
+            "budget_usd": checked["budget_usd"], "budget_kind": "none" if backend == "saved_replay" else "estimate_only",
             "budget_enforced": backend == "saved_replay", "configuration": config}
 
 
@@ -1323,7 +1388,8 @@ def me_record(user: User) -> dict[str, Any]:
 @app.post("/api/auth/login")
 def login(body: Login, response: Response, db: Session = Depends(get_db)):
     user = db.scalar(select(User).where(User.email == body.email.strip().lower()))
-    if not user or not user.active or not verify_password(body.password, user.password_hash):
+    password_ok = verify_password(body.password, user.password_hash if user else DUMMY_PASSWORD_HASH)
+    if not user or not user.active or not password_ok:
         raise HTTPException(401, "Email or password is incorrect")
     token = new_session_token()
     db.add(LoginSession(token_hash=token_digest(token), user_id=user.id,
@@ -1392,10 +1458,11 @@ def overview(db: Session = Depends(get_db), user: User = Depends(get_user)):
 
 
 @app.get("/api/users")
-def users(page: int = 1, per_page: int = 50, db: Session = Depends(get_db), user: User = Depends(require_role("admin"))):
+def users(page: int = Query(1, ge=1), per_page: int = Query(50, ge=1), db: Session = Depends(get_db), user: User = Depends(require_role("admin"))):
     query = select(User).where(User.workspace_id == user.workspace_id)
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
-    results = db.scalars(query.order_by(User.name).offset((page - 1) * per_page).limit(min(per_page, 200))).all()
+    size = min(per_page, 200)
+    results = db.scalars(query.order_by(User.name).offset((page - 1) * size).limit(size)).all()
     return {"items": [me_record(u) for u in results], "total": total}
 
 
@@ -1406,6 +1473,8 @@ def update_user(user_id: str, body: UserUpdate, db: Session = Depends(get_db), u
         raise HTTPException(404, "User not found")
     if target.id == user.id and body.role and body.role != "admin":
         raise HTTPException(409, "You cannot remove your own administrator role")
+    if target.id == user.id and body.active is False:
+        raise HTTPException(409, "You cannot deactivate your own account")
     for key, value in body.model_dump(exclude_unset=True).items():
         setattr(target, key, value)
     activity(db, user, "user.updated", "user", target.id)
@@ -1414,21 +1483,25 @@ def update_user(user_id: str, body: UserUpdate, db: Session = Depends(get_db), u
 
 
 @app.get("/api/teams")
-def teams(page: int = 1, per_page: int = 50, db: Session = Depends(get_db), user: User = Depends(get_user)):
+def teams(page: int = Query(1, ge=1), per_page: int = Query(50, ge=1), db: Session = Depends(get_db), user: User = Depends(get_user)):
     query = select(Team).where(Team.workspace_id == user.workspace_id)
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
-    items = db.scalars(query.order_by(Team.name).offset((page - 1) * per_page).limit(min(per_page, 200))).all()
+    size = min(per_page, 200)
+    items = db.scalars(query.order_by(Team.name).offset((page - 1) * size).limit(size)).all()
     result = []
     for team in items:
         item = record(team)
         item["members"] = [me_record(db.get(User, m.user_id)) for m in db.scalars(select(TeamMember).where(TeamMember.team_id == team.id)).all()]
+        if user.role not in ("admin", "manager"):
+            # Match /api/directory: only admins and managers see member email addresses.
+            item["members"] = [{**member, "email": None} for member in item["members"]]
         result.append(item)
     return {"items": result, "total": total}
 
 
 @app.post("/api/teams")
 def create_team(body: TeamCreate, db: Session = Depends(get_db), user: User = Depends(require_role("admin", "manager"))):
-    team = Team(workspace_id=user.workspace_id, name=body.name.strip(), description=body.description, created_at=utcnow())
+    team = Team(id=uid(), workspace_id=user.workspace_id, name=body.name.strip(), description=body.description, created_at=utcnow())
     db.add(team)
     activity(db, user, "team.created", "team", team.id)
     try:
@@ -1483,7 +1556,7 @@ def remove_team_member(team_id: str, user_id: str, db: Session = Depends(get_db)
 
 
 @app.get("/api/datasets")
-def datasets(page: int = 1, per_page: int = 50, include_archived: bool = False,
+def datasets(page: int = Query(1, ge=1), per_page: int = Query(50, ge=1), include_archived: bool = False,
              db: Session = Depends(get_db), user: User = Depends(get_user)):
     query = select(Dataset).where(Dataset.workspace_id == user.workspace_id)
     all_items = db.scalars(query.order_by(Dataset.updated_at.desc())).all()
@@ -1516,7 +1589,7 @@ def datasets(page: int = 1, per_page: int = 50, include_archived: bool = False,
 
 @app.post("/api/datasets")
 def create_dataset(body: DatasetCreate, db: Session = Depends(get_db), user: User = Depends(require_role("admin", "manager"))):
-    dataset = Dataset(workspace_id=user.workspace_id, name=body.name.strip(), description=body.description,
+    dataset = Dataset(id=uid(), workspace_id=user.workspace_id, name=body.name.strip(), description=body.description,
                       source_adapter=body.source_adapter, created_by=user.id)
     db.add(dataset)
     activity(db, user, "dataset.created", "dataset", dataset.id)
@@ -1966,11 +2039,12 @@ def sync_preview(dataset_id: str, db: Session = Depends(get_db), user: User = De
 
 
 @app.get("/api/presets")
-def presets(page: int = 1, per_page: int = 50, db: Session = Depends(get_db), user: User = Depends(get_user)):
+def presets(page: int = Query(1, ge=1), per_page: int = Query(50, ge=1), db: Session = Depends(get_db), user: User = Depends(get_user)):
     query = select(Preset).where(Preset.workspace_id == user.workspace_id,
                                  ~Preset.name.like("__run_config__%"))
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
-    items = db.scalars(query.order_by(Preset.name).offset((page - 1) * per_page).limit(min(per_page, 200))).all()
+    size = min(per_page, 200)
+    items = db.scalars(query.order_by(Preset.name).offset((page - 1) * size).limit(size)).all()
     output = []
     for p in items:
         entry = record(p)
@@ -1997,6 +2071,8 @@ def create_preset(body: PresetCreate, db: Session = Depends(get_db), user: User 
         raise HTTPException(422, "saved_replay must use model 'retained-poc'")
     if body.backend != "saved_replay" and body.budget_usd is None:
         raise HTTPException(422, "Explicit non-replay presets need a pinned budget")
+    # Presets prefill new runs, so they must satisfy the same bounds and never store credentials.
+    validate_execution({**body.model_dump(), "model": model})
     preset = db.scalar(select(Preset).where(Preset.workspace_id == user.workspace_id,
                                             Preset.name == body.name.strip()))
     if not preset:
@@ -2098,7 +2174,7 @@ def sync_provider_models(body: ProviderModelCatalogSync, db: Session = Depends(g
 
 
 @app.get("/api/batches")
-def batches(page: int = 1, per_page: int = 50, include_archived: bool = False,
+def batches(page: int = Query(1, ge=1), per_page: int = Query(50, ge=1), include_archived: bool = False,
             db: Session = Depends(get_db), user: User = Depends(get_user)):
     query = select(Batch).where(Batch.workspace_id == user.workspace_id).order_by(Batch.created_at.desc())
     all_items = db.scalars(query).all()
@@ -2243,7 +2319,7 @@ def create_run(body: RunCreate, db: Session = Depends(get_db), user: User = Depe
 
 
 @app.get("/api/runs")
-def list_runs(page: int = 1, per_page: int = 50, include_archived: bool = False,
+def list_runs(page: int = Query(1, ge=1), per_page: int = Query(50, ge=1), include_archived: bool = False,
               db: Session = Depends(get_db), user: User = Depends(get_user)):
     rows = db.scalars(select(Batch).where(Batch.workspace_id == user.workspace_id)
                       .order_by(Batch.created_at.desc())).all()
@@ -2371,7 +2447,7 @@ def sync_run(run_id: str, request: Request, db: Session = Depends(get_db), user:
 
 
 @app.get("/api/runs/{run_id}/tasks")
-def run_tasks(run_id: str, page: int = 1, per_page: int = 100, include_archived: bool = False,
+def run_tasks(run_id: str, page: int = Query(1, ge=1), per_page: int = Query(100, ge=1), include_archived: bool = False,
               db: Session = Depends(get_db), user: User = Depends(get_user)):
     batch, _role = get_batch(db, run_id, user)
     if is_archived(db, "run", batch.id) and not include_archived:
@@ -2436,11 +2512,16 @@ def rerun_run(run_id: str, body: RunRerun | None = None,
     if not selected:
         raise HTTPException(422, "Source run has no task revisions to rerun")
     grants = db.scalars(select(BatchGrant).where(BatchGrant.batch_id == source.id)).all()
-    team_ids = [grant.team_id for grant in grants if grant.team_id]
-    user_ids = [grant.user_id for grant in grants if grant.user_id]
     new_run = create_run_records(db, user, name=body.name or f"Rerun: {source.name}",
         description=source.description, datasets=datasets_selected, members=selected,
-        workflow=workflow, execution=execution, team_ids=team_ids, user_ids=user_ids, rerun_of=source.id)
+        workflow=workflow, execution=execution, rerun_of=source.id)
+    # Carry each grant over with its original role; deactivated users or removed teams are skipped.
+    for grant in grants:
+        target = db.get(Team, grant.team_id) if grant.team_id else db.get(User, grant.user_id)
+        if not target or target.workspace_id != user.workspace_id or getattr(target, "active", True) is False:
+            continue
+        db.add(BatchGrant(batch_id=new_run.id, team_id=grant.team_id, user_id=grant.user_id,
+                          role=grant.role, created_by=user.id))
     activity(db, user, "run.rerun_created", "run", new_run.id, source_run_id=source.id)
     db.commit()
     return run_detail(db, new_run, user)
@@ -2456,12 +2537,13 @@ def get_batch_detail(batch_id: str, include_archived: bool = False,
 
 
 @app.get("/api/batches/{batch_id}/tasks")
-def batch_tasks(batch_id: str, page: int = 1, per_page: int = 100,
+def batch_tasks(batch_id: str, page: int = Query(1, ge=1), per_page: int = Query(100, ge=1),
                 db: Session = Depends(get_db), access=Depends(require_batch())):
     batch, user, _role = access
     query = select(BatchMember).where(BatchMember.batch_id == batch.id).order_by(BatchMember.created_at, BatchMember.task_id)
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
-    members = db.scalars(query.offset((page - 1) * min(per_page, 500)).limit(min(per_page, 500))).all()
+    size = min(per_page, 500)
+    members = db.scalars(query.offset((page - 1) * size).limit(size)).all()
     items = []
     for member in members:
         revision = db.get(TaskRevision, member.task_revision_id)
@@ -2612,7 +2694,10 @@ def _enqueue_review_jobs(db: Session, batch: Batch, user: User):
             continue
         member.review_kind = route
         idem = f"review:{member.id}:{preset_revision.id}:1"
-        old = db.scalar(select(Job).where(Job.idempotency_key == idem))
+        # Manual retries reuse the job and bump the key's generation suffix, so match the
+        # member and pinned preset instead of the first-generation key.
+        old = db.scalar(select(Job.id).where(Job.member_id == member.id, Job.stage == "review",
+                                             Job.preset_revision_id == preset_revision.id).limit(1))
         if old:
             continue
         job = Job(workspace_id=user.workspace_id, batch_id=batch.id, member_id=member.id,
@@ -2815,14 +2900,15 @@ def cancel_batch(batch_id: str, db: Session = Depends(get_db), access=Depends(re
 
 
 @app.get("/api/jobs")
-def jobs(page: int = 1, per_page: int = 100, db: Session = Depends(get_db), user: User = Depends(get_user)):
+def jobs(page: int = Query(1, ge=1), per_page: int = Query(100, ge=1), db: Session = Depends(get_db), user: User = Depends(get_user)):
     query = select(Job).where(Job.workspace_id == user.workspace_id)
     if user.role not in ("admin", "manager"):
         batch_ids = visible_batch_ids(db, user)
         query = query.where(Job.batch_id.in_(batch_ids)) if batch_ids else query.where(False)
     query = query.order_by(Job.created_at.desc())
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
-    items = db.scalars(query.offset((page - 1) * min(per_page, 500)).limit(min(per_page, 500))).all()
+    size = min(per_page, 500)
+    items = db.scalars(query.offset((page - 1) * size).limit(size)).all()
     output = []
     for job in items:
         item = job_detail(db, job)
@@ -2897,13 +2983,14 @@ def retry_job(job_id: str, body: StartBatch | None = None, db: Session = Depends
 
 
 @app.get("/api/activity")
-def activity_list(page: int = 1, per_page: int = 100, db: Session = Depends(get_db), user: User = Depends(get_user)):
+def activity_list(page: int = Query(1, ge=1), per_page: int = Query(100, ge=1), db: Session = Depends(get_db), user: User = Depends(get_user)):
     query = select(ActivityEvent).where(ActivityEvent.workspace_id == user.workspace_id)
     if user.role not in ("admin", "manager"):
         query = query.where(ActivityEvent.actor_id == user.id)
     query = query.order_by(ActivityEvent.created_at.desc())
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
-    items = db.scalars(query.offset((page - 1) * min(per_page, 500)).limit(min(per_page, 500))).all()
+    size = min(per_page, 500)
+    items = db.scalars(query.offset((page - 1) * size).limit(size)).all()
     return {"items": [record(item) for item in items], "total": total}
 
 
@@ -3035,7 +3122,7 @@ def _curate_taxonomy(db: Session, user: User, body: TaxonomyConsolidate):
                            "provenance": copy.deepcopy(result.get("provenance") or {})}
     version_num = (db.scalar(select(func.count(TaxonomyCandidate.id)).where(
         TaxonomyCandidate.workspace_id == user.workspace_id)) or 0) + 1
-    candidate = TaxonomyCandidate(workspace_id=user.workspace_id, version=f"candidate-{version_num}",
+    candidate = TaxonomyCandidate(id=uid(), workspace_id=user.workspace_id, version=f"candidate-{version_num}",
         base_release_id=base_release_id, base_hash=base_hash, proposal_heads=heads,
         content=content, content_hash=digest(content), created_by=user.id)
     db.add(candidate)
@@ -3060,7 +3147,7 @@ def taxonomy(db: Session = Depends(get_db), user: User = Depends(get_user)):
 def create_proposal(body: TaxonomyProposalCreate, db: Session = Depends(get_db), user: User = Depends(require_role("admin", "manager", "reviewer"))):
     lock_taxonomy_workspace(db, user.workspace_id)
     release = db.get(TaxonomyRelease, body.base_release_id) if body.base_release_id else current_release(db, user.workspace_id)
-    if release and release.workspace_id != user.workspace_id:
+    if (body.base_release_id and not release) or (release and release.workspace_id != user.workspace_id):
         raise HTTPException(404, "Base release not found")
     base_hash = release.content_hash if release else digest({"labels": []})
     if body.label_id and db.scalar(select(TaxonomyProposal.id).where(
@@ -3092,8 +3179,12 @@ def edit_proposal(proposal_id: str, body: TaxonomyProposalCreate, db: Session = 
         raise HTTPException(404, "Proposal not found")
     previous = db.get(ProposalRevision, proposal.latest_revision_id) if proposal.latest_revision_id else None
     release = db.get(TaxonomyRelease, body.base_release_id) if body.base_release_id else current_release(db, user.workspace_id)
-    if release and release.workspace_id != user.workspace_id:
+    if (body.base_release_id and not release) or (release and release.workspace_id != user.workspace_id):
         raise HTTPException(404, "Base release not found")
+    if body.label_id and db.scalar(select(TaxonomyProposal.id).where(
+            TaxonomyProposal.workspace_id == user.workspace_id, TaxonomyProposal.label_id == body.label_id,
+            TaxonomyProposal.id != proposal.id)):
+        raise HTTPException(409, "A draft already exists for this label; append a revision to that proposal")
     content = {"name": body.name.strip(), "description": body.description.strip(), "evidence_refs": body.evidence_refs}
     revision = ProposalRevision(proposal_id=proposal.id,
         revision=(previous.revision + 1 if previous else 1), name=content["name"],
@@ -3207,7 +3298,7 @@ def consolidate_taxonomy(body: TaxonomyConsolidate | None = None, db: Session = 
     content = {**base_content, "labels": labels, "mappings": mappings,
                "unresolved": unresolved, "draft_proposals": entries}
     version_num = len(db.scalars(select(TaxonomyCandidate).where(TaxonomyCandidate.workspace_id == user.workspace_id)).all()) + 1
-    candidate = TaxonomyCandidate(workspace_id=user.workspace_id, version=f"candidate-{version_num}",
+    candidate = TaxonomyCandidate(id=uid(), workspace_id=user.workspace_id, version=f"candidate-{version_num}",
         base_release_id=release.id if release else None, base_hash=base_hash, proposal_heads=heads,
         content=content, content_hash=digest(content), created_by=user.id)
     db.add(candidate)
@@ -3250,7 +3341,7 @@ def approve_candidate(candidate_id: str, body: CandidateApproval, db: Session = 
         label["status"] = "retired" if label.get("status") == "retired" else "active"
     release_content = {key: copy.deepcopy(value) for key, value in (candidate.content or {}).items()}
     version = f"{len(db.scalars(select(TaxonomyRelease).where(TaxonomyRelease.workspace_id == user.workspace_id)).all()) + 1}.0.0"
-    release = TaxonomyRelease(workspace_id=user.workspace_id, version=version, content=release_content,
+    release = TaxonomyRelease(id=uid(), workspace_id=user.workspace_id, version=version, content=release_content,
                               content_hash=digest(release_content), created_by=user.id)
     db.add(release)
     db.add(CandidateDecision(candidate_id=candidate.id, action="approve", expected_hash=body.expected_hash,
@@ -3375,10 +3466,10 @@ def get_artifact(task_id: str, relative_path: str, member_id: str | None = None,
         except FileNotFoundError:
             raise HTTPException(404, "Recorded artifact is missing")
     elif artifact.source_relative_path:
-        path = _recorded_source_file(artifact.source_relative_path)
-        if not path:
+        image = _recorded_image_file(artifact.source_relative_path)
+        if not image:
             raise HTTPException(404, "Recorded artifact is missing")
-        body = path.read_bytes()
+        body = image[0]
     else:
         raise HTTPException(404, "Recorded artifact is missing")
     if hashlib.sha256(body).hexdigest() != artifact.sha256:

@@ -22,6 +22,10 @@ def verify_password(password: str, encoded: str) -> bool:
         return False
 
 
+# Verified against when an email is unknown, so login timing does not reveal which accounts exist.
+DUMMY_PASSWORD_HASH = hash_password(secrets.token_urlsafe(16))
+
+
 def new_session_token() -> str:
     return secrets.token_urlsafe(40)
 

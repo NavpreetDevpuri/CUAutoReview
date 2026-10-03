@@ -15,6 +15,7 @@ from app.models import Batch, BatchMember, Job, JobAttempt, OutboxEvent, ReviewR
 
 
 ORIGIN = {"Origin": "http://testserver"}
+PNG_BYTES = b"\x89PNG\r\n\x1a\nrecorded screenshot"
 
 
 @asynccontextmanager
@@ -197,7 +198,7 @@ def test_team_batch_access_is_revoked_server_side_and_artifacts_are_recorded(app
     screenshot = "data/source/fixture/shot.png"
     file_path = tmp / "poc" / screenshot
     file_path.parent.mkdir(parents=True)
-    file_path.write_bytes(b"recorded screenshot")
+    file_path.write_bytes(PNG_BYTES)
     dataset = create_dataset(client)
     assert import_tasks(client, dataset["id"], task(screenshot=screenshot)).status_code == 200
     preset = create_saved_preset(client)
@@ -211,7 +212,7 @@ def test_team_batch_access_is_revoked_server_side_and_artifacts_are_recorded(app
     assert detail.status_code == 200
     step = detail.json()["task"]["steps"][0]
     assert step["artifact_status"] == "recorded"
-    assert viewer.get(step["screenshot_url"]).content == b"recorded screenshot"
+    assert viewer.get(step["screenshot_url"]).content == PNG_BYTES
     assert client.get(step["screenshot_url"]).status_code == 200
 
     hidden_batch = create_batch(client, dataset, preset, task_ids=["task-1"])
@@ -578,6 +579,172 @@ def test_import_validates_steps_and_never_trusts_imported_screenshot_urls(app_cl
     detail = client.get(f"/api/datasets/{dataset['id']}")
     assert detail.status_code == 200
     assert 'screenshot_url' not in detail.json()['tasks'][0]['steps'][0]
+
+
+def signup_user(email):
+    client = TestClient(main.app)
+    response = post(client, "/api/auth/signup", json={"name": email.split("@")[0], "email": email,
+                                                      "password": "member-password"})
+    assert response.status_code == 200, response.text
+    return client, response.json()
+
+
+def create_saved_run(client, dataset):
+    response = post(client, "/api/runs", json={"name": "Saved run", "dataset_ids": [dataset["id"]],
+        "execution": {"backend": "saved_replay", "model": None, "budget_usd": 0, "configuration": {}}})
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def test_audit_events_record_ids_of_newly_created_objects(app_clients):
+    from app.models import ActivityEvent
+
+    client = app_clients["admin"]
+    team = post(client, "/api/teams", json={"name": "Audited team"}).json()
+    dataset = create_dataset(client, "Audited dataset")
+    post(client, "/api/taxonomy/proposals", json={"name": "Wrong target", "description": "Clicked the neighbour."})
+    candidate = post(client, "/api/taxonomy/consolidate", json={}).json()
+    release = post(client, f"/api/taxonomy/candidates/{candidate['id']}/approve",
+                   json={"expected_hash": candidate["hash"], "version": candidate["version"]})
+    assert release.status_code == 200, release.text
+    with app_clients["factory"]() as db:
+        recorded = {row.action: row.object_id for row in db.scalars(select(ActivityEvent)).all()}
+    assert recorded["team.created"] == team["id"]
+    assert recorded["dataset.created"] == dataset["id"]
+    assert recorded["taxonomy.consolidated"] == candidate["id"]
+    assert recorded["taxonomy.approved"] == release.json()["id"]
+
+
+def test_rerun_keeps_grant_roles_and_skips_deactivated_users(app_clients):
+    client = app_clients["admin"]
+    dataset = create_dataset(client)
+    assert import_tasks(client, dataset["id"], task()).status_code == 200
+    run = create_saved_run(client, dataset)
+    viewer, viewer_user = signup_user("grant-viewer@example.test")
+    _gone, gone_user = signup_user("grant-gone@example.test")
+    for user in (viewer_user, gone_user):
+        granted = post(client, f"/api/runs/{run['id']}/grants", json={"user_id": user["id"], "role": "viewer"})
+        assert granted.status_code == 200, granted.text
+    assert client.patch(f"/api/users/{gone_user['id']}", headers=ORIGIN, json={"active": False}).status_code == 200
+
+    rerun = post(client, f"/api/runs/{run['id']}/rerun", json={})
+    assert rerun.status_code == 200, rerun.text
+    with app_clients["factory"]() as db:
+        from app.models import BatchGrant
+        grants = {(row.user_id, row.role) for row in db.scalars(
+            select(BatchGrant).where(BatchGrant.batch_id == rerun.json()["id"])).all()}
+    assert grants == {(viewer_user["id"], "viewer")}
+    feedback = post(viewer, f"/api/runs/{rerun.json()['id']}/tasks/task-1/feedback", json={"text": "Viewer note"})
+    assert feedback.status_code == 403
+
+
+def test_list_endpoints_reject_non_positive_pagination(app_clients):
+    client = app_clients["admin"]
+    for path in ("/api/users", "/api/teams", "/api/datasets", "/api/presets", "/api/runs",
+                 "/api/batches", "/api/jobs", "/api/activity"):
+        assert client.get(path, params={"page": 0}).status_code == 422, path
+        assert client.get(path, params={"per_page": -1}).status_code == 422, path
+    for index in range(3):
+        post(client, "/api/teams", json={"name": f"Paged team {index}"})
+    oversized = client.get("/api/teams", params={"page": 2, "per_page": 1000}).json()
+    assert oversized["total"] == 3 and oversized["items"] == []
+
+
+def test_json_import_registers_only_bundled_images_as_evidence(app_clients):
+    client = app_clients["admin"]
+    poc = app_clients["tmp_path"] / "poc"
+    for relative, body in (("runs/stderr.log", b"internal log line"),
+                           ("viewer/index.html", b"<script>alert(1)</script>"),
+                           ("data/source/fixture/fake.png", b"<html>not an image</html>"),
+                           ("data/source/fixture/real.png", PNG_BYTES)):
+        (poc / relative).parent.mkdir(parents=True, exist_ok=True)
+        (poc / relative).write_bytes(body)
+    dataset = create_dataset(client)
+    imported = import_tasks(client, dataset["id"], task("log", screenshot="runs/stderr.log"),
+                            task("html", screenshot="viewer/index.html"),
+                            task("fake", screenshot="data/source/fixture/fake.png"),
+                            task("real", screenshot="data/source/fixture/real.png"))
+    assert imported.status_code == 200, imported.text
+    steps = {item["task_id"]: item["steps"][0] for item in client.get(f"/api/datasets/{dataset['id']}").json()["tasks"]}
+    assert not any(steps[name].get("screenshot_url") for name in ("log", "html", "fake"))
+    image = client.get(steps["real"]["screenshot_url"])
+    assert image.status_code == 200 and image.headers["content-type"] == "image/png"
+
+
+def test_presets_apply_run_execution_bounds_and_reject_secrets(app_clients):
+    client = app_clients["admin"]
+    base = {"name": "Bounded preset", "backend": "litellm", "model": "openai/gpt-test", "budget_usd": 0.25}
+    for change in ({"configuration": {"api_key": "sk-live-SECRET"}},
+                   {"configuration": {"nested": {"Authorization": "Bearer x"}}},
+                   {"configuration": {"timeout_seconds": 100000}},
+                   {"configuration": {"max_images": 10000}},
+                   {"budget_usd": 99}):
+        response = post(client, "/api/presets", json={**base, **change})
+        assert response.status_code == 422, change
+    assert "sk-live-SECRET" not in client.get("/api/presets").text
+    assert post(client, "/api/presets", json={**base, "configuration": {"max_images": 8}}).status_code == 200
+
+
+def test_proposal_label_ids_stay_unique_and_base_release_must_exist(app_clients):
+    client = app_clients["admin"]
+    assert post(client, "/api/taxonomy/proposals", json={"name": "A", "description": "a", "label_id": "L1"}).status_code == 200
+    second = post(client, "/api/taxonomy/proposals", json={"name": "B", "description": "b", "label_id": "L2"}).json()
+    duplicate = client.patch(f"/api/taxonomy/proposals/{second['id']}", headers=ORIGIN,
+                             json={"name": "B", "description": "b", "label_id": "L1"})
+    assert duplicate.status_code == 409
+    same_label = client.patch(f"/api/taxonomy/proposals/{second['id']}", headers=ORIGIN,
+                              json={"name": "B2", "description": "b", "label_id": "L2"})
+    assert same_label.status_code == 200, same_label.text
+    unknown = post(client, "/api/taxonomy/proposals", json={"name": "C", "description": "c",
+                                                           "base_release_id": "missing-release"})
+    assert unknown.status_code == 404
+
+
+def test_team_member_emails_are_limited_to_admins_and_managers(app_clients):
+    client = app_clients["admin"]
+    viewer, _viewer_user = signup_user("team-viewer@example.test")
+    _member, member_user = signup_user("team-member@example.test")
+    team = post(client, "/api/teams", json={"name": "Email team"}).json()
+    assert post(client, f"/api/teams/{team['id']}/members", json={"user_id": member_user["id"]}).status_code == 200
+    viewer_members = viewer.get("/api/teams").json()["items"][0]["members"]
+    assert viewer_members and all(item["email"] is None and item["name"] for item in viewer_members)
+    admin_members = client.get("/api/teams").json()["items"][0]["members"]
+    assert {item["email"] for item in admin_members} == {"team-member@example.test"}
+
+
+def test_admin_cannot_deactivate_own_account(app_clients):
+    client = app_clients["admin"]
+    me = client.get("/api/auth/me").json()
+    response = client.patch(f"/api/users/{me['id']}", headers=ORIGIN, json={"active": False})
+    assert response.status_code == 409
+    assert client.get("/api/auth/me").status_code == 200
+
+
+def test_login_verifies_a_password_hash_even_for_unknown_emails(app_clients, monkeypatch):
+    checked = []
+    original = main.verify_password
+    monkeypatch.setattr(main, "verify_password", lambda password, encoded: checked.append(encoded) or original(password, encoded))
+    anonymous = TestClient(main.app)
+    response = post(anonymous, "/api/auth/login", json={"email": "nobody@example.test", "password": "wrong-password"})
+    assert response.status_code == 401
+    assert checked == [main.DUMMY_PASSWORD_HASH]
+
+
+def test_request_body_cap_rejects_declared_and_streamed_oversize(app_clients, monkeypatch):
+    monkeypatch.setattr(main, "MAX_REQUEST_BYTES", 1024)
+    anonymous = TestClient(main.app)
+    declared = anonymous.post("/api/auth/login", headers=ORIGIN, content=b"x" * 2048)
+    assert declared.status_code == 413
+
+    def chunks():
+        for _ in range(4):
+            yield b"y" * 512
+
+    streamed = anonymous.post("/api/auth/login", headers={**ORIGIN, "Content-Type": "application/json"},
+                              content=chunks())
+    assert streamed.status_code == 413
+    small = post(anonymous, "/api/auth/login", json={"email": "nobody@example.test", "password": "wrong-password"})
+    assert small.status_code == 401
 
 
 def test_lifespan_runs_startup_and_shutdown(monkeypatch):
