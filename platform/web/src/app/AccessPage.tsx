@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import AutoAwesomeRounded from "@mui/icons-material/AutoAwesomeRounded";
 import { apiRequest } from "../api/client";
+import { useApi } from "../hooks/useApi";
 import { ThemeModeToggle } from "./theme";
 
 export function AccessPage() {
@@ -26,13 +27,17 @@ export function AccessPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // Production deployments close self-service sign-up; the server enforces it, this only hides the option.
+  const authConfig = useApi<{ signup_enabled: boolean }>("/auth/config");
+  const signupEnabled = authConfig.data?.signup_enabled !== false;
+  const activeMode = signupEnabled ? mode : "login";
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
     setBusy(true);
     try {
-      if (mode === "signup") {
+      if (activeMode === "signup") {
         await apiRequest("/auth/signup", {
           method: "POST",
           body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),
@@ -97,20 +102,22 @@ export function AccessPage() {
               A local evidence workspace for computer-use trajectories, review runs, teams, and shared labels.
             </Typography>
           </Stack>
-          <ToggleButtonGroup
-            exclusive
-            fullWidth
-            value={mode}
-            onChange={(_, value) => value && setMode(value)}
-            sx={{ mb: 2.7 }}
-          >
-            <ToggleButton value="login" sx={{ textTransform: "none", fontWeight: 700 }}>
-              Sign in
-            </ToggleButton>
-            <ToggleButton value="signup" sx={{ textTransform: "none", fontWeight: 700 }}>
-              Create account
-            </ToggleButton>
-          </ToggleButtonGroup>
+          {signupEnabled && (
+            <ToggleButtonGroup
+              exclusive
+              fullWidth
+              value={activeMode}
+              onChange={(_, value) => value && setMode(value)}
+              sx={{ mb: 2.7 }}
+            >
+              <ToggleButton value="login" sx={{ textTransform: "none", fontWeight: 700 }}>
+                Sign in
+              </ToggleButton>
+              <ToggleButton value="signup" sx={{ textTransform: "none", fontWeight: 700 }}>
+                Create account
+              </ToggleButton>
+            </ToggleButtonGroup>
+          )}
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
@@ -118,7 +125,7 @@ export function AccessPage() {
           )}
           <Box component="form" onSubmit={submit}>
             <Stack gap={1.8}>
-              {mode === "signup" && (
+              {activeMode === "signup" && (
                 <TextField
                   label="Name"
                   value={name}
@@ -142,22 +149,22 @@ export function AccessPage() {
                 type="password"
                 value={password}
                 onChange={event => setPassword(event.target.value)}
-                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                autoComplete={activeMode === "signup" ? "new-password" : "current-password"}
                 required
                 fullWidth
                 inputProps={{ minLength: 8 }}
-                helperText={mode === "signup" ? "Use at least 8 characters." : undefined}
+                helperText={activeMode === "signup" ? "Use at least 8 characters." : undefined}
               />
               <Button
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={busy || (mode === "signup" && password.length < 8)}
+                disabled={busy || (activeMode === "signup" && password.length < 8)}
                 sx={{ mt: 0.4, py: 1.2, fontWeight: 750, textTransform: "none" }}
               >
                 {busy ? (
                   <CircularProgress size={22} color="inherit" />
-                ) : mode === "signup" ? (
+                ) : activeMode === "signup" ? (
                   "Create local account"
                 ) : (
                   "Sign in"
@@ -167,7 +174,9 @@ export function AccessPage() {
           </Box>
           <Divider sx={{ my: 2.3 }} />
           <Typography color="text.secondary" sx={{ fontSize: 13, textAlign: "center" }}>
-            The first account in a new workspace becomes its administrator. No model runs start automatically.
+            {signupEnabled
+              ? "The first account in a new workspace becomes its administrator. No model runs start automatically."
+              : "New accounts are created by a workspace administrator."}
           </Typography>
         </Paper>
       </Container>

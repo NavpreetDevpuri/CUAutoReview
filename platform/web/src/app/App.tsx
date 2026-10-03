@@ -42,6 +42,7 @@ export function App() {
       loginPage={AccessPage}
       dashboard={OverviewPage}
       title="CUAutoReview"
+      disableTelemetry
     >
       <Resource name="datasets" list={DatasetsPage} />
       <Resource name="runs" list={BatchesPage} />
