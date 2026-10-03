@@ -1,0 +1,74 @@
+# Production overrides for a single-host deployment behind an HTTPS reverse proxy:
+#
+#   docker compose -f platform/compose.yaml -f platform/compose.prod.yaml up -d --build
+#
+# Every credential is required and nothing falls back to the committed local values; Compose
+# stops with the message below when one is missing. See platform/docs/DEPLOYMENT.md.
+x-prod-env: &prod-env
+  ENVIRONMENT: production
+  DATABASE_URL: ${CUAUTOREVIEW_DATABASE_URL:?Set CUAUTOREVIEW_DATABASE_URL (postgresql+psycopg://user:password@host:5432/db)}
+  CELERY_BROKER_URL: ${CUAUTOREVIEW_BROKER_URL:?Set CUAUTOREVIEW_BROKER_URL (amqp://user:password@host:5672/vhost)}
+  # Empty uses the bundled SeaweedFS; set https://s3.<region>.amazonaws.com (or another endpoint) for managed S3.
+  S3_ENDPOINT_URL: ${CUAUTOREVIEW_S3_ENDPOINT:-http://storage:8333}
+  S3_BUCKET: ${CUAUTOREVIEW_S3_BUCKET:?Set CUAUTOREVIEW_S3_BUCKET}
+  AWS_ACCESS_KEY_ID: ${CUAUTOREVIEW_S3_ACCESS_KEY:?Set CUAUTOREVIEW_S3_ACCESS_KEY}
+  AWS_SECRET_ACCESS_KEY: ${CUAUTOREVIEW_S3_SECRET_KEY:?Set CUAUTOREVIEW_S3_SECRET_KEY}
+  AWS_REGION: ${CUAUTOREVIEW_S3_REGION:-us-east-1}
+  PUBLIC_ORIGIN: ${CUAUTOREVIEW_PUBLIC_ORIGIN:?Set CUAUTOREVIEW_PUBLIC_ORIGIN to the https:// origin users open}
+  SECURE_COOKIES: "true"
+  SEED_POC: "false"
+  AUTO_MIGRATE: "false"
+  ALLOW_SIGNUP: ${CUAUTOREVIEW_ALLOW_SIGNUP:-false}
+  EXPOSE_API_DOCS: "false"
+  LOG_FORMAT: json
+  LOG_LEVEL: ${CUAUTOREVIEW_LOG_LEVEL:-INFO}
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  # Bundled infrastructure keeps its internal-only networking; only the API port is published, on loopback.
+  postgres:
+    <<: *restart
+    environment:
+      POSTGRES_PASSWORD: ${CUAUTOREVIEW_POSTGRES_PASSWORD:?Set CUAUTOREVIEW_POSTGRES_PASSWORD (must match CUAUTOREVIEW_DATABASE_URL)}
+  rabbitmq:
+    <<: *restart
+    environment:
+      RABBITMQ_DEFAULT_PASS: ${CUAUTOREVIEW_RABBITMQ_PASSWORD:?Set CUAUTOREVIEW_RABBITMQ_PASSWORD (must match CUAUTOREVIEW_BROKER_URL)}
+  storage:
+    <<: *restart
+    volumes:
+      - ${CUAUTOREVIEW_S3_IDENTITIES:?Set CUAUTOREVIEW_S3_IDENTITIES to a SeaweedFS identity file with your S3 keys}:/etc/seaweedfs/s3.json:ro
+  migrate:
+    environment: *prod-env
+  app:
+    <<: *restart
+    environment: *prod-env
+    # X-Forwarded-For/Proto are trusted from any peer because the API port is published on 127.0.0.1 only,
+    # so the host's reverse proxy is the only possible client. The proxy must overwrite X-Forwarded-For with
+    # the client address (nginx: proxy_set_header X-Forwarded-For $remote_addr). Narrow the value if the port
+    # is ever reachable from elsewhere; login throttling depends on it.
+    command:
+      - uvicorn
+      - app.main:app
+      - --host=0.0.0.0
+      - --port=8000
+      - --proxy-headers
+      - --forwarded-allow-ips=${CUAUTOREVIEW_FORWARDED_ALLOW_IPS:-*}
+      - --workers=${CUAUTOREVIEW_WEB_WORKERS:-2}
+    cpus: 2
+    mem_limit: 1g
+  worker:
+    <<: *restart
+    environment: *prod-env
+    cpus: 2
+    mem_limit: 2g
+  cli-worker:
+    <<: *restart
+    environment: *prod-env
+    cpus: 1
+    mem_limit: 2g
+  # The demo seed tool is development-only.
+  seed:
+    profiles: [development-only]

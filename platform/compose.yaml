@@ -53,6 +53,17 @@ services:
       interval: 3s
       timeout: 3s
       retries: 30
+  # One-shot schema migration; the API and workers start only after it succeeds.
+  migrate:
+    image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
+    build:
+      context: ..
+      dockerfile: platform/Dockerfile
+    environment: *app-env
+    depends_on:
+      postgres: {condition: service_healthy}
+    command: [python, -m, app.core.migrate]
+    restart: "no"
   app:
     image: ${CUAUTOREVIEW_IMAGE:-cuautoreview-local:dev}
     build:
@@ -61,12 +72,14 @@ services:
     environment: *app-env
     ports: ["127.0.0.1:${CUAUTOREVIEW_PORT:-8000}:8000"]
     depends_on:
+      migrate: {condition: service_completed_successfully}
       postgres: {condition: service_healthy}
       rabbitmq: {condition: service_healthy}
       storage: {condition: service_healthy}
     command: [uvicorn, app.main:app, --host, 0.0.0.0, --port, "8000"]
+    # Readiness: database reachable, schema at head and object store reachable.
     healthcheck:
-      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/ready')"]
       interval: 5s
       timeout: 3s
       retries: 30
