@@ -98,6 +98,8 @@ export function DatasetsPage() {
 
 interface DatasetDetails {
   dataset?: DatasetRecord;
+  /** The caller's effective role on this dataset; sharing needs manager or above. */
+  access_role?: string | null;
   tasks?: TaskRecord[];
   runs?: Record<string, unknown>[];
   batches?: Record<string, unknown>[];
@@ -238,6 +240,7 @@ export function DatasetDetailPage() {
   const dataset = state.data?.dataset || state.data as DatasetRecord | null;
   const tasks = state.data?.tasks || [];
   const runs = state.data?.runs || state.data?.batches || [];
+  const canShare = ["admin", "manager"].includes(String(state.data?.access_role || ""));
   const archivedDataset = Boolean(dataset?.archived || dataset?.archived_at);
   const submitImport = async () => {
     if (!importState.prepared) return;
@@ -304,7 +307,7 @@ export function DatasetDetailPage() {
         return <Paper key={runId || index} component={RouterLink} to={`/runs/${encodeURIComponent(runId)}${archived ? "?include_archived=true" : ""}`} variant="outlined" sx={{ ...linkedCardSx, p: 1.5, textDecoration: "none", color: "text.primary", "&:focus-visible": { outline: "2px solid", outlineColor: "primary.main", outlineOffset: 2 } }}><Typography sx={{ fontWeight: 750, overflowWrap: "anywhere" }}>{displayValue(run.run_name || run.name)}</Typography><Stack direction="row" gap={1} sx={{ mt: .8, flexWrap: "wrap" }}><StatusTag value={runStatusLabel(run)} /><StatusTag value={run.mode} />{taskCoverage && <Typography color="text.secondary" sx={{ alignSelf: "center", fontSize: 12.5 }}>{taskCoverage}</Typography>}</Stack></Paper>;
       })}{!runs.length && <Typography color="text.secondary">No runs use this dataset yet.</Typography>}</Stack></Panel></Grid>
     </Grid>
-    {!archivedDataset && <Box sx={{ mt: 2 }}><DatasetShares datasetId={id} /></Box>}
+    {!archivedDataset && canShare && <Box sx={{ mt: 2 }}><DatasetShares datasetId={id} /></Box>}
     <Dialog open={importOpen} onClose={() => !working && !importState.checking && setImportOpen(false)} fullWidth maxWidth="md">
       <DialogTitle>Import task records</DialogTitle><DialogContent><Stack gap={2} sx={{ pt: 1 }}>
         {error && <Alert severity="error">{error}</Alert>}

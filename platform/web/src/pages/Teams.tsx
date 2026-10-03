@@ -17,6 +17,8 @@ export function TeamsPage() {
   const teams = useResourceList<Team>("teams");
   const identity = useGetIdentity();
   const isAdmin = identity.data?.role === "admin" || identity.data?.role === "workspace_admin";
+  // Matches POST /api/teams, which admins and managers may call.
+  const canCreateTeam = isAdmin || identity.data?.role === "manager";
   // The user directory is admin-only; other roles never request it.
   const users = useResourceList<UserRow>(isAdmin ? "users" : null);
   const [createOpen, setCreateOpen] = useState(false);
@@ -54,7 +56,7 @@ export function TeamsPage() {
   };
 
   return <>
-    <PageHeader eyebrow="WORKSPACE ACCESS" title="Teams" description="Organize workspace members and manage run-scoped access. Team membership alone does not share datasets or run results." action={<Button variant="contained" startIcon={<AddRounded />} onClick={() => { setError(""); setCreateOpen(true); }}>New team</Button>} />
+    <PageHeader eyebrow="WORKSPACE ACCESS" title="Teams" description="Organize workspace members and manage run-scoped access. Team membership alone does not share datasets or run results." action={canCreateTeam ? <Button variant="contained" startIcon={<AddRounded />} onClick={() => { setError(""); setCreateOpen(true); }}>New team</Button> : undefined} />
     {error && <Alert severity="error" onClose={() => setError("")} sx={{ mb: 2 }}>{error}</Alert>}
     {teams.loading && <LoadingState label="Loading teams…" />}
     {teams.error && <ErrorState message={teams.error} onRetry={teams.reload} />}

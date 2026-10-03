@@ -1816,6 +1816,8 @@ def dataset_detail(dataset_id: str, include_archived: bool = False,
     dataset = require_dataset_access(db, dataset_id, user, include_archived=include_archived)
     output = record(dataset)
     output["archived"] = is_archived(db, "dataset", dataset.id)
+    # Lets the UI hide controls the caller cannot use, such as sharing (manager or above).
+    output["access_role"] = dataset_role(db, dataset, user)
     tasks = []
     definitions = task_definitions(db, dataset.id)
     preload_rows(db, TaskRevision, {definition.current_revision_id for definition in definitions})

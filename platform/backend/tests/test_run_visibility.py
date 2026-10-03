@@ -93,3 +93,21 @@ def test_dataset_share_reaches_jobs_and_overview_like_run_pages(admin):
               json={"workspace_shared": False, "users": []})
     assert reviewer.get("/api/jobs").json()["total"] == 0
     assert reviewer.get("/api/overview").json()["batches"] == 0
+
+
+def test_dataset_detail_reports_the_callers_access_role(admin):
+    dataset = dataset_with_task(admin, "gamma")
+    viewer, viewer_user = signup("viewer")
+    lead, lead_user = signup("lead")
+    outsider, _outsider_user = signup("stranger")
+    admin.put(f"/api/datasets/{dataset['id']}/shares", headers=ORIGIN, json={
+        "workspace_shared": False, "users": [{"target_id": viewer_user["id"], "role": "viewer"},
+                                             {"target_id": lead_user["id"], "role": "manager"}]})
+
+    assert admin.get(f"/api/datasets/{dataset['id']}").json()["access_role"] == "admin"
+    assert lead.get(f"/api/datasets/{dataset['id']}").json()["access_role"] == "manager"
+    assert lead.get(f"/api/datasets/{dataset['id']}/shares").status_code == 200
+    # The UI hides sharing for this role; the server keeps refusing it either way.
+    assert viewer.get(f"/api/datasets/{dataset['id']}").json()["access_role"] == "viewer"
+    assert viewer.get(f"/api/datasets/{dataset['id']}/shares").status_code == 403
+    assert outsider.get(f"/api/datasets/{dataset['id']}").status_code in (403, 404)

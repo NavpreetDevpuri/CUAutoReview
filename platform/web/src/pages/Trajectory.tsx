@@ -225,7 +225,10 @@ export function TrajectoryPage() {
   const batchRecord = batch.data?.run || batch.data?.batch || batch.data as BatchRecord | null;
   const sourceDatasets = Array.isArray((batch.data as AnyRecord | null)?.source_datasets) ? (batch.data as AnyRecord).source_datasets as AnyRecord[] : [];
   const datasetId = String(normalizedTask?.dataset_id || record(normalizedTask?.source).dataset_id || sourceDatasets[0]?.id || sourceDatasets[0]?.dataset_id || batchRecord?.dataset_id || "");
-  const datasetState = useApi<{ dataset?: AnyRecord }>(datasetId ? `/datasets/${encodeURIComponent(datasetId)}` : null);
+  // The run already lists its source datasets by name; only fetch when that name is unknown, since
+  // run-only access does not include reading the source dataset itself.
+  const knownSource = sourceDatasets.find(item => String(item.id || item.dataset_id || "") === datasetId);
+  const datasetState = useApi<{ dataset?: AnyRecord }>(datasetId && batch.data && !knownSource?.name ? `/datasets/${encodeURIComponent(datasetId)}` : null);
   const selectedMemberId = memberId || idOf(normalizedTask?.member_id || member?.id);
   const selectedMemberQuery = selectedMemberId ? `?member_id=${encodeURIComponent(selectedMemberId)}` : "";
   const steps = useMemo(() => stepsOf(normalizedTask), [normalizedTask]);
@@ -352,7 +355,7 @@ export function TrajectoryPage() {
   const draftProposals = taxonomyState.data?.proposals || [];
 
   const datasetRecord = datasetState.data?.dataset || datasetState.data as AnyRecord | null;
-  const datasetName = String(datasetRecord?.name || sourceDatasets[0]?.name || "Dataset");
+  const datasetName = String(datasetRecord?.name || knownSource?.name || sourceDatasets[0]?.name || "Dataset");
   const sourceScreenshotMissing = selectedStep?.artifact_status === "missing" || (!screenshotUrl && Boolean(selectedStep?.screenshot || selectedStep?.screenshot_path || selectedStep?.artifact_id));
   const screenshotMessage = screenshotUrl
     ? screenshotLoadFailed ? "Screenshot source exists, but it could not be loaded." : ""
