@@ -89,7 +89,10 @@ export function TrajectoryPage() {
   const detailState = useApi<TrajectoryResponse>(
     batchId && taskId ? `/runs/${encodeURIComponent(batchId)}/tasks/${encodeURIComponent(taskId)}${memberQuery}` : null,
   );
-  const tasks = Array.isArray(tasksState.data) ? tasksState.data : tasksState.data?.items || [];
+  const tasks = useMemo(
+    () => (Array.isArray(tasksState.data) ? tasksState.data : tasksState.data?.items || []),
+    [tasksState.data],
+  );
   const response = detailState.data;
   const member = response?.member;
   const directTask =
@@ -98,9 +101,10 @@ export function TrajectoryPage() {
       : undefined;
   const task = response?.task || member?.task || (member && member.steps ? member : undefined) || directTask;
   const review = response?.review || task?.review || member?.review || directTask?.review;
-  const normalizedTask: TaskRecord | undefined = task
-    ? { ...task, task_id: taskKey(task) || taskId, review: review || task.review }
-    : undefined;
+  const normalizedTask = useMemo<TaskRecord | undefined>(
+    () => (task ? { ...task, task_id: taskKey(task) || taskId, review: review || task.review } : undefined),
+    [task, review, taskId],
+  );
   const batchRecord = batch.data?.run || batch.data?.batch || (batch.data as BatchRecord | null);
   const sourceDatasets = Array.isArray((batch.data as AnyRecord | null)?.source_datasets)
     ? ((batch.data as AnyRecord).source_datasets as AnyRecord[])
@@ -123,7 +127,9 @@ export function TrajectoryPage() {
   const selectedMemberQuery = selectedMemberId ? `?member_id=${encodeURIComponent(selectedMemberId)}` : "";
   const steps = useMemo(() => stepsOf(normalizedTask), [normalizedTask]);
   const episodes = useMemo(() => episodesOf(review), [review]);
-  const [stepIndex, setStepIndex] = useState(0);
+  // The URL's step_id names the selected step; without one (or if it is unknown) the first step is shown.
+  const requestedIndex = requestedStepId ? steps.findIndex(step => stepId(step) === requestedStepId) : -1;
+  const stepIndex = Math.max(requestedIndex, 0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [stepPickerOpen, setStepPickerOpen] = useState(false);
   const theme = useTheme();
@@ -139,17 +145,14 @@ export function TrajectoryPage() {
   const screenshotRef = useRef<HTMLDivElement>(null);
   const stepListRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setStepIndex(0);
-  }, [taskId, memberId]);
-  useEffect(() => {
-    if (detailState.loading) return;
-    const index = requestedStepId ? steps.findIndex(step => stepId(step) === requestedStepId) : -1;
-    setStepIndex(index >= 0 ? index : 0);
-  }, [detailState.loading, requestedStepId, steps]);
-  useEffect(() => {
-    setFeedback(Array.isArray(response?.feedback) ? response.feedback : []);
-  }, [response?.feedback, taskId, memberId]);
+  // Recorded feedback is replaced whenever another task or a fresh response loads; local additions append.
+  const recordedFeedback = response?.feedback;
+  const feedbackScope = `${taskId}:${memberId}`;
+  const [feedbackFor, setFeedbackFor] = useState({ scope: feedbackScope, source: recordedFeedback });
+  if (feedbackFor.scope !== feedbackScope || feedbackFor.source !== recordedFeedback) {
+    setFeedbackFor({ scope: feedbackScope, source: recordedFeedback });
+    setFeedback(Array.isArray(recordedFeedback) ? recordedFeedback : []);
+  }
   useEffect(() => {
     if (detailState.loading) return;
     requestAnimationFrame(() => screenshotRef.current?.scrollIntoView({ block: "start" }));
@@ -159,9 +162,12 @@ export function TrajectoryPage() {
   useEffect(() => {
     if (selectedStepId) requestAnimationFrame(() => screenshotRef.current?.scrollIntoView({ block: "start" }));
   }, [selectedStepId]);
-  useEffect(() => {
+  // A failed screenshot is retried when another step is selected.
+  const [screenshotStateFor, setScreenshotStateFor] = useState(selectedStepId);
+  if (screenshotStateFor !== selectedStepId) {
+    setScreenshotStateFor(selectedStepId);
     setScreenshotLoadFailed(false);
-  }, [selectedStepId]);
+  }
   useEffect(() => {
     if (stepPickerOpen)
       requestAnimationFrame(() =>
@@ -215,7 +221,6 @@ export function TrajectoryPage() {
   const alignScreenshot = () => screenshotRef.current?.scrollIntoView({ block: "start" });
   const changeStep = (nextIndex: number) => {
     const boundedIndex = Math.max(0, Math.min(steps.length - 1, nextIndex));
-    setStepIndex(boundedIndex);
     setStepPickerOpen(false);
     const nextId = steps[boundedIndex] ? stepId(steps[boundedIndex]) : "";
     const nextParams = new URLSearchParams(searchParams);

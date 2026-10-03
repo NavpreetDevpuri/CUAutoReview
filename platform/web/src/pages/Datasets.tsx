@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   Alert,
@@ -588,8 +588,8 @@ function DatasetLifecycle({
 export function DatasetDetailPage() {
   const { id = "" } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [includeArchived, setIncludeArchived] = useState(searchParams.get("include_archived") === "true");
-  useEffect(() => setIncludeArchived(searchParams.get("include_archived") === "true"), [searchParams]);
+  // The URL is the single source of truth for showing archived records.
+  const includeArchived = searchParams.get("include_archived") === "true";
   const [showArchivedTasks, setShowArchivedTasks] = useState(false);
   const [expandedTaskId, setExpandedTaskId] = useState("");
   const includeTaskArchive = showArchivedTasks || includeArchived;
@@ -680,7 +680,6 @@ export function DatasetDetailPage() {
             <DatasetLifecycle
               dataset={dataset}
               onChanged={archived => {
-                setIncludeArchived(archived);
                 setSearchParams(archived ? { include_archived: "true" } : {}, { replace: true });
               }}
             />

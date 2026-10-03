@@ -182,8 +182,8 @@ function reviewFlagsAtStep(row: Row, stepId: string) {
 export function DatasetTaskPage() {
   const { id: datasetId = "", taskId = "" } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [includeArchived, setIncludeArchived] = useState(searchParams.get("include_archived") === "true");
-  useEffect(() => setIncludeArchived(searchParams.get("include_archived") === "true"), [searchParams]);
+  // The URL is the single source of truth for showing archived records.
+  const includeArchived = searchParams.get("include_archived") === "true";
   const archiveQuery = includeArchived ? "?include_archived=true" : "";
   const detail = useApi<TaskHistory>(
     datasetId && taskId
@@ -201,7 +201,7 @@ export function DatasetTaskPage() {
   const [stepPickerOpen, setStepPickerOpen] = useState(false);
   const theme = useTheme();
   const compactSteps = useMediaQuery(theme.breakpoints.down("md"));
-  const [selectedSourceStepId, setSelectedSourceStepId] = useState("");
+  const [chosenSourceStepId, setSelectedSourceStepId] = useState("");
   const [sourceScreenshotFailed, setSourceScreenshotFailed] = useState(false);
   const sourceEvidenceRef = useRef<HTMLDivElement>(null);
   const sourceStepListRef = useRef<HTMLDivElement>(null);
@@ -242,7 +242,13 @@ export function DatasetTaskPage() {
   const sourceSteps = Array.isArray(task.steps) ? task.steps : [];
   const currentRevisionId = String(revision.id || revision.revision_id || revision.task_revision_id || "");
   const sourceSlots = buildSourceStepSlots(sourceSteps);
-  const sourceStepSignature = sourceSlots.map(slot => `${slot.id}:${slot.index}`).join("|");
+  // A chosen step that is not in this task or revision falls back to the first source step.
+  const firstSourceStepId = sourceSteps[0] ? String(sourceSteps[0].step_id ?? 1) : "";
+  const selectedSourceStepId = sourceSteps.some(
+    (step, index) => String(step.step_id ?? index + 1) === chosenSourceStepId,
+  )
+    ? chosenSourceStepId
+    : firstSourceStepId;
   const allReviewOptions = reviews.map((review, index) => ({ review, key: reviewIdForFilter(review, index) }));
   const reviewOptions = (
     currentRevisionId
@@ -267,6 +273,24 @@ export function DatasetTaskPage() {
   const [backendFilter, setBackendFilter] = useState("all");
   const [modelFilter, setModelFilter] = useState("all");
   const [selectedReviewIds, setSelectedReviewIds] = useState<string[]>([]);
+  // Filters and selections belong to one task revision; opening another starts fresh.
+  const pageKey = `${datasetId}:${taskId}:${currentRevisionId}`;
+  const [pageStateFor, setPageStateFor] = useState(pageKey);
+  if (pageStateFor !== pageKey) {
+    setPageStateFor(pageKey);
+    setSourceReviewFilter("all");
+    setSelectedSourceStepId("");
+    setStepPickerOpen(false);
+    setSelectedReviewIds([]);
+    setBackendFilter("all");
+    setModelFilter("all");
+  }
+  // A failed screenshot is retried when another step is selected.
+  const [screenshotStateFor, setScreenshotStateFor] = useState(selectedSourceStepId);
+  if (screenshotStateFor !== selectedSourceStepId) {
+    setScreenshotStateFor(selectedSourceStepId);
+    setSourceScreenshotFailed(false);
+  }
   const backendOptions = [...new Set(reviews.map(review => String(review.backend || "")).filter(Boolean))].sort();
   const modelOptions = [...new Set(reviews.map(review => String(review.model || "")).filter(Boolean))].sort();
   const filteredReviews = reviews.filter(
@@ -306,7 +330,6 @@ export function DatasetTaskPage() {
     try {
       await apiRequest(`/tasks/${encodeURIComponent(taskId)}/${archived ? "restore" : "archive"}`, { method: "POST" });
       const nextArchived = !archived;
-      setIncludeArchived(nextArchived);
       setSearchParams(nextArchived ? { include_archived: "true" } : {}, { replace: true });
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Task status could not be changed.");
@@ -322,24 +345,6 @@ export function DatasetTaskPage() {
     requestAnimationFrame(() => sourceEvidenceRef.current?.scrollIntoView({ block: "start" }));
   };
 
-  useEffect(() => {
-    setSourceReviewFilter("all");
-    setSelectedSourceStepId("");
-    setStepPickerOpen(false);
-    setSelectedReviewIds([]);
-    setBackendFilter("all");
-    setModelFilter("all");
-  }, [datasetId, taskId, currentRevisionId]);
-  useEffect(() => {
-    const firstStep = sourceSteps[0];
-    if (
-      !selectedSourceStepId ||
-      !sourceSteps.some((step, index) => String(step.step_id ?? index + 1) === selectedSourceStepId)
-    ) {
-      setSelectedSourceStepId(firstStep ? String(firstStep.step_id ?? 1) : "");
-    }
-  }, [datasetId, taskId, sourceStepSignature]);
-  useEffect(() => setSourceScreenshotFailed(false), [selectedSourceStepId]);
   useEffect(() => {
     const list = sourceStepListRef.current;
     const selected = list?.querySelector<HTMLButtonElement>('[aria-current="step"]');

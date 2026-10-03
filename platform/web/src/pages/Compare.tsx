@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -19,6 +19,7 @@ import { PageBreadcrumbs, PageHeader, Panel } from "../components/Page";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import { StatusTag } from "../components/StatusTag";
 import { formatDate } from "../lib/format";
+import { usePostQuery } from "../hooks/usePostQuery";
 interface Step {
   step_id: string;
   review_status: string;
@@ -81,37 +82,26 @@ export function ComparePage() {
   const [params] = useSearchParams();
   const left = params.get("left"),
     right = params.get("right");
-  const [data, setData] = useState<Comparison | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [onlyDifferent, setOnlyDifferent] = useState(true);
   const [note, setNote] = useState("");
   const [flagged, setFlagged] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [nonce, setNonce] = useState(0);
-  useEffect(() => {
-    if (!left || !right) return;
-    let alive = true;
-    setLoading(true);
-    setError("");
+  const comparison = usePostQuery<Comparison>(
+    left && right ? "/analytics/compare" : null,
+    { result_ids: [left, right] },
+    nonce,
+    "Could not compare reviews.",
+  );
+  const { data, loading } = comparison;
+  // Flags belong to one pair of reviews; a new pair or a reload clears them.
+  const pairKey = `${left}:${right}:${nonce}`;
+  const [flaggedFor, setFlaggedFor] = useState(pairKey);
+  if (flaggedFor !== pairKey) {
+    setFlaggedFor(pairKey);
     setFlagged([]);
-    apiRequest<Comparison>("/analytics/compare", {
-      method: "POST",
-      body: JSON.stringify({ result_ids: [left, right] }),
-    })
-      .then(value => {
-        if (alive) setData(value);
-      })
-      .catch(reason => {
-        if (alive) setError(reason instanceof Error ? reason.message : "Could not compare reviews.");
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [left, right, nonce]);
+  }
   const reviews: Review[] = useMemo(
     () =>
       (data?.results || []).map(
@@ -190,7 +180,15 @@ export function ComparePage() {
         />
       )}
       {loading && <LoadingState label="Aligning review evidence…" />}
-      {error && <ErrorState message={error} onRetry={() => setNonce(n => n + 1)} />}
+      {(error || comparison.error) && (
+        <ErrorState
+          message={error || comparison.error}
+          onRetry={() => {
+            setError("");
+            setNonce(n => n + 1);
+          }}
+        />
+      )}
       {!loading && data && (
         <>
           <Alert severity="info" sx={{ mb: 2 }}>

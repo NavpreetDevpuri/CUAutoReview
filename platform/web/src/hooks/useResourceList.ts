@@ -7,16 +7,32 @@ import { failureMessage, type LoadState } from "./useApi";
 /** Largest page every react-admin resource list endpoint accepts. */
 const RESOURCE_PAGE_SIZE = 200;
 
-/** Lists a react-admin resource across all pages. Pass `null` to skip the request entirely. */
+interface ListSnapshot<T> {
+  key: string | null;
+  data: T[];
+  total: number;
+  error: string;
+  settled: boolean;
+}
+
+const EMPTY_LIST: never[] = [];
+
+/**
+ * Lists a react-admin resource across all pages. Pass `null` to skip the request entirely.
+ * State is keyed by resource, so switching resources never exposes the previous list as current.
+ */
 export function useResourceList<T>(
   resource: string | null,
   reloadKey = 0,
 ): Omit<LoadState<T[]>, "data"> & { data: T[]; total: number } {
   const provider = useDataProvider();
-  const [data, setData] = useState<T[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(Boolean(resource));
-  const [error, setError] = useState("");
+  const [snapshot, setSnapshot] = useState<ListSnapshot<T>>({
+    key: null,
+    data: EMPTY_LIST,
+    total: 0,
+    error: "",
+    settled: !resource,
+  });
   const [nonce, setNonce] = useState(0);
   const generation = useRef(0);
   const refreshing = useRef(false);
@@ -41,40 +57,58 @@ export function useResourceList<T>(
     try {
       const result = await fetchAll(resource);
       if (generation.current === started) {
-        setData(result.items);
-        setTotal(result.total);
-        setError("");
+        setSnapshot(current =>
+          current.key === resource
+            ? { key: resource, data: result.items, total: result.total, error: "", settled: true }
+            : current,
+        );
       }
     } catch (reason) {
-      if (generation.current === started && endsSession(reason))
-        setError(failureMessage(reason, "Could not load records"));
+      // A failed background refresh keeps the last good list; only a lost session is surfaced.
+      if (generation.current === started && endsSession(reason)) {
+        setSnapshot(current =>
+          current.key === resource ? { ...current, error: failureMessage(reason, "Could not load records") } : current,
+        );
+      }
     } finally {
       refreshing.current = false;
     }
   }, [fetchAll, resource]);
   useEffect(() => {
     const started = ++generation.current;
-    setError("");
-    if (!resource) {
-      setData([]);
-      setTotal(0);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
+    // A skipped request needs no state change: results are derived from the snapshot's key.
+    if (!resource) return;
+    setSnapshot(current => ({
+      key: resource,
+      data: current.key === resource ? current.data : EMPTY_LIST,
+      total: current.key === resource ? current.total : 0,
+      error: "",
+      settled: false,
+    }));
     fetchAll(resource)
       .then(result => {
         if (generation.current === started) {
-          setData(result.items);
-          setTotal(result.total);
+          setSnapshot({ key: resource, data: result.items, total: result.total, error: "", settled: true });
         }
       })
       .catch(reason => {
-        if (generation.current === started) setError(failureMessage(reason, "Could not load records"));
-      })
-      .finally(() => {
-        if (generation.current === started) setLoading(false);
+        if (generation.current === started) {
+          setSnapshot(current => ({
+            ...current,
+            key: resource,
+            error: failureMessage(reason, "Could not load records"),
+            settled: true,
+          }));
+        }
       });
   }, [fetchAll, resource, reloadKey, nonce]);
-  return { data, total, loading, error, reload, refreshQuietly };
+  const current = snapshot.key === resource;
+  return {
+    data: current ? snapshot.data : EMPTY_LIST,
+    total: current ? snapshot.total : 0,
+    loading: resource ? !current || !snapshot.settled : false,
+    error: current ? snapshot.error : "",
+    reload,
+    refreshQuietly,
+  };
 }

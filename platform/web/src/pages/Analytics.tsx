@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -20,7 +20,6 @@ import FilterAltRounded from "@mui/icons-material/FilterAltRounded";
 import CompareArrowsRounded from "@mui/icons-material/CompareArrowsRounded";
 import RefreshRounded from "@mui/icons-material/RefreshRounded";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
-import { apiRequest } from "../api/client";
 import { MetricCard } from "../components/MetricCard";
 import { PageHeader, Panel, SectionTitle } from "../components/Page";
 import {
@@ -33,6 +32,7 @@ import {
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import { StatusTag } from "../components/StatusTag";
 import { useApi } from "../hooks/useApi";
+import { usePostQuery } from "../hooks/usePostQuery";
 
 export interface AnalyticsRow {
   run_id: string | null;
@@ -91,41 +91,30 @@ export function AnalyticsPage() {
     [params],
   );
   const [filterOpen, setFilterOpen] = useState(false);
-  const [data, setData] = useState<Analytics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [nonce, setNonce] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
   const catalog = useApi<Catalog>("/catalog");
   const names = new Map(
     catalog.data?.tasks.map(task => [task.task_definition_id || task.id, task.title || task.task_id]) || [],
   );
-  useEffect(() => {
-    let alive = true;
-    setLoading(true);
-    setError("");
+  const query = usePostQuery<Analytics>(
+    "/analytics/query",
+    {
+      dataset_ids: selection.datasetIds,
+      run_ids: selection.runIds,
+      task_definition_ids: selection.taskDefinitionIds,
+    },
+    nonce,
+    "Analytics could not load.",
+  );
+  const { data, loading, error } = query;
+  // Review selections belong to one result set; a new filter or refresh clears them.
+  const resultKey = `${JSON.stringify(selection)}:${nonce}`;
+  const [selectedFor, setSelectedFor] = useState(resultKey);
+  if (selectedFor !== resultKey) {
+    setSelectedFor(resultKey);
     setSelected([]);
-    apiRequest<Analytics>("/analytics/query", {
-      method: "POST",
-      body: JSON.stringify({
-        dataset_ids: selection.datasetIds,
-        run_ids: selection.runIds,
-        task_definition_ids: selection.taskDefinitionIds,
-      }),
-    })
-      .then(value => {
-        if (alive) setData(value);
-      })
-      .catch(reason => {
-        if (alive) setError(reason instanceof Error ? reason.message : "Analytics could not load.");
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [selection, nonce]);
+  }
   const apply = (value: Selection) => {
     const next = new URLSearchParams();
     value.datasetIds.forEach(id => next.append("dataset", id));

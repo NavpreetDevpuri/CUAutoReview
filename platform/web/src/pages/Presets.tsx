@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -110,14 +110,14 @@ export function PresetsPage() {
   }, [providers.data]);
   const availableModels = modelCatalog.data?.backend === backend ? modelCatalog.data.models : [];
   const selectedModel = availableModels.find(item => item.id === model);
-  useEffect(() => {
-    if (!open || model || modelCatalog.loading || modelCatalog.data?.backend !== backend) return;
+  // Suggest the provider's preferred model once its catalog loads, until the user picks one.
+  if (open && !model && !modelCatalog.loading && modelCatalog.data?.backend === backend) {
     const next = preferredModel(availableModels, backend);
     if (next) {
       setModel(next.id);
       setBudget(suggestedBudget(next).toFixed(2));
     }
-  }, [open, model, backend, modelCatalog.data, modelCatalog.loading]);
+  }
   const replay = backend === "saved_replay";
   const validBudget = replay || (Number(budget) > 0 && Number(budget) <= 0.5);
   const canCreate =

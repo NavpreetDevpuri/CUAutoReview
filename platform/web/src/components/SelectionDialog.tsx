@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -63,6 +63,8 @@ export function selectionSummary(value: Selection): string {
   return parts.length ? parts.join(" · ") : "All accessible data";
 }
 
+const EMPTY_CATALOG: Catalog = { datasets: [], runs: [], tasks: [] };
+
 export function SelectionDialog({
   open,
   onClose,
@@ -80,16 +82,19 @@ export function SelectionDialog({
   const [draft, setDraft] = useState<Selection>(value);
   const [tab, setTab] = useState("datasets");
   const [query, setQuery] = useState("");
-  useEffect(() => {
+  // Each opening starts from the applied selection, not an abandoned draft.
+  const [wasOpen, setWasOpen] = useState(false);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setDraft(value);
       setQuery("");
       setTab("datasets");
     }
-  }, [open]);
-  const data = catalog.data || { datasets: [], runs: [], tasks: [] };
+  }
+  const data = catalog.data ?? EMPTY_CATALOG;
   const scope = mode === "scope";
-  const datasetNames = new Map(data.datasets.map(item => [item.id, item.name]));
+  const datasetNames = useMemo(() => new Map(data.datasets.map(item => [item.id, item.name])), [data.datasets]);
   const effectiveTaskIds = useMemo(
     () =>
       new Set(
@@ -127,7 +132,7 @@ export function SelectionDialog({
             .includes(q),
         ),
     );
-  }, [tab, data, query, draft.datasetIds]);
+  }, [tab, data, query, draft.datasetIds, scope, datasetNames]);
   const checked = (item: CatalogItem) => {
     if (scope && tab === "datasets") {
       const ids = data.tasks.filter(task => task.dataset_id === item.id).map(definitionId);

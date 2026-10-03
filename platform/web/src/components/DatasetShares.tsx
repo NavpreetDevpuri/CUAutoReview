@@ -22,6 +22,7 @@ import PersonAddAlt1Rounded from "@mui/icons-material/PersonAddAlt1Rounded";
 import { apiRequest } from "../api/client";
 import { Panel, SectionTitle } from "./Page";
 import { ErrorState, LoadingState } from "./States";
+import { useApi } from "../hooks/useApi";
 
 type ShareRole = "viewer" | "reviewer" | "manager";
 type Row = Record<string, unknown>;
@@ -69,32 +70,20 @@ function sharesToDirectory(shares: ShareState): DirectoryRecord[] {
 }
 
 export function DatasetShares({ datasetId }: { datasetId: string }) {
-  const [shares, setShares] = useState<ShareState | null>(null);
-  const [loading, setLoading] = useState(true);
+  const sharesState = useApi<ShareState>(`/datasets/${encodeURIComponent(datasetId)}/shares`);
+  const shares = sharesState.data;
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [open, setOpen] = useState(false);
-  const [workspaceShared, setWorkspaceShared] = useState(false);
+  // Optimistic value while a workspace-sharing change is saving; otherwise the saved state is shown.
+  const [pendingWorkspace, setPendingWorkspace] = useState<boolean | null>(null);
+  const workspaceShared = pendingWorkspace ?? Boolean(shares?.workspace_shared);
   const [selected, setSelected] = useState<DirectoryRecord | null>(null);
   const [role, setRole] = useState<ShareRole>("reviewer");
   const [query, setQuery] = useState("");
   const [directory, setDirectory] = useState<DirectoryRecord[]>([]);
   const [busy, setBusy] = useState(false);
   const existing = useMemo(() => sharesToDirectory(shares || {}), [shares]);
-  const load = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      setShares(await apiRequest<ShareState>(`/datasets/${encodeURIComponent(datasetId)}/shares`));
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Dataset sharing could not be loaded.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    void load();
-  }, [datasetId]);
   useEffect(() => {
     let active = true;
     const timer = window.setTimeout(() => {
@@ -150,12 +139,11 @@ export function DatasetShares({ datasetId }: { datasetId: string }) {
       const teams = nextRows
         .filter(row => row.kind === "team")
         .map(row => ({ target_id: row.id, role: row.role || "reviewer" }));
-      const result = await apiRequest<ShareState>(`/datasets/${encodeURIComponent(datasetId)}/shares`, {
+      await apiRequest<ShareState>(`/datasets/${encodeURIComponent(datasetId)}/shares`, {
         method: "PUT",
         body: JSON.stringify({ workspace_shared: nextWorkspace, users, teams }),
       });
-      setShares(result);
-      setWorkspaceShared(Boolean(result.workspace_shared));
+      await sharesState.refreshQuietly();
       setNotice("Dataset access updated.");
       setOpen(false);
       setSelected(null);
@@ -166,9 +154,6 @@ export function DatasetShares({ datasetId }: { datasetId: string }) {
       setBusy(false);
     }
   };
-  useEffect(() => {
-    setWorkspaceShared(Boolean(shares?.workspace_shared));
-  }, [shares?.workspace_shared]);
   const add = () => {
     if (!selected || existing.some(row => row.kind === selected.kind && row.id === selected.id)) return;
     void save(workspaceShared, [...existing, { ...selected, role }]);
@@ -179,8 +164,8 @@ export function DatasetShares({ datasetId }: { datasetId: string }) {
       existing.filter(row => !(row.kind === record.kind && row.id === record.id)),
     );
   const setWorkspace = (value: boolean) => {
-    setWorkspaceShared(value);
-    void save(value, existing);
+    setPendingWorkspace(value);
+    void save(value, existing).finally(() => setPendingWorkspace(null));
   };
 
   return (
@@ -202,13 +187,21 @@ export function DatasetShares({ datasetId }: { datasetId: string }) {
             </Button>
           }
         />
-        {error && <ErrorState message={error} onRetry={() => void load()} />}
+        {(error || sharesState.error) && (
+          <ErrorState
+            message={error || sharesState.error}
+            onRetry={() => {
+              setError("");
+              sharesState.reload();
+            }}
+          />
+        )}
         {notice && (
           <Alert severity="success" onClose={() => setNotice("")} sx={{ mb: 1.2 }}>
             {notice}
           </Alert>
         )}
-        {loading ? (
+        {sharesState.loading ? (
           <LoadingState label="Loading dataset access…" />
         ) : (
           <Stack gap={1.1}>

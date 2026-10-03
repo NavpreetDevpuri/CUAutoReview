@@ -1,6 +1,7 @@
-import type { AuthProvider, DataProvider } from "react-admin";
+import type { AuthProvider, DataProvider, Identifier, RaRecord } from "react-admin";
 import { endsSession } from "./sessionErrors";
 import type { ApiErrorShape, ListResult, SessionUser } from "./types";
+import { asRecord } from "../lib/records";
 
 export class ApiError extends Error {
   status: number;
@@ -84,6 +85,16 @@ function recordId(resource: string, value: Record<string, unknown>): string {
   return String(id ?? "");
 }
 
+/** Unwrap an optional `{ data }` envelope from a single-record response. */
+function recordBody(body: unknown): Record<string, unknown> {
+  return asRecord(body && typeof body === "object" && "data" in body ? (body as { data: unknown }).data : body);
+}
+
+/** Give a record the `id` react-admin keys on, falling back to resource-specific ID fields. */
+function withId<RecordType extends RaRecord>(resource: string, value: Record<string, unknown>): RecordType {
+  return { ...value, id: (value.id ?? recordId(resource, value)) as Identifier } as RecordType;
+}
+
 export const dataProvider: DataProvider = {
   async getList(resource, params) {
     const query = new URLSearchParams();
@@ -100,15 +111,11 @@ export const dataProvider: DataProvider = {
     }
     const suffix = query.size ? `?${query.toString()}` : "";
     const result = listEnvelope(await apiRequest<unknown>(`/${resource}${suffix}`));
-    return {
-      data: result.data.map(item => ({ ...item, id: item.id ?? recordId(resource, item) })),
-      total: result.total,
-    } as any;
+    return { data: result.data.map(item => withId(resource, item)), total: result.total };
   },
   async getOne(resource, params) {
     const body = await apiRequest<Record<string, unknown>>(`/${resource}/${encodeURIComponent(String(params.id))}`);
-    const record = (body && typeof body === "object" && "data" in body ? body.data : body) as Record<string, unknown>;
-    return { data: { ...record, id: record.id ?? recordId(resource, record) } } as any;
+    return { data: withId(resource, recordBody(body)) };
   },
   async getMany(resource, params) {
     const records = await Promise.all(params.ids.map(id => this.getOne(resource, { id })));
@@ -122,16 +129,14 @@ export const dataProvider: DataProvider = {
       method: "POST",
       body: JSON.stringify(params.data),
     });
-    const record = (body && typeof body === "object" && "data" in body ? body.data : body) as Record<string, unknown>;
-    return { data: { ...record, id: record.id ?? recordId(resource, record) } } as any;
+    return { data: withId(resource, recordBody(body)) };
   },
   async update(resource, params) {
     const body = await apiRequest<Record<string, unknown>>(`/${resource}/${encodeURIComponent(String(params.id))}`, {
       method: "PATCH",
       body: JSON.stringify(params.data),
     });
-    const record = (body && typeof body === "object" && "data" in body ? body.data : body) as Record<string, unknown>;
-    return { data: { ...record, id: record.id ?? recordId(resource, record) } } as any;
+    return { data: withId(resource, recordBody(body)) };
   },
   async updateMany(resource, params) {
     await Promise.all(
@@ -149,7 +154,7 @@ export const dataProvider: DataProvider = {
       `/${resource}/${encodeURIComponent(String(params.id))}`,
       { method: "DELETE" },
     );
-    return { data: { ...(params.previousData || old || {}), id: params.id } } as any;
+    return { data: withId(resource, { ...(params.previousData ?? old ?? {}), id: params.id }) };
   },
   async deleteMany(resource, params) {
     await Promise.all(

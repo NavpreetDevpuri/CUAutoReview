@@ -278,24 +278,26 @@ export function BatchesPage() {
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const [composerOpen, setComposerOpen] = useState(false);
-  const initialDatasetIds = search.get("dataset_id") ? [search.get("dataset_id")!] : [];
+  const datasetFilter = search.get("dataset_id") || "";
+  const initialDatasetIds = useMemo(() => (datasetFilter ? [datasetFilter] : []), [datasetFilter]);
   const allRuns = records(runs.data);
   const visibleRuns = useMemo(() => {
-    if (!initialDatasetIds.length) return allRuns;
+    if (!datasetFilter) return allRuns;
     return allRuns.filter(
       run =>
-        run.dataset_id === initialDatasetIds[0] ||
-        run.source_datasets?.some(dataset => String(dataset.id || dataset.dataset_id) === initialDatasetIds[0]),
+        run.dataset_id === datasetFilter ||
+        run.source_datasets?.some(dataset => String(dataset.id || dataset.dataset_id) === datasetFilter),
     );
-  }, [allRuns, initialDatasetIds.join("|")]);
+  }, [allRuns, datasetFilter]);
   const activeRun = visibleRuns.some(run =>
     ["running", "paused"].includes(String(run.status || run.processing_status).toLowerCase()),
   );
+  const { refreshQuietly: refreshRuns } = runs;
   useEffect(() => {
     if (!activeRun) return;
-    const timer = window.setInterval(() => void runs.refreshQuietly(), 3000);
+    const timer = window.setInterval(() => void refreshRuns(), 3000);
     return () => window.clearInterval(timer);
-  }, [activeRun, runs.refreshQuietly]);
+  }, [activeRun, refreshRuns]);
   return (
     <>
       <PageHeader
@@ -464,8 +466,8 @@ export function BatchesPage() {
 export function BatchDetailPage() {
   const { id = "" } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [includeArchived, setIncludeArchived] = useState(searchParams.get("include_archived") === "true");
-  useEffect(() => setIncludeArchived(searchParams.get("include_archived") === "true"), [searchParams]);
+  // The URL is the single source of truth for showing archived records.
+  const includeArchived = searchParams.get("include_archived") === "true";
   const navigate = useNavigate();
   const archiveQuery = includeArchived ? "?include_archived=true" : "";
   const detail = useApi<RunDetailResponse>(id ? `/runs/${encodeURIComponent(id)}${archiveQuery}` : null);
@@ -493,14 +495,16 @@ export function BatchDetailPage() {
   const datasetId = String(primaryDataset?.id || primaryDataset?.dataset_id || run?.dataset_id || "");
   const datasetName = String(primaryDataset?.name || primaryDataset?.dataset_name || run?.dataset_name || "Dataset");
   const showDatasetBreadcrumb = sourceDatasets.length <= 1;
+  const { refreshQuietly: refreshDetail } = detail;
+  const { refreshQuietly: refreshTasks } = tasksState;
   useEffect(() => {
     if (!id || !["running", "paused"].includes(status)) return;
     const timer = window.setInterval(() => {
-      void detail.refreshQuietly();
-      void tasksState.refreshQuietly();
+      void refreshDetail();
+      void refreshTasks();
     }, 2500);
     return () => window.clearInterval(timer);
-  }, [id, status, detail.refreshQuietly, tasksState.refreshQuietly]);
+  }, [id, status, refreshDetail, refreshTasks]);
   const runAction = async (action: "pause" | "resume" | "cancel" | "sync" | "archive" | "restore") => {
     setBusy(action);
     setError("");
@@ -519,7 +523,6 @@ export function BatchDetailPage() {
       setConfirmCancel(false);
       if (action === "archive" || action === "restore") {
         const nextArchived = action === "archive";
-        setIncludeArchived(nextArchived);
         setSearchParams(nextArchived ? { include_archived: "true" } : {}, { replace: true });
       } else {
         await detail.reload();

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Autocomplete,
@@ -124,24 +124,32 @@ export function RunComposer({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [preparedId, setPreparedId] = useState<string | null>(null);
-  useEffect(() => {
-    if (!open) return;
-    setSelection({ datasetIds: initialDatasetIds, taskDefinitionIds: initialTaskDefinitionIds, runIds: [] });
-    setName(`Review ${new Date().toLocaleDateString()}`);
-    setBackend("");
-    setModel("");
-    setBudget("0.10");
-    setAccepted(false);
-    setError("");
-    setPreparedId(null);
-    setSavedPresetId("");
-    setTeams([]);
-    setPeople([]);
-    setMaxImages(32);
-    setExecutionConfiguration({});
-  }, [open, sourceRunId]);
-  useEffect(() => {
-    if (!source.data) return;
+  // Every opening, or a different source run, starts from a fresh form.
+  const formKey = open ? `open:${sourceRunId ?? ""}` : null;
+  const [formFor, setFormFor] = useState<string | null>(null);
+  const [appliedSource, setAppliedSource] = useState<Run | null>(null);
+  if (formKey !== formFor) {
+    setFormFor(formKey);
+    if (formKey !== null) {
+      setSelection({ datasetIds: initialDatasetIds, taskDefinitionIds: initialTaskDefinitionIds, runIds: [] });
+      setName(`Review ${new Date().toLocaleDateString()}`);
+      setBackend("");
+      setModel("");
+      setBudget("0.10");
+      setAccepted(false);
+      setError("");
+      setPreparedId(null);
+      setSavedPresetId("");
+      setTeams([]);
+      setPeople([]);
+      setMaxImages(32);
+      setExecutionConfiguration({});
+      setAppliedSource(null);
+    }
+  }
+  // A rerun starts from the source run's pinned workflow and execution settings, applied once per load.
+  if (source.data && source.data !== appliedSource) {
+    setAppliedSource(source.data);
     const run = source.data;
     const execution = run.configuration?.execution_snapshot;
     setName(run.status === "draft" ? run.name : `${run.name} · new review`);
@@ -154,7 +162,7 @@ export function RunComposer({
       setMaxImages(Number(execution.configuration?.max_images ?? 32));
       setExecutionConfiguration(execution.configuration || {});
     }
-  }, [source.data]);
+  }
   const selectedTasks = useMemo(
     () =>
       (catalog.data?.tasks || []).filter(task =>
@@ -173,14 +181,14 @@ export function RunComposer({
   const chosenProvider = providers.data?.backends.find(item => item.id === backend);
   const availableModels = modelCatalog.data?.backend === backend ? modelCatalog.data.models : [];
   const selectedModel = availableModels.find(item => item.id === model);
-  useEffect(() => {
-    if (!open || model || sourceRunId || modelCatalog.loading || modelCatalog.data?.backend !== backend) return;
+  // Suggest the provider's preferred model once its catalog loads, until the user picks one.
+  if (open && !model && !sourceRunId && !modelCatalog.loading && modelCatalog.data?.backend === backend) {
     const next = preferredModel(availableModels, backend);
     if (next) {
       setModel(next.id);
       setBudget(suggestedBudget(next).toFixed(2));
     }
-  }, [open, backend, model, modelCatalog.data, modelCatalog.loading, sourceRunId]);
+  }
   const chosenWorkflow = workflows.data?.items.find(item => item.revision_id === workflow);
   const replay = backend === "saved_replay";
   const available = !!chosenProvider && chosenProvider.configured !== false && chosenProvider.supported !== false;
