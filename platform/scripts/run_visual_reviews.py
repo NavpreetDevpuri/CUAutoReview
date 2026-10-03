@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Run the explicitly selected visual-review check against the local platform.
+"""Replay the recorded 27 September 2026 visual-review experiment against the local platform.
 
-No provider keys are read by this script. Workers must already be enabled.
-Canary first, then remaining seven tasks, plus one optional matched Codex review.
+This starts PAID hosted inference, so it does nothing without --run. The dataset and task
+IDs below are specific to the workspace where the experiment was recorded; on another
+workspace, edit them first. No provider keys are read by this script; workers must already
+be enabled. Canary first, then remaining seven tasks, plus one optional matched Codex review.
 Each job uses the platform's bounded retry policy; this script never restarts it.
 """
 import argparse
@@ -21,7 +23,17 @@ MATCHED = '06fe7178-4491-4589-810f-2e2bc9502122'
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('scope', choices=['canary', 'remaining', 'codex'])
+    parser.add_argument('--run', action='store_true',
+                        help='Actually create and start the paid run; without it, only print the plan')
     args = parser.parse_args()
+    if not args.run:
+        backend, model = ('codex', 'gpt-6-sol') if args.scope == 'codex' else ('gemini_cli', 'gemini-3.8-flash')
+        print(json.dumps({'dry_run': True, 'scope': args.scope, 'backend': backend, 'model': model,
+                          'datasets': DATASETS, 'matched_task_id': MATCHED,
+                          'per_task_attempt_allowance_usd': 0.10, 'max_attempts_per_task': 4,
+                          'note': 'Hosted inference costs money. Re-run with --run to create and start this run.'},
+                         indent=2))
+        return
     api = Api()
     account = json.loads(ACCOUNT_FILE.read_text())
     api.call('POST', '/auth/login', {'email': account['email'], 'password': account['password']})

@@ -12,6 +12,8 @@ import time
 import urllib.error
 import urllib.request
 
+from seed_demo import private_write
+
 ROOT = Path(__file__).resolve().parents[2]
 BASE = os.getenv('CUAUTOREVIEW_URL', 'http://127.0.0.1:8000')
 RESULTS = []
@@ -44,9 +46,13 @@ def main():
         me=admin.call('POST','/auth/login', {'email':credentials['email'],'password':credentials['password']})
     else:
         credentials={'name':'Local Reviewer','email':'local-reviewer@cuautoreview.test','password':secrets.token_urlsafe(22)}
-        me=admin.call('POST','/auth/signup',credentials)
-        account_path.write_text(json.dumps(credentials,indent=2)+'\n')
-        account_path.chmod(0o600)
+        # Persist the generated password (0600, atomic) before signup can make it the only admin login.
+        private_write(account_path,json.dumps(credentials,indent=2)+'\n')
+        try:
+            me=admin.call('POST','/auth/signup',credentials)
+        except AssertionError:
+            account_path.unlink(missing_ok=True)  # The server rejected signup, so these credentials were never used.
+            raise
     assert me['role']=='admin'
     admin.call('GET','/auth/me')
     ok('Signup/login and first administrator')
