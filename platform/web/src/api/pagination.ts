@@ -34,12 +34,15 @@ export function withPageParams(path: string, page: number, perPage: number): str
 export function pageItems<T>(value: unknown): { items: T[]; total: number } {
   if (Array.isArray(value)) return { items: value as T[], total: value.length };
   const body = value as { items?: unknown; total?: unknown } | null;
-  const items = Array.isArray(body?.items) ? body.items as T[] : [];
+  const items = Array.isArray(body?.items) ? (body.items as T[]) : [];
   const total = typeof body?.total === "number" && Number.isFinite(body.total) ? body.total : items.length;
   return { items, total };
 }
 
-export async function collectPages<T>(fetchPage: (page: number) => Promise<unknown>, maxPages = DEFAULT_MAX_PAGES): Promise<PageEnvelope<T>> {
+export async function collectPages<T>(
+  fetchPage: (page: number) => Promise<unknown>,
+  maxPages = DEFAULT_MAX_PAGES,
+): Promise<PageEnvelope<T>> {
   const items: T[] = [];
   let total = 0;
   for (let page = 1; page <= Math.max(1, maxPages); page += 1) {

@@ -2,12 +2,17 @@ import { asRecord } from "./records";
 
 export function benchmarkResultLabel(task: Record<string, unknown>): string {
   const source = asRecord(task.source);
-  const datasets = Array.isArray(task.source_datasets) ? task.source_datasets.map(item => {
-    const dataset = asRecord(item);
-    return dataset.name || dataset.dataset_name || dataset.source_adapter;
-  }) : [];
+  const datasets = Array.isArray(task.source_datasets)
+    ? task.source_datasets.map(item => {
+        const dataset = asRecord(item);
+        return dataset.name || dataset.dataset_name || dataset.source_adapter;
+      })
+    : [];
   const origin = [source.dataset, source.benchmark, source.name, task.benchmark, task.source_adapter, ...datasets]
-    .filter(value => value !== null && value !== undefined).map(String).join(" ").toLowerCase();
+    .filter(value => value !== null && value !== undefined)
+    .map(String)
+    .join(" ")
+    .toLowerCase();
   return origin.includes("osworld") ? "OSWorld result" : "Framework result";
 }
 

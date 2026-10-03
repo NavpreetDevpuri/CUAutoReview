@@ -1,17 +1,158 @@
 import { useState } from "react";
-import { Alert, Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import PersonAddAlt1Rounded from "@mui/icons-material/PersonAddAlt1Rounded";
 import { apiRequest } from "../api/client";
 import { Panel, SectionTitle } from "./Page";
 import { useApi } from "../hooks/useApi";
-interface Person { id: string; name: string; email?: string; kind: "user" | "team" }
-interface Grant { id: string; team_id?: string; user_id?: string; team_name?: string; user_name?: string; email?: string; role?: string }
+interface Person {
+  id: string;
+  name: string;
+  email?: string;
+  kind: "user" | "team";
+}
+interface Grant {
+  id: string;
+  team_id?: string;
+  user_id?: string;
+  team_name?: string;
+  user_name?: string;
+  email?: string;
+  role?: string;
+}
 export function RunShares({ runId, grants, onChange }: { runId: string; grants: Grant[]; onChange: () => void }) {
- const [open,setOpen]=useState(false); const [query,setQuery]=useState(""); const [target,setTarget]=useState<Person|null>(null); const [role,setRole]=useState("reviewer"); const [busy,setBusy]=useState(false); const [error,setError]=useState("");
- const directory=useApi<{users: Omit<Person,"kind">[];teams: Omit<Person,"kind">[]}>(open?`/directory?q=${encodeURIComponent(query)}`:null);
- const options:Person[]=[...(directory.data?.users || []).map(person=>({...person,kind:"user" as const})),...(directory.data?.teams || []).map(team=>({...team,kind:"team" as const}))];
- const add=async()=>{if(!target)return;setBusy(true);setError("");try{await apiRequest(`/runs/${runId}/grants`,{method:"POST",body:JSON.stringify({[target.kind==="team"?"team_id":"user_id"]:target.id,role})});setOpen(false);setTarget(null);onChange();}catch(reason){setError(reason instanceof Error?reason.message:"Could not add access.");}finally{setBusy(false);}};
- const remove=async(id:string)=>{setBusy(true);setError("");try{await apiRequest(`/runs/${runId}/grants/${id}`,{method:"DELETE"});onChange();}catch(reason){setError(reason instanceof Error?reason.message:"Could not remove access.");}finally{setBusy(false);}};
- return <><Panel><SectionTitle title="Run access" subtitle="Named grants apply to this run and its pinned evidence." action={<Button size="small" startIcon={<PersonAddAlt1Rounded />} onClick={()=>setOpen(true)}>Add access</Button>}/>{error&&!open&&<Alert severity="error" sx={{mb:1}}>{error}</Alert>}<Stack gap={1}>{grants.map(grant=><Stack key={grant.id} direction="row" gap={1} justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={650}>{grant.team_name || grant.user_name || grant.email || grant.team_id || grant.user_id}</Typography><Typography color="text.secondary" sx={{fontSize:13}}>{grant.team_id?"Team":"Person"} · {grant.role}</Typography></Box><Button size="small" color="error" disabled={busy} onClick={()=>remove(grant.id)}>Remove</Button></Stack>)}{!grants.length&&<Typography color="text.secondary" sx={{fontSize:14}}>No additional run grants. Workspace administrators and effective source permissions still apply.</Typography>}</Stack></Panel>
- <Dialog open={open} onClose={()=>!busy&&setOpen(false)} fullWidth maxWidth="sm"><DialogTitle>Add run access</DialogTitle><DialogContent><Stack gap={2} sx={{pt:1}}>{(error||directory.error)&&<Alert severity="error">{error||directory.error}</Alert>}<Autocomplete options={options} filterOptions={values=>values} value={target} onChange={(_,value)=>setTarget(value)} inputValue={query} onInputChange={(_,value)=>setQuery(value)} isOptionEqualToValue={(a,b)=>a.id===b.id&&a.kind===b.kind} getOptionLabel={item=>`${item.name}${item.email?` (${item.email})`:" · Team"}`} renderInput={params=><TextField {...params} label="Name, email or team" autoFocus/>}/><TextField select label="Run role" value={role} onChange={event=>setRole(event.target.value)}>{["viewer","reviewer","manager"].map(value=><MenuItem value={value} key={value}>{value}</MenuItem>)}</TextField><Typography color="text.secondary" sx={{fontSize:13}}>This grants access to the run's selected tasks. It does not share unrelated tasks in the source datasets.</Typography></Stack></DialogContent><DialogActions sx={{p:2}}><Button onClick={()=>setOpen(false)} disabled={busy}>Cancel</Button><Button onClick={add} variant="contained" disabled={busy||!target}>Add access</Button></DialogActions></Dialog></>;
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [target, setTarget] = useState<Person | null>(null);
+  const [role, setRole] = useState("reviewer");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const directory = useApi<{ users: Omit<Person, "kind">[]; teams: Omit<Person, "kind">[] }>(
+    open ? `/directory?q=${encodeURIComponent(query)}` : null,
+  );
+  const options: Person[] = [
+    ...(directory.data?.users || []).map(person => ({ ...person, kind: "user" as const })),
+    ...(directory.data?.teams || []).map(team => ({ ...team, kind: "team" as const })),
+  ];
+  const add = async () => {
+    if (!target) return;
+    setBusy(true);
+    setError("");
+    try {
+      await apiRequest(`/runs/${runId}/grants`, {
+        method: "POST",
+        body: JSON.stringify({ [target.kind === "team" ? "team_id" : "user_id"]: target.id, role }),
+      });
+      setOpen(false);
+      setTarget(null);
+      onChange();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not add access.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  const remove = async (id: string) => {
+    setBusy(true);
+    setError("");
+    try {
+      await apiRequest(`/runs/${runId}/grants/${id}`, { method: "DELETE" });
+      onChange();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not remove access.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <Panel>
+        <SectionTitle
+          title="Run access"
+          subtitle="Named grants apply to this run and its pinned evidence."
+          action={
+            <Button size="small" startIcon={<PersonAddAlt1Rounded />} onClick={() => setOpen(true)}>
+              Add access
+            </Button>
+          }
+        />
+        {error && !open && (
+          <Alert severity="error" sx={{ mb: 1 }}>
+            {error}
+          </Alert>
+        )}
+        <Stack gap={1}>
+          {grants.map(grant => (
+            <Stack key={grant.id} direction="row" gap={1} justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography fontWeight={650}>
+                  {grant.team_name || grant.user_name || grant.email || grant.team_id || grant.user_id}
+                </Typography>
+                <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+                  {grant.team_id ? "Team" : "Person"} · {grant.role}
+                </Typography>
+              </Box>
+              <Button size="small" color="error" disabled={busy} onClick={() => remove(grant.id)}>
+                Remove
+              </Button>
+            </Stack>
+          ))}
+          {!grants.length && (
+            <Typography color="text.secondary" sx={{ fontSize: 14 }}>
+              No additional run grants. Workspace administrators and effective source permissions still apply.
+            </Typography>
+          )}
+        </Stack>
+      </Panel>
+      <Dialog open={open} onClose={() => !busy && setOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Add run access</DialogTitle>
+        <DialogContent>
+          <Stack gap={2} sx={{ pt: 1 }}>
+            {(error || directory.error) && <Alert severity="error">{error || directory.error}</Alert>}
+            <Autocomplete
+              options={options}
+              filterOptions={values => values}
+              value={target}
+              onChange={(_, value) => setTarget(value)}
+              inputValue={query}
+              onInputChange={(_, value) => setQuery(value)}
+              isOptionEqualToValue={(a, b) => a.id === b.id && a.kind === b.kind}
+              getOptionLabel={item => `${item.name}${item.email ? ` (${item.email})` : " · Team"}`}
+              renderInput={params => <TextField {...params} label="Name, email or team" autoFocus />}
+            />
+            <TextField select label="Run role" value={role} onChange={event => setRole(event.target.value)}>
+              {["viewer", "reviewer", "manager"].map(value => (
+                <MenuItem value={value} key={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </TextField>
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              This grants access to the run's selected tasks. It does not share unrelated tasks in the source datasets.
+            </Typography>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setOpen(false)} disabled={busy}>
+            Cancel
+          </Button>
+          <Button onClick={add} variant="contained" disabled={busy || !target}>
+            Add access
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 }

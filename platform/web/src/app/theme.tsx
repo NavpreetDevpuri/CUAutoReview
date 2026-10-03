@@ -61,19 +61,72 @@ export function createWorkspaceTheme(mode: PaletteMode) {
       button: { fontSize: 13, textTransform: "none", fontWeight: 600 },
     },
     components: {
-      MuiButton: { styleOverrides: { root: { borderRadius: 6, minHeight: 36, whiteSpace: "nowrap", lineHeight: 1.35, flexShrink: 0, boxShadow: "none", "&:hover": { boxShadow: "none" }, "@media (pointer: coarse)": { minHeight: 44 } }, startIcon: { marginLeft: 0, marginRight: 6 }, endIcon: { marginLeft: 6, marginRight: 0 } } },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 6,
+            minHeight: 36,
+            whiteSpace: "nowrap",
+            lineHeight: 1.35,
+            flexShrink: 0,
+            boxShadow: "none",
+            "&:hover": { boxShadow: "none" },
+            "@media (pointer: coarse)": { minHeight: 44 },
+          },
+          startIcon: { marginLeft: 0, marginRight: 6 },
+          endIcon: { marginLeft: 6, marginRight: 0 },
+        },
+      },
       MuiIconButton: { styleOverrides: { root: { "@media (pointer: coarse)": { minWidth: 44, minHeight: 44 } } } },
       MuiTextField: { defaultProps: { size: "small" } },
       MuiFormControl: { defaultProps: { size: "small" }, styleOverrides: { root: { minWidth: 0 } } },
-      MuiOutlinedInput: { styleOverrides: { root: ({ theme }) => ({ backgroundColor: theme.palette.background.paper, fontSize: 14, [theme.breakpoints.down("sm")]: { fontSize: 16 } }) } },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            backgroundColor: theme.palette.background.paper,
+            fontSize: 14,
+            [theme.breakpoints.down("sm")]: { fontSize: 16 },
+          }),
+        },
+      },
       MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
-      MuiChip: { styleOverrides: { root: { maxWidth: "100%", minHeight: 24, height: "auto", borderRadius: 6, fontSize: 12, fontWeight: 600 }, label: { padding: "3px 8px", whiteSpace: "normal", overflowWrap: "anywhere", lineHeight: 1.4 } } },
-      MuiTableCell: { styleOverrides: { root: { fontSize: 13, padding: "12px 14px", verticalAlign: "top" }, head: { color: dark ? "#c5d0df" : "#526174", fontWeight: 650 }, sizeSmall: { padding: "10px 12px" } } },
-      MuiDialog: { styleOverrides: { paper: { borderRadius: 10, "@media (max-width: 599px)": { margin: 12, maxWidth: "calc(100% - 24px)", maxHeight: "calc(100% - 24px)" }, "&.MuiDialog-paperFullScreen": { margin: 0, maxWidth: "100%", maxHeight: "100%", borderRadius: 0 } } } },
+      MuiChip: {
+        styleOverrides: {
+          root: { maxWidth: "100%", minHeight: 24, height: "auto", borderRadius: 6, fontSize: 12, fontWeight: 600 },
+          label: { padding: "3px 8px", whiteSpace: "normal", overflowWrap: "anywhere", lineHeight: 1.4 },
+        },
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: { fontSize: 13, padding: "12px 14px", verticalAlign: "top" },
+          head: { color: dark ? "#c5d0df" : "#526174", fontWeight: 650 },
+          sizeSmall: { padding: "10px 12px" },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            borderRadius: 10,
+            "@media (max-width: 599px)": { margin: 12, maxWidth: "calc(100% - 24px)", maxHeight: "calc(100% - 24px)" },
+            "&.MuiDialog-paperFullScreen": { margin: 0, maxWidth: "100%", maxHeight: "100%", borderRadius: 0 },
+          },
+        },
+      },
       MuiDialogTitle: { styleOverrides: { root: { fontSize: 18, fontWeight: 650, padding: "18px 20px 12px" } } },
       MuiDialogContent: { styleOverrides: { root: { paddingLeft: 20, paddingRight: 20 } } },
-      MuiDialogActions: { styleOverrides: { root: { padding: "12px 20px 16px", gap: 8, flexWrap: "wrap", "& > :not(style) ~ :not(style)": { marginLeft: 0 } } } },
-      MuiAlert: { styleOverrides: { root: { minWidth: 0, fontSize: 13 }, message: { minWidth: 0, overflowWrap: "anywhere" } } },
+      MuiDialogActions: {
+        styleOverrides: {
+          root: {
+            padding: "12px 20px 16px",
+            gap: 8,
+            flexWrap: "wrap",
+            "& > :not(style) ~ :not(style)": { marginLeft: 0 },
+          },
+        },
+      },
+      MuiAlert: {
+        styleOverrides: { root: { minWidth: 0, fontSize: 13 }, message: { minWidth: 0, overflowWrap: "anywhere" } },
+      },
     },
   });
 }
@@ -84,12 +137,23 @@ export function ThemeModeProvider({ children }: { children: ReactNode }) {
   const toggleMode = useCallback(() => {
     setMode(current => {
       const next: PaletteMode = current === "light" ? "dark" : "light";
-      try { localStorage.setItem(STORAGE_KEY, next); } catch { /* preferences remain usable without storage */ }
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch {
+        /* preferences remain usable without storage */
+      }
       return next;
     });
   }, []);
   const value = useMemo(() => ({ mode, theme, toggleMode }), [mode, theme, toggleMode]);
-  return <ThemeModeContext.Provider value={value}><ThemeProvider theme={theme}><CssBaseline />{children}</ThemeProvider></ThemeModeContext.Provider>;
+  return (
+    <ThemeModeContext.Provider value={value}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </ThemeModeContext.Provider>
+  );
 }
 
 export function useThemeMode() {
@@ -101,9 +165,11 @@ export function useThemeMode() {
 export function ThemeModeToggle({ size = "small" }: { size?: "small" | "medium" }) {
   const { mode, toggleMode } = useThemeMode();
   const target = mode === "light" ? "dark" : "light";
-  return <Tooltip title={`Switch to ${target} mode`}>
-    <IconButton size={size} color="inherit" aria-label={`Switch to ${target} mode`} onClick={toggleMode}>
-      {mode === "light" ? <DarkModeRounded fontSize={size} /> : <LightModeRounded fontSize={size} />}
-    </IconButton>
-  </Tooltip>;
+  return (
+    <Tooltip title={`Switch to ${target} mode`}>
+      <IconButton size={size} color="inherit" aria-label={`Switch to ${target} mode`} onClick={toggleMode}>
+        {mode === "light" ? <DarkModeRounded fontSize={size} /> : <LightModeRounded fontSize={size} />}
+      </IconButton>
+    </Tooltip>
+  );
 }

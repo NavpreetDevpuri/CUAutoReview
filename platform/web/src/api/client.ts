@@ -15,11 +15,15 @@ export class ApiError extends Error {
 
 function errorMessage(detail: unknown, fallback: string): string {
   if (typeof detail === "string") return detail;
-  if (Array.isArray(detail)) return detail.map(item => {
-    const value = item as { loc?: unknown[]; msg?: string };
-    return `${value.loc?.join(".") || "Input"}: ${value.msg || "Invalid value"}`;
-  }).join("; ");
-  if (detail && typeof detail === "object" && "message" in detail && typeof detail.message === "string") return detail.message;
+  if (Array.isArray(detail))
+    return detail
+      .map(item => {
+        const value = item as { loc?: unknown[]; msg?: string };
+        return `${value.loc?.join(".") || "Input"}: ${value.msg || "Invalid value"}`;
+      })
+      .join("; ");
+  if (detail && typeof detail === "object" && "message" in detail && typeof detail.message === "string")
+    return detail.message;
   return fallback;
 }
 
@@ -37,13 +41,20 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
   const raw = response.status === 204 ? null : await response.text();
   let payload: unknown = null;
   if (raw) {
-    try { payload = JSON.parse(raw); } catch { payload = raw; }
+    try {
+      payload = JSON.parse(raw);
+    } catch {
+      payload = raw;
+    }
   }
   if (!response.ok) {
     const body = payload as ApiErrorShape | null;
-    const message = typeof body === "object" && body
-      ? errorMessage(body.detail, body.message || response.statusText)
-      : typeof body === "string" ? body : response.statusText;
+    const message =
+      typeof body === "object" && body
+        ? errorMessage(body.detail, body.message || response.statusText)
+        : typeof body === "string"
+          ? body
+          : response.statusText;
     throw new ApiError(message || `Request failed (${response.status})`, response.status, payload);
   }
   return payload as T;
@@ -51,12 +62,25 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
 function listEnvelope(value: unknown): { data: Record<string, unknown>[]; total: number } {
   const body = value as { items?: Record<string, unknown>[]; data?: Record<string, unknown>[]; total?: number };
-  const data = Array.isArray(body?.items) ? body.items : Array.isArray(body?.data) ? body.data : Array.isArray(value) ? value as Record<string, unknown>[] : [];
+  const data = Array.isArray(body?.items)
+    ? body.items
+    : Array.isArray(body?.data)
+      ? body.data
+      : Array.isArray(value)
+        ? (value as Record<string, unknown>[])
+        : [];
   return { data, total: Number.isFinite(body?.total) ? Number(body.total) : data.length };
 }
 
 function recordId(resource: string, value: Record<string, unknown>): string {
-  const id = value.id ?? value[resource.slice(0, -1) + "_id"] ?? value.dataset_id ?? value.batch_id ?? value.task_id ?? value.user_id ?? value.team_id;
+  const id =
+    value.id ??
+    value[resource.slice(0, -1) + "_id"] ??
+    value.dataset_id ??
+    value.batch_id ??
+    value.task_id ??
+    value.user_id ??
+    value.team_id;
   return String(id ?? "");
 }
 
@@ -76,7 +100,10 @@ export const dataProvider: DataProvider = {
     }
     const suffix = query.size ? `?${query.toString()}` : "";
     const result = listEnvelope(await apiRequest<unknown>(`/${resource}${suffix}`));
-    return { data: result.data.map(item => ({ ...item, id: item.id ?? recordId(resource, item) })), total: result.total } as any;
+    return {
+      data: result.data.map(item => ({ ...item, id: item.id ?? recordId(resource, item) })),
+      total: result.total,
+    } as any;
   },
   async getOne(resource, params) {
     const body = await apiRequest<Record<string, unknown>>(`/${resource}/${encodeURIComponent(String(params.id))}`);
@@ -91,25 +118,43 @@ export const dataProvider: DataProvider = {
     return this.getList(resource, { ...params, filter: { ...params.filter, [params.target]: params.id } });
   },
   async create(resource, params) {
-    const body = await apiRequest<Record<string, unknown>>(`/${resource}`, { method: "POST", body: JSON.stringify(params.data) });
+    const body = await apiRequest<Record<string, unknown>>(`/${resource}`, {
+      method: "POST",
+      body: JSON.stringify(params.data),
+    });
     const record = (body && typeof body === "object" && "data" in body ? body.data : body) as Record<string, unknown>;
     return { data: { ...record, id: record.id ?? recordId(resource, record) } } as any;
   },
   async update(resource, params) {
-    const body = await apiRequest<Record<string, unknown>>(`/${resource}/${encodeURIComponent(String(params.id))}`, { method: "PATCH", body: JSON.stringify(params.data) });
+    const body = await apiRequest<Record<string, unknown>>(`/${resource}/${encodeURIComponent(String(params.id))}`, {
+      method: "PATCH",
+      body: JSON.stringify(params.data),
+    });
     const record = (body && typeof body === "object" && "data" in body ? body.data : body) as Record<string, unknown>;
     return { data: { ...record, id: record.id ?? recordId(resource, record) } } as any;
   },
   async updateMany(resource, params) {
-    await Promise.all(params.ids.map(id => apiRequest(`/${resource}/${encodeURIComponent(String(id))}`, { method: "PATCH", body: JSON.stringify(params.data) })));
+    await Promise.all(
+      params.ids.map(id =>
+        apiRequest(`/${resource}/${encodeURIComponent(String(id))}`, {
+          method: "PATCH",
+          body: JSON.stringify(params.data),
+        }),
+      ),
+    );
     return { data: params.ids };
   },
   async delete(resource, params) {
-    const old = await apiRequest<Record<string, unknown> | null>(`/${resource}/${encodeURIComponent(String(params.id))}`, { method: "DELETE" });
+    const old = await apiRequest<Record<string, unknown> | null>(
+      `/${resource}/${encodeURIComponent(String(params.id))}`,
+      { method: "DELETE" },
+    );
     return { data: { ...(params.previousData || old || {}), id: params.id } } as any;
   },
   async deleteMany(resource, params) {
-    await Promise.all(params.ids.map(id => apiRequest(`/${resource}/${encodeURIComponent(String(id))}`, { method: "DELETE" })));
+    await Promise.all(
+      params.ids.map(id => apiRequest(`/${resource}/${encodeURIComponent(String(id))}`, { method: "DELETE" })),
+    );
     return { data: params.ids };
   },
 };

@@ -5,7 +5,10 @@ import { endsSession } from "../src/api/sessionErrors.ts";
 
 test("page parameters are added without dropping existing filters", () => {
   assert.equal(withPageParams("/runs/r1/tasks", 2, 500), "/runs/r1/tasks?page=2&per_page=500");
-  assert.equal(withPageParams("/runs?include_archived=true", 1, 200), "/runs?include_archived=true&page=1&per_page=200");
+  assert.equal(
+    withPageParams("/runs?include_archived=true", 1, 200),
+    "/runs?include_archived=true&page=1&per_page=200",
+  );
   assert.equal(withPageParams("/runs?page=9&per_page=5", 3, 200), "/runs?page=3&per_page=200");
 });
 
@@ -38,7 +41,10 @@ test("collectPages stops at the page limit and reports truncation", async () => 
 
 test("collectPages stops on an empty page even if total overstates the records", async () => {
   let calls = 0;
-  const result = await collectPages(async page => { calls += 1; return { items: page === 1 ? ["a"] : [], total: 5 }; });
+  const result = await collectPages(async page => {
+    calls += 1;
+    return { items: page === 1 ? ["a"] : [], total: 5 };
+  });
   assert.equal(calls, 2);
   assert.deepEqual(result.items, ["a"]);
   assert.equal(result.truncated, true);
@@ -46,7 +52,10 @@ test("collectPages stops on an empty page even if total overstates the records",
 
 test("a bare array response is a single complete page", async () => {
   let calls = 0;
-  const result = await collectPages(async () => { calls += 1; return ["a", "b"]; });
+  const result = await collectPages(async () => {
+    calls += 1;
+    return ["a", "b"];
+  });
   assert.equal(calls, 1);
   assert.deepEqual(result, { items: ["a", "b"], total: 2, truncated: false });
 });

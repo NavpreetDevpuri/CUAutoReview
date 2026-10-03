@@ -2,11 +2,20 @@ export function countLabel(count: number, singular: string, plural = `${singular
   return `${count} ${count === 1 ? singular : plural}`;
 }
 
-export function runStatusLabel(run: { status?: unknown; processing_status?: unknown; archived?: unknown; archived_at?: unknown; progress?: unknown; failed_task_count?: unknown }) {
+export function runStatusLabel(run: {
+  status?: unknown;
+  processing_status?: unknown;
+  archived?: unknown;
+  archived_at?: unknown;
+  progress?: unknown;
+  failed_task_count?: unknown;
+}) {
   if (run.archived || run.archived_at) return "archived";
   const status = String(run.status || run.processing_status || "unknown");
-  const progress = run.progress && typeof run.progress === "object" ? run.progress as Record<string, unknown> : {};
-  return status.toLowerCase() === "completed" && Number(progress.failed ?? run.failed_task_count ?? 0) > 0 ? "finished with errors" : status;
+  const progress = run.progress && typeof run.progress === "object" ? (run.progress as Record<string, unknown>) : {};
+  return status.toLowerCase() === "completed" && Number(progress.failed ?? run.failed_task_count ?? 0) > 0
+    ? "finished with errors"
+    : status;
 }
 
 export function reviewProcessingError(value: unknown): string {
@@ -29,5 +38,9 @@ export function displayValue(value: unknown, fallback = "Not recorded"): string 
   if (value === null || value === undefined || value === "") return fallback;
   if (typeof value === "string") return value;
   if (typeof value === "number" || typeof value === "boolean") return String(value);
-  try { return JSON.stringify(value, null, 2); } catch { return String(value); }
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return String(value);
+  }
 }
