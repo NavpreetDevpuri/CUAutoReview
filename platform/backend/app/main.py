@@ -19,7 +19,7 @@ import yaml
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import FileResponse
-from sqlalchemy import distinct, func, or_, select
+from sqlalchemy import distinct, event, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, object_session
 
@@ -231,12 +231,201 @@ def require_role(*roles: str):
     return dependency
 
 
+# Request-scoped read cache. List and summary endpoints touch the same small
+# tables for every row; loading them once per session keeps query counts flat
+# as tasks and runs grow. Any flush, commit or rollback drops the cache, so a
+# write path never reads rows that are older than its own changes.
+READ_CACHE_CHUNK = 500
+
+
+@event.listens_for(Session, "after_flush")
+@event.listens_for(Session, "after_commit")
+@event.listens_for(Session, "after_rollback")
+def _drop_read_cache(session: Session, *_args) -> None:
+    session.info.pop("read_cache", None)
+
+
+def _read_cache(db: Session) -> dict[Any, Any]:
+    return db.info.setdefault("read_cache", {})
+
+
+def _chunks(values: list[str]):
+    for start in range(0, len(values), READ_CACHE_CHUNK):
+        yield values[start:start + READ_CACHE_CHUNK]
+
+
+def preload_rows(db: Session, model: Any, ids) -> None:
+    """Load rows by primary key in bulk so later db.get() calls resolve from the identity map.
+
+    The identity map holds weak references, so the cache keeps the loaded rows alive.
+    """
+    loaded = _read_cache(db).setdefault(("rows", model), {})
+    wanted = sorted({item for item in ids if item is not None and item not in loaded})
+    for chunk in _chunks(wanted):
+        for row in db.scalars(select(model).where(model.id.in_(chunk))).all():
+            loaded[row.id] = row
+
+
+def archived_objects(db: Session, object_type: str) -> dict[str, datetime]:
+    """Map archived object IDs of one type to their archive time."""
+    cache = _read_cache(db)
+    key = ("archived", object_type)
+    if key not in cache:
+        cache[key] = dict(db.execute(select(ObjectArchive.object_id, ObjectArchive.archived_at).where(
+            ObjectArchive.object_type == object_type, ObjectArchive.archived_at.is_not(None))).all())
+    return cache[key]
+
+
+def user_team_ids(db: Session, user_id: str) -> set[str]:
+    cache = _read_cache(db).setdefault("team_ids", {})
+    if user_id not in cache:
+        cache[user_id] = set(db.scalars(select(TeamMember.team_id).where(TeamMember.user_id == user_id)).all())
+    return cache[user_id]
+
+
+def dataset_shares(db: Session, workspace_id: str, dataset_id: str) -> list[DatasetShare]:
+    cache = _read_cache(db)
+    key = ("dataset_shares", workspace_id)
+    if key not in cache:
+        by_dataset: dict[str, list[DatasetShare]] = {}
+        for share in db.scalars(select(DatasetShare).where(DatasetShare.workspace_id == workspace_id)).all():
+            by_dataset.setdefault(share.dataset_id, []).append(share)
+        cache[key] = by_dataset
+    return cache[key].get(dataset_id, [])
+
+
+def run_source_ids(db: Session, batch: Batch) -> list[str]:
+    """Return a run's source dataset IDs in position order; empty for legacy single-source batches."""
+    cache = _read_cache(db)
+    key = ("run_sources", batch.workspace_id)
+    if key not in cache:
+        by_batch: dict[str, list[str]] = {}
+        for batch_id, dataset_id in db.execute(select(RunSource.batch_id, RunSource.dataset_id)
+                .join(Batch, Batch.id == RunSource.batch_id)
+                .where(Batch.workspace_id == batch.workspace_id)
+                .order_by(RunSource.batch_id, RunSource.position)).all():
+            by_batch.setdefault(batch_id, []).append(dataset_id)
+        cache[key] = by_batch
+    return list(cache[key].get(batch.id, []))
+
+
+def batch_grants(db: Session, batch: Batch) -> list[BatchGrant]:
+    cache = _read_cache(db)
+    key = ("batch_grants", batch.workspace_id)
+    if key not in cache:
+        by_batch: dict[str, list[BatchGrant]] = {}
+        for grant in db.scalars(select(BatchGrant).join(Batch, Batch.id == BatchGrant.batch_id)
+                                .where(Batch.workspace_id == batch.workspace_id)).all():
+            by_batch.setdefault(grant.batch_id, []).append(grant)
+        cache[key] = by_batch
+    return cache[key].get(batch.id, [])
+
+
+def preload_members(db: Session, members: list[BatchMember]) -> None:
+    """Bulk-load the reviews, jobs, attempts and revisions that per-member helpers read."""
+    cache = _read_cache(db)
+    member_ids = {member.id for member in members}
+    reviews = cache.setdefault("member_reviews", {})
+    for chunk in _chunks(sorted(member_ids - reviews.keys())):
+        for member_id in chunk:
+            reviews[member_id] = []
+        for result in db.scalars(select(ReviewResult).where(ReviewResult.member_id.in_(chunk))
+                                 .order_by(ReviewResult.member_id, ReviewResult.revision)).all():
+            reviews[result.member_id].append(result)
+    jobs = cache.setdefault("member_jobs", {})
+    for chunk in _chunks(sorted(member_ids - jobs.keys())):
+        for member_id in chunk:
+            jobs[member_id] = []
+        for job in db.scalars(select(Job).where(Job.member_id.in_(chunk)).order_by(Job.created_at)).all():
+            jobs[job.member_id].append(job)
+    job_rows = [job for member_id in member_ids for job in jobs[member_id]]
+    preload_attempts(db, job_rows)
+    preload_rows(db, PresetRevision, {job.preset_revision_id for job in job_rows})
+    preload_rows(db, TaskRevision, {member.task_revision_id for member in members})
+
+
+def preload_attempts(db: Session, jobs: list[Job]) -> None:
+    attempts = _read_cache(db).setdefault("job_attempts", {})
+    for chunk in _chunks(sorted({job.id for job in jobs} - attempts.keys())):
+        for job_id in chunk:
+            attempts[job_id] = []
+        for attempt in db.scalars(select(JobAttempt).where(JobAttempt.job_id.in_(chunk))
+                                  .order_by(JobAttempt.job_id, JobAttempt.attempt_number)).all():
+            attempts[attempt.job_id].append(attempt)
+
+
+def member_reviews(db: Session, member_id: str) -> list[ReviewResult]:
+    """All saved review revisions for a member, oldest first."""
+    reviews = _read_cache(db).setdefault("member_reviews", {})
+    if member_id not in reviews:
+        reviews[member_id] = db.scalars(select(ReviewResult).where(ReviewResult.member_id == member_id)
+                                        .order_by(ReviewResult.revision)).all()
+    return reviews[member_id]
+
+
+def members_with_reviews(db: Session, member_ids: list[str]) -> set[str]:
+    """Return members that have at least one saved review, without loading review payloads."""
+    reviews = _read_cache(db).get("member_reviews", {})
+    found = {member_id for member_id in member_ids if reviews.get(member_id)}
+    for chunk in _chunks(sorted({member_id for member_id in member_ids if member_id not in reviews})):
+        found.update(db.scalars(select(distinct(ReviewResult.member_id))
+                                .where(ReviewResult.member_id.in_(chunk))).all())
+    return found
+
+
+def member_jobs(db: Session, member_id: str) -> list[Job]:
+    jobs = _read_cache(db).setdefault("member_jobs", {})
+    if member_id not in jobs:
+        jobs[member_id] = db.scalars(select(Job).where(Job.member_id == member_id).order_by(Job.created_at)).all()
+    return jobs[member_id]
+
+
+def job_attempts(db: Session, job_id: str) -> list[JobAttempt]:
+    attempts = _read_cache(db).setdefault("job_attempts", {})
+    if job_id not in attempts:
+        attempts[job_id] = db.scalars(select(JobAttempt).where(JobAttempt.job_id == job_id)
+                                      .order_by(JobAttempt.attempt_number)).all()
+    return attempts[job_id]
+
+
+def preload_artifacts(db: Session, *, revision_ids=(), member_ids=()) -> None:
+    """Bulk-load stored artifact rows keyed by task revision and by member."""
+    cache = _read_cache(db)
+    by_revision = cache.setdefault("revision_artifacts", {})
+    for chunk in _chunks(sorted({item for item in revision_ids if item} - by_revision.keys())):
+        for revision_id in chunk:
+            by_revision[revision_id] = []
+        for artifact in db.scalars(select(StoredArtifact).where(StoredArtifact.task_revision_id.in_(chunk))).all():
+            by_revision[artifact.task_revision_id].append(artifact)
+    by_member = cache.setdefault("member_artifacts", {})
+    for chunk in _chunks(sorted({item for item in member_ids if item} - by_member.keys())):
+        for member_id in chunk:
+            by_member[member_id] = []
+        for artifact in db.scalars(select(StoredArtifact).where(StoredArtifact.member_id.in_(chunk))).all():
+            by_member[artifact.member_id].append(artifact)
+
+
+def revision_artifacts(db: Session, revision_id: str) -> list[StoredArtifact]:
+    by_revision = _read_cache(db).setdefault("revision_artifacts", {})
+    if revision_id not in by_revision:
+        by_revision[revision_id] = db.scalars(select(StoredArtifact).where(
+            StoredArtifact.task_revision_id == revision_id)).all()
+    return by_revision[revision_id]
+
+
+def member_artifacts(db: Session, member_id: str) -> list[StoredArtifact]:
+    by_member = _read_cache(db).setdefault("member_artifacts", {})
+    if member_id not in by_member:
+        by_member[member_id] = db.scalars(select(StoredArtifact).where(StoredArtifact.member_id == member_id)).all()
+    return by_member[member_id]
+
+
 def get_batch(db: Session, batch_id: str, user: User, *, required_role: str = "viewer") -> tuple[Batch, str]:
     batch = db.get(Batch, batch_id)
     if not batch or batch.workspace_id != user.workspace_id:
         raise HTTPException(404, "Batch not found")
     effective = user.role if user.role in ("admin", "manager") else None
-    source_dataset_ids = set(db.scalars(select(RunSource.dataset_id).where(RunSource.batch_id == batch.id)).all()) or {batch.dataset_id}
+    source_dataset_ids = set(run_source_ids(db, batch)) or {batch.dataset_id}
     shared_roles = []
     for source_id in source_dataset_ids:
         source_dataset = db.get(Dataset, source_id)
@@ -250,8 +439,8 @@ def get_batch(db: Session, batch_id: str, user: User, *, required_role: str = "v
         shared_role = min(shared_roles, key=lambda role: ROLE_ORDER.get(role, -1))
         if effective is None or ROLE_ORDER.get(shared_role, -1) > ROLE_ORDER.get(effective, -1):
             effective = shared_role
-    grants = db.scalars(select(BatchGrant).where(BatchGrant.batch_id == batch.id)).all()
-    team_ids = set(db.scalars(select(TeamMember.team_id).where(TeamMember.user_id == user.id)).all())
+    grants = batch_grants(db, batch)
+    team_ids = user_team_ids(db, user.id)
     for grant in grants:
         if grant.user_id == user.id or (grant.team_id and grant.team_id in team_ids):
             if effective is None or ROLE_ORDER.get(grant.role, -1) > ROLE_ORDER.get(effective, -1):
@@ -278,9 +467,8 @@ def dataset_role(db: Session, dataset: Dataset, user: User) -> str | None:
         return None
     if user.role in ("admin", "manager"):
         return user.role
-    shares = db.scalars(select(DatasetShare).where(DatasetShare.dataset_id == dataset.id,
-        DatasetShare.workspace_id == user.workspace_id)).all()
-    team_ids = set(db.scalars(select(TeamMember.team_id).where(TeamMember.user_id == user.id)).all())
+    shares = dataset_shares(db, user.workspace_id, dataset.id)
+    team_ids = user_team_ids(db, user.id)
     roles = []
     for share in shares:
         if ((share.target_type == "workspace" and share.target_id is None) or
@@ -304,8 +492,7 @@ def require_dataset_access(db: Session, dataset_id: str, user: User, role: str =
 
 
 def is_archived(db: Session, object_type: str, object_id: str) -> bool:
-    return bool(db.scalar(select(ObjectArchive.id).where(ObjectArchive.object_type == object_type,
-        ObjectArchive.object_id == object_id, ObjectArchive.archived_at.is_not(None))))
+    return object_id in archived_objects(db, object_type)
 
 
 def set_archived(db: Session, user: User, object_type: str, object_id: str, archived: bool) -> dict[str, Any]:
@@ -410,16 +597,15 @@ def task_view(db: Session, content: dict[str, Any], revision_id: str, task_id: s
     output["review_kind"] = review_result.review_kind if review_result else (review or {}).get("review_kind")
     output["review_history"] = []
     if member:
-        history = db.scalars(select(ReviewResult).where(ReviewResult.member_id == member.id).order_by(ReviewResult.revision)).all()
-        output["review_history"] = [record(item) for item in history]
-        jobs = db.scalars(select(Job).where(Job.member_id == member.id).order_by(Job.created_at)).all()
+        output["review_history"] = [record(item) for item in member_reviews(db, member.id)]
+        jobs = member_jobs(db, member.id)
         output["jobs"] = [job_detail(db, job) for job in jobs]
         output["job_id"] = jobs[0].id if jobs else None
-        artifact_rows = db.scalars(select(StoredArtifact).where(StoredArtifact.member_id == member.id)).all()
+        artifact_rows = member_artifacts(db, member.id)
     else:
         output["jobs"] = []
         output["job_id"] = None
-        artifact_rows = db.scalars(select(StoredArtifact).where(StoredArtifact.task_revision_id == revision_id)).all()
+        artifact_rows = revision_artifacts(db, revision_id)
     artifact_by_path = {a.relative_path: a for a in artifact_rows}
     step_annotations = {str(s.get("step_id")): s for s in (review or {}).get("steps", [])}
     for step in output.get("steps") or []:
@@ -449,7 +635,8 @@ def task_view(db: Session, content: dict[str, Any], revision_id: str, task_id: s
 
 
 def member_review(db: Session, member: BatchMember) -> ReviewResult | None:
-    return db.scalar(select(ReviewResult).where(ReviewResult.member_id == member.id).order_by(ReviewResult.revision.desc()).limit(1))
+    reviews = member_reviews(db, member.id)
+    return reviews[-1] if reviews else None
 
 
 def job_detail(db: Session, job: Job) -> dict[str, Any]:
@@ -460,8 +647,7 @@ def job_detail(db: Session, job: Job) -> dict[str, Any]:
     item["budget_usd"] = preset.budget_usd if preset else None
     item["max_total_budget_usd"] = (float(preset.budget_usd) * job.max_attempts
                                     if preset and preset.budget_usd is not None else None)
-    attempts = db.scalars(select(JobAttempt).where(JobAttempt.job_id == job.id)
-                          .order_by(JobAttempt.attempt_number)).all()
+    attempts = job_attempts(db, job.id)
     item["attempts"] = [record(attempt) for attempt in attempts]
     known_attempt_costs = [float(attempt.cost_usd) for attempt in attempts if attempt.cost_usd is not None]
     item["cumulative_cost_usd"] = sum(known_attempt_costs) if known_attempt_costs else None
@@ -534,9 +720,9 @@ def dataset_task_summary(db: Session, content: dict | None,
     current_results: list[tuple[ReviewResult, BatchMember]] = []
     historical_results: list[tuple[ReviewResult, BatchMember]] = []
     all_reviews = 0
+    preload_members(db, members)
     for member in members:
-        results = db.scalars(select(ReviewResult).where(ReviewResult.member_id == member.id)
-                             .order_by(ReviewResult.revision)).all()
+        results = member_reviews(db, member.id)
         all_reviews += len(results)
         if results:
             current_results.append((results[-1], member))
@@ -583,8 +769,8 @@ def dataset_task_summary(db: Session, content: dict | None,
     total_known_cost = 0.0
     total_unknown_attempts = 0
     for member in members:
-        for job in db.scalars(select(Job).where(Job.member_id == member.id)).all():
-            attempts = db.scalars(select(JobAttempt).where(JobAttempt.job_id == job.id)).all()
+        for job in member_jobs(db, member.id):
+            attempts = job_attempts(db, job.id)
             for attempt in attempts:
                 if attempt.cost_usd is None:
                     total_unknown_attempts += 1
@@ -659,6 +845,8 @@ def dataset_task_summary(db: Session, content: dict | None,
 
 def batch_progress(db: Session, batch: Batch) -> dict[str, Any]:
     members = db.scalars(select(BatchMember).where(BatchMember.batch_id == batch.id)).all()
+    preload_rows(db, TaskRevision, {member.task_revision_id for member in members})
+    reviewed_member_ids = members_with_reviews(db, [member.id for member in members])
     counts: dict[str, int] = {}
     outcomes: dict[str, int] = {}
     saved_reviews = missing_reviews = 0
@@ -670,11 +858,13 @@ def batch_progress(db: Session, batch: Batch) -> dict[str, Any]:
         outcomes[str(outcome or "unknown")] = outcomes.get(str(outcome or "unknown"), 0) + 1
         if outcome in ("passed", "failed"):
             reviewable_members.append(member)
-            if member_review(db, member):
+            if member.id in reviewed_member_ids:
                 saved_reviews += 1
             else:
                 missing_reviews += 1
     jobs = db.scalars(select(Job).where(Job.batch_id == batch.id)).all()
+    preload_attempts(db, jobs)
+    preload_rows(db, PresetRevision, {job.preset_revision_id for job in jobs} | {batch.preset_revision_id})
     job_status_counts: dict[str, int] = {}
     attempt_count = automatic_retry_count = 0
     known_cost_usd = 0.0
@@ -692,7 +882,7 @@ def batch_progress(db: Session, batch: Batch) -> dict[str, Any]:
             known_planned_allowance_usd += float(preset.budget_usd) * job.max_attempts
         else:
             planned_allowance_complete = False
-        for attempt in db.scalars(select(JobAttempt).where(JobAttempt.job_id == job.id)).all():
+        for attempt in job_attempts(db, job.id):
             if attempt.cost_usd is None:
                 unknown_cost_attempts += 1
             else:
@@ -766,8 +956,7 @@ def batch_detail(db: Session, batch: Batch) -> dict[str, Any]:
 def run_detail(db: Session, batch: Batch, user: User) -> dict[str, Any]:
     output = batch_detail(db, batch)
     output["archived"] = is_archived(db, "run", batch.id)
-    source_ids = list(db.scalars(select(RunSource.dataset_id).where(RunSource.batch_id == batch.id)
-                                 .order_by(RunSource.position)).all())
+    source_ids = run_source_ids(db, batch)
     if not source_ids:
         source_ids = [batch.dataset_id]
     output["dataset_ids"] = source_ids
@@ -820,6 +1009,8 @@ def review_problem_count(review: dict | None) -> int:
 def visible_batches(db: Session, user: User, include_archived: bool = False) -> list[Batch]:
     rows = db.scalars(select(Batch).where(Batch.workspace_id == user.workspace_id)
                       .order_by(Batch.created_at.desc())).all()
+    preload_rows(db, Dataset, {source_id for batch in rows
+                               for source_id in (run_source_ids(db, batch) or [batch.dataset_id])})
     output = []
     for batch in rows:
         if not include_archived and is_archived(db, "run", batch.id):
@@ -832,6 +1023,15 @@ def visible_batches(db: Session, user: User, include_archived: bool = False) -> 
     return output
 
 
+def batch_members_by_batch(db: Session, batches: list[Batch]) -> dict[str, list[BatchMember]]:
+    """Load members of several runs in one pass, grouped by run."""
+    grouped: dict[str, list[BatchMember]] = {batch.id: [] for batch in batches}
+    for chunk in _chunks(sorted(grouped)):
+        for member in db.scalars(select(BatchMember).where(BatchMember.batch_id.in_(chunk))).all():
+            grouped[member.batch_id].append(member)
+    return grouped
+
+
 @app.get("/api/catalog")
 def selection_catalog(include_archived: bool = False, db: Session = Depends(get_db), user: User = Depends(get_user)):
     datasets = db.scalars(select(Dataset).where(Dataset.workspace_id == user.workspace_id)
@@ -841,14 +1041,17 @@ def selection_catalog(include_archived: bool = False, db: Session = Depends(get_
     accessible_datasets = {dataset.id: dataset for dataset in datasets}
     batches = visible_batches(db, user, include_archived)
     run_rows = []
-    run_members: dict[str, list[BatchMember]] = {}
+    run_members = batch_members_by_batch(db, batches)
+    preload_members(db, [member for members in run_members.values() for member in members])
+    members_by_run_task: dict[tuple[str, str], list[BatchMember]] = {}
+    for batch_id, members in run_members.items():
+        for member in members:
+            members_by_run_task.setdefault((batch_id, member.task_definition_id), []).append(member)
     for batch in batches:
-        members = db.scalars(select(BatchMember).where(BatchMember.batch_id == batch.id)).all()
-        run_members[batch.id] = members
+        members = run_members[batch.id]
         problems = sum(review_problem_count((member_review(db, member).review if member_review(db, member) else None))
                        for member in members)
-        sources = list(db.scalars(select(RunSource.dataset_id).where(RunSource.batch_id == batch.id)
-                                  .order_by(RunSource.position)).all()) or [batch.dataset_id]
+        sources = run_source_ids(db, batch) or [batch.dataset_id]
         visible_sources = [source_id for source_id in sources if source_id in accessible_datasets]
         run_rows.append({"id": batch.id, "name": batch.name, "dataset_ids": visible_sources,
             "task_count": len(members), "status": batch.status, "problem_count": problems,
@@ -859,15 +1062,16 @@ def selection_catalog(include_archived: bool = False, db: Session = Depends(get_
                                  .order_by(TaskDefinition.task_id)).all()
         if not include_archived:
             definitions = [definition for definition in definitions if not is_archived(db, "task", definition.id)]
+        preload_rows(db, TaskRevision, {definition.current_revision_id for definition in definitions})
         problem_total = 0
         run_ids_for_dataset = {batch.id for batch in batches if dataset.id in (
-            list(db.scalars(select(RunSource.dataset_id).where(RunSource.batch_id == batch.id)).all()) or [batch.dataset_id])}
+            run_source_ids(db, batch) or [batch.dataset_id])}
         for definition in definitions:
             revision = current_revision(db, definition)
             if not revision:
                 continue
-            memberships = [member for run_id in run_ids_for_dataset for member in run_members.get(run_id, [])
-                           if member.task_definition_id == definition.id]
+            memberships = [member for run_id in run_ids_for_dataset
+                           for member in members_by_run_task.get((run_id, definition.id), [])]
             problems = sum(review_problem_count((latest.review if (latest := member_review(db, member)) else None))
                            for member in memberships)
             problem_total += problems
@@ -933,14 +1137,21 @@ def analytics_query(body: AnalyticsQuery, db: Session = Depends(get_db), user: U
         selected_definition_ids = {definition.id for definition in definitions}
 
     member_rows: list[BatchMember] = []
+    selected_members = batch_members_by_batch(db, selected_batches)
     for batch in selected_batches:
-        sources = set(db.scalars(select(RunSource.dataset_id).where(RunSource.batch_id == batch.id)).all()) or {batch.dataset_id}
-        for member in db.scalars(select(BatchMember).where(BatchMember.batch_id == batch.id)).all():
+        sources = set(run_source_ids(db, batch)) or {batch.dataset_id}
+        for member in selected_members[batch.id]:
             if member.task_definition_id not in selected_definition_ids:
                 continue
             definition = db.get(TaskDefinition, member.task_definition_id)
             if definition and definition.dataset_id in selected_dataset_ids and sources.intersection(selected_dataset_ids):
                 member_rows.append(member)
+    preload_members(db, member_rows)
+    preload_rows(db, TaskRevision, {definition.current_revision_id for definition in definitions
+                                    if definition.id in selected_definition_ids})
+    preload_artifacts(db, revision_ids={member.task_revision_id for member in member_rows} |
+                      {definition.current_revision_id for definition in definitions
+                       if definition.id in selected_definition_ids})
 
     rows: list[dict[str, Any]] = []
     seen_definitions = set()
@@ -981,27 +1192,26 @@ def analytics_query(body: AnalyticsQuery, db: Session = Depends(get_db), user: U
             label_counts[key] = label_counts.get(key, 0) + 1
             labels_for_row.append({"id": label_id, "name": label_name})
         recovery_count += recovery_step_count
-        artifacts = db.scalars(select(StoredArtifact.relative_path).where(StoredArtifact.workspace_id == user.workspace_id,
-            StoredArtifact.task_revision_id == revision.id,
-            or_(StoredArtifact.member_id == member.id, StoredArtifact.member_id.is_(None)))).all()
-        recorded = set(artifacts)
+        revision_rows = [artifact for artifact in revision_artifacts(db, revision.id)
+                                    if artifact.member_id in (member.id, None)]
+        recorded = {artifact.relative_path for artifact in revision_rows
+                    if artifact.workspace_id == user.workspace_id}
         steps = [step for step in content.get("steps", []) if isinstance(step, dict)]
         absent_frames = sum(1 for step in steps if not (step.get("screenshot") or step.get("screenshot_path")))
         screenshot_paths = [step.get("screenshot") or step.get("screenshot_path") for step in steps
                             if step.get("screenshot") or step.get("screenshot_path")]
         missing_records = sum(1 for path in screenshot_paths if path not in recorded)
-        artifact_rows = db.scalars(select(StoredArtifact).where(StoredArtifact.task_revision_id == revision.id,
-            StoredArtifact.relative_path.in_(screenshot_paths or ["__none__"]),
-            or_(StoredArtifact.member_id == member.id, StoredArtifact.member_id.is_(None)))).all()
+        artifact_rows = [artifact for artifact in revision_rows
+                         if artifact.relative_path in (screenshot_paths or ["__none__"])]
         broken_sources = sum(1 for artifact in artifact_rows if artifact.source_relative_path and
                              not _recorded_source_file(artifact.source_relative_path))
         absent_frame_steps += absent_frames
         missing_artifact_records += missing_records
         broken_source_files += broken_sources
-        jobs = db.scalars(select(Job).where(Job.member_id == member.id)).all()
+        jobs = member_jobs(db, member.id)
         member_known_cost, member_unknown_jobs, member_unknown_attempts = 0.0, 0, 0
         for job in jobs:
-            attempts = db.scalars(select(JobAttempt).where(JobAttempt.job_id == job.id)).all()
+            attempts = job_attempts(db, job.id)
             job_unknown_attempts = 0
             for attempt in attempts:
                 if attempt.cost_usd is None:
@@ -1035,16 +1245,15 @@ def analytics_query(body: AnalyticsQuery, db: Session = Depends(get_db), user: U
             if not revision:
                 continue
             content = revision.content or {}
-            artifacts = set(db.scalars(select(StoredArtifact.relative_path).where(
-                StoredArtifact.task_revision_id == revision.id, StoredArtifact.member_id.is_(None))).all())
+            source_artifacts = [artifact for artifact in revision_artifacts(db, revision.id) if artifact.member_id is None]
+            artifacts = {artifact.relative_path for artifact in source_artifacts}
             steps = [step for step in content.get("steps", []) if isinstance(step, dict)]
             absent_frames = sum(1 for step in steps if not (step.get("screenshot") or step.get("screenshot_path")))
             screenshot_paths = [step.get("screenshot") or step.get("screenshot_path") for step in steps
                                 if step.get("screenshot") or step.get("screenshot_path")]
             missing_records = sum(1 for path in screenshot_paths if path not in artifacts)
-            artifact_rows = db.scalars(select(StoredArtifact).where(StoredArtifact.task_revision_id == revision.id,
-                StoredArtifact.relative_path.in_(screenshot_paths or ["__none__"]),
-                StoredArtifact.member_id.is_(None))).all()
+            artifact_rows = [artifact for artifact in source_artifacts
+                             if artifact.relative_path in (screenshot_paths or ["__none__"])]
             broken_sources = sum(1 for artifact in artifact_rows if artifact.source_relative_path and
                                  not _recorded_source_file(artifact.source_relative_path))
             absent_frame_steps += absent_frames
@@ -1608,15 +1817,17 @@ def dataset_detail(dataset_id: str, include_archived: bool = False,
     output = record(dataset)
     output["archived"] = is_archived(db, "dataset", dataset.id)
     tasks = []
-    for definition in task_definitions(db, dataset.id):
+    definitions = task_definitions(db, dataset.id)
+    preload_rows(db, TaskRevision, {definition.current_revision_id for definition in definitions})
+    preload_artifacts(db, revision_ids=[definition.current_revision_id for definition in definitions])
+    for definition in definitions:
         if not include_archived and is_archived(db, "task", definition.id):
             continue
         rev = current_revision(db, definition)
         if rev:
             item = task_view(db, rev.content, rev.id, definition.task_id, rev.revision)
             item["task_definition_id"] = definition.id
-            item["archived_at"] = (db.scalar(select(ObjectArchive.archived_at).where(
-                ObjectArchive.object_type == "task", ObjectArchive.object_id == definition.id)))
+            item["archived_at"] = archived_objects(db, "task").get(definition.id)
             if item["archived_at"]:
                 item["archived_at"] = iso(item["archived_at"])
             tasks.append(item)
@@ -1626,6 +1837,12 @@ def dataset_detail(dataset_id: str, include_archived: bool = False,
     batches = [batch for batch in batches_for_dataset
                if _allowed(db, batch.id, user) and (include_archived or not is_archived(db, "run", batch.id))]
     visible_task_ids = {item["task_definition_id"] for item in tasks}
+    members_by_run_task: dict[tuple[str, str], list[BatchMember]] = {}
+    for batch_id, members in batch_members_by_batch(db, batches).items():
+        for member in members:
+            members_by_run_task.setdefault((batch_id, member.task_definition_id), []).append(member)
+    preload_members(db, [member for (_batch_id, definition_id), members in members_by_run_task.items()
+                         if definition_id in visible_task_ids for member in members])
     included_by_run: dict[str, set[str]] = {}
     batch_outputs = []
     for batch in batches:
@@ -1642,9 +1859,7 @@ def dataset_detail(dataset_id: str, include_archived: bool = False,
         memberships = []
         for batch_id, included_ids in included_by_run.items():
             if definition_id in included_ids:
-                memberships.extend(db.scalars(select(BatchMember).where(
-                    BatchMember.batch_id == batch_id,
-                    BatchMember.task_definition_id == definition_id)).all())
+                memberships.extend(members_by_run_task.get((batch_id, definition_id), []))
         item["summary"] = dataset_task_summary(db, item, memberships)
     output["tasks"] = tasks
     output["batches"] = batch_outputs
@@ -1779,7 +1994,9 @@ def dataset_task_detail(dataset_id: str, task_definition_id: str, include_archiv
                            .order_by(TaskRevision.revision)).all()
     memberships = db.scalars(select(BatchMember).where(BatchMember.task_definition_id == definition.id)
                              .order_by(BatchMember.created_at)).all()
+    preload_members(db, memberships)
     batch_ids = {member.batch_id for member in memberships}
+    preload_rows(db, Batch, batch_ids)
     failed_by_batch = {}
     if batch_ids:
         failed_by_batch = {batch_id: count for batch_id, count in db.execute(
@@ -1797,9 +2014,8 @@ def dataset_task_detail(dataset_id: str, task_definition_id: str, include_archiv
         except HTTPException:
             continue
         revision = db.get(TaskRevision, member.task_revision_id)
-        reviews = db.scalars(select(ReviewResult).where(ReviewResult.member_id == member.id)
-                             .order_by(ReviewResult.revision)).all()
-        jobs = db.scalars(select(Job).where(Job.member_id == member.id).order_by(Job.created_at)).all()
+        reviews = member_reviews(db, member.id)
+        jobs = member_jobs(db, member.id)
         latest_review = reviews[-1] if reviews else None
         content = revision.content if revision else {}
         review_summary = _review_counts(latest_review.review if latest_review else None)
@@ -2544,6 +2760,9 @@ def batch_tasks(batch_id: str, page: int = Query(1, ge=1), per_page: int = Query
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
     size = min(per_page, 500)
     members = db.scalars(query.offset((page - 1) * size).limit(size)).all()
+    preload_members(db, members)
+    preload_artifacts(db, member_ids=[member.id for member in members])
+    preload_rows(db, TaskDefinition, {member.task_definition_id for member in members})
     items = []
     for member in members:
         revision = db.get(TaskRevision, member.task_revision_id)
@@ -2909,6 +3128,11 @@ def jobs(page: int = Query(1, ge=1), per_page: int = Query(100, ge=1), db: Sessi
     total = db.scalar(select(func.count()).select_from(query.subquery())) or 0
     size = min(per_page, 500)
     items = db.scalars(query.offset((page - 1) * size).limit(size)).all()
+    preload_attempts(db, items)
+    preload_rows(db, PresetRevision, {job.preset_revision_id for job in items})
+    preload_rows(db, BatchMember, {job.member_id for job in items})
+    preload_rows(db, TaskRevision, {member.task_revision_id for job in items
+                                    if (member := db.get(BatchMember, job.member_id))})
     output = []
     for job in items:
         item = job_detail(db, job)
