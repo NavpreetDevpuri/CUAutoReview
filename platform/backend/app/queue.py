@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import socket
+import time
 import uuid
 from datetime import timedelta
 
@@ -13,6 +14,7 @@ import yaml
 from celery import Celery
 from kombu import Exchange, Queue
 from sqlalchemy import func, select
+from sqlalchemy.orm import aliased
 
 from .config import settings
 from .database import make_engine, make_session_factory
@@ -65,6 +67,21 @@ celery_app.conf.update(
 _engine = make_engine(settings.database_url)
 SessionLocal = make_session_factory(_engine)
 WORKER_ID = f"{socket.gethostname()}:{os.getpid()}:{uuid.uuid4().hex[:8]}"
+CLI_BACKENDS = ("codex", "gemini_cli")
+ARTIFACT_PUT_ATTEMPTS = 3
+# A sent event whose job is still queued after this many lease periods may have been
+# acknowledged without a claim; see _requeue_stranded_events.
+STRANDED_EVENT_LEASES = 10
+MAX_RELAY_SENDS = 8  # four job attempts plus bounded stranded redispatches
+
+
+class ArtifactStoreUnavailable(RuntimeError):
+    """A validated review could not be stored; the payload travels with the error."""
+
+    def __init__(self, message: str, *, usage: dict, unsaved_review: dict):
+        super().__init__(message)
+        self.usage = usage
+        self.unsaved_review = unsaved_review
 
 
 def _retry_delay(attempt: int) -> timedelta:
@@ -79,15 +96,11 @@ def _retryable_failure(exc: Exception) -> bool:
     retryable_categories = {
         "model_response_schema_invalid", "model_response_invalid_json", "model_response_missing",
         "cli_output_invalid_json", "cli_timeout", "provider_quota_or_rate_limit",
-        "provider_upstream_error", "cli_transport_error", "provider_timeout",
-    }
-    terminal_categories = {
-        "provider_auth_failed", "provider_access_denied", "provider_request_rejected",
-        "provider_model_unavailable", "codex_home_unavailable", "gemini_admin_policy_invalid",
-        "gemini_settings_not_root_owned", "workspace_not_trusted", "cli_unavailable",
+        "provider_upstream_error", "cli_transport_error", "provider_timeout", "storage_unavailable",
     }
     if category:
-        return category in retryable_categories and category not in terminal_categories
+        # Unlisted categories, including auth, access and policy failures, are terminal.
+        return category in retryable_categories
 
     message = str(exc).lower()
     terminal_markers = (
@@ -164,16 +177,74 @@ def _settle_batch_if_terminal(session, batch: Batch):
     batch.updated_at = utcnow()
 
 
+def _queue_name(session, preset_revision_id: str) -> str:
+    preset = session.get(PresetRevision, preset_revision_id)
+    return "cuautoreview.cli" if preset and preset.backend in CLI_BACKENDS else "cuautoreview.reviews"
+
+
+def _requeue_stranded_events(session, now, limit: int) -> int:
+    """Redispatch sent events whose message was acknowledged without a claim.
+
+    A worker that cannot reach the database during _claim still acknowledges the
+    message, leaving the job queued and its event marked sent. Ordinary backlog looks
+    the same, so an event is only reset when its queue has since claimed work that was
+    published after it; broker delivery is FIFO, so that message was skipped or lost.
+    Duplicate delivery is a no-op because claims are fenced by generation.
+    """
+    threshold = now - timedelta(seconds=settings.job_lease_seconds * STRANDED_EVENT_LEASES)
+    candidates = session.execute(
+        select(OutboxEvent, Job)
+        .join(Job, Job.id == OutboxEvent.job_id)
+        .join(Batch, Batch.id == Job.batch_id)
+        .where(OutboxEvent.status == "sent", OutboxEvent.sent_at < threshold,
+               OutboxEvent.generation == Job.generation, OutboxEvent.send_attempts < MAX_RELAY_SENDS,
+               Job.status == "queued", Batch.status == "running")
+        .order_by(OutboxEvent.sent_at)
+        .limit(limit)
+    ).all()
+    if not candidates:
+        return 0
+    # Newest publication per queue that a worker has already claimed.
+    claimed = aliased(OutboxEvent)
+    oldest = min(as_utc(event.sent_at) for event, _ in candidates)
+    claimed_until: dict[str, object] = {}
+    for preset_id, sent_at in session.execute(
+        select(Job.preset_revision_id, func.max(claimed.sent_at))
+        .join(JobAttempt, JobAttempt.job_id == Job.id)
+        .join(claimed, (claimed.job_id == Job.id) & (claimed.generation == JobAttempt.generation))
+        .where(claimed.sent_at > oldest, JobAttempt.started_at >= claimed.sent_at)
+        .group_by(Job.preset_revision_id)
+    ).all():
+        queue_name = _queue_name(session, preset_id)
+        sent_at = as_utc(sent_at)
+        if queue_name not in claimed_until or sent_at > claimed_until[queue_name]:
+            claimed_until[queue_name] = sent_at
+    requeued = 0
+    for event, job in candidates:
+        newest_claimed = claimed_until.get(_queue_name(session, job.preset_revision_id))
+        if not newest_claimed or newest_claimed <= as_utc(event.sent_at):
+            continue
+        event.status = "pending"
+        event.available_at = now
+        event.last_error = "Redispatched: the queue claimed later work while this job stayed queued"
+        requeued += 1
+    return requeued
+
+
 @celery_app.task(name="app.queue.relay_outbox", ignore_result=True)
 def relay_outbox(limit: int = 100):
     """Publish due SQL outbox entries; late duplicate publishes are safe by generation."""
     session = SessionLocal()
-    sent = failed = 0
+    sent = failed = requeued = 0
     now = utcnow()
     try:
+        # Paused or cancelled batches keep their pending events, so they must not occupy
+        # the relay window ahead of running batches.
+        running_jobs = select(Job.id).join(Batch, Batch.id == Job.batch_id).where(Batch.status == "running")
         events = session.scalars(
             select(OutboxEvent)
-            .where(OutboxEvent.status == "pending", OutboxEvent.available_at <= now)
+            .where(OutboxEvent.status == "pending", OutboxEvent.available_at <= now,
+                   OutboxEvent.job_id.in_(running_jobs))
             .order_by(OutboxEvent.created_at)
             .limit(min(max(limit, 1), 500))
             .with_for_update(skip_locked=True)
@@ -193,8 +264,7 @@ def relay_outbox(limit: int = 100):
             event.send_attempts += 1
             session.commit()
             try:
-                preset = session.get(PresetRevision, job.preset_revision_id)
-                queue_name = "cuautoreview.cli" if preset and preset.backend in ("codex", "gemini_cli") else "cuautoreview.reviews"
+                queue_name = _queue_name(session, job.preset_revision_id)
                 run_review.apply_async(args=[job.id, event.generation],
                                        task_id=f"{event.id}:{event.send_attempts}", queue=queue_name)
                 event.status = "sent"
@@ -218,13 +288,14 @@ def relay_outbox(limit: int = 100):
             event.available_at = now
             event.relay_owner = None
             event.relay_lease_expires_at = None
+        requeued = _requeue_stranded_events(session, now, min(max(limit, 1), 500))
         session.commit()
     except Exception:
         session.rollback()
         raise
     finally:
         session.close()
-    return {"sent": sent, "publish_failures": failed}
+    return {"sent": sent, "publish_failures": failed, "stranded_requeued": requeued}
 
 
 def _claim(job_id: str, generation: int):
@@ -320,6 +391,33 @@ def _save_proposals(session, workspace_id: str, user_id: str, proposals: list[di
         proposal.latest_revision_id = revision.id
 
 
+def _put_artifact(key: str, data: bytes, content_type: str) -> str:
+    """Write an immutable artifact, retrying transient store errors with a short backoff."""
+    for attempt in range(1, ARTIFACT_PUT_ATTEMPTS + 1):
+        try:
+            return create_artifact_store(settings).put(key, data, content_type)
+        except ValueError:
+            raise  # Invalid key or conflicting immutable content cannot succeed on retry.
+        except Exception:
+            if attempt == ARTIFACT_PUT_ATTEMPTS:
+                raise
+            time.sleep(0.5 * attempt)
+    raise AssertionError("unreachable")
+
+
+def _unsaved_review(session, job_id: str, task_revision_id: str, preset_revision_id: str):
+    """Return a validated review that an earlier attempt of this job could not store."""
+    attempts = session.scalars(select(JobAttempt).where(JobAttempt.job_id == job_id)
+                               .order_by(JobAttempt.attempt_number.desc())).all()
+    for attempt in attempts:
+        pending = (attempt.usage or {}).get("unsaved_review") if isinstance(attempt.usage, dict) else None
+        if (isinstance(pending, dict) and isinstance(pending.get("review"), dict)
+                and pending.get("task_revision_id") == task_revision_id
+                and pending.get("preset_revision_id") == preset_revision_id):
+            return attempt.id, copy.deepcopy(pending)
+    return None
+
+
 @celery_app.task(name="app.queue.run_review", bind=True, ignore_result=True)
 def run_review(self, job_id: str, generation: int):
     """Process one review. A duplicate, stale generation, or lost fence is a no-op."""
@@ -354,20 +452,53 @@ def run_review(self, job_id: str, generation: int):
         replay = task_snapshot.get("review")
         snapshot_ids = {"generation": claim["generation"], "fence_token": claim["fence_token"],
                         "attempt_id": claim["attempt_id"]}
+        recovered = _unsaved_review(session, job.id, revision.id, preset_model.id)
         # Leave the transaction before any slow external call.
         session.close()
-        from .review_backends import execute_review
-        output = execute_review(backend=preset["backend"], preset_revision=preset,
-            task_snapshot=task_snapshot, review_kind=claim["review_kind"], replay_source=replay,
-            trusted_artifacts=trusted_artifacts)
+        if recovered:
+            # Store-only retry: an earlier attempt paid for and validated this review but
+            # could not write it. Reuse it instead of paying for another inference.
+            recovered_attempt_id, pending = recovered
+            output = {"review": pending["review"], "provenance": pending.get("provenance") or {},
+                      "proposals": pending.get("proposals") or [],
+                      "usage": {"kind": "recovered_unsaved_review", "estimated_usd": 0, "billed": False,
+                                "recovered_from_attempt_id": recovered_attempt_id}}
+            review_usage = pending.get("usage") if isinstance(pending.get("usage"), dict) else {"kind": "unknown", "estimated_usd": None}
+            taxonomy_snapshot = {"taxonomy_proposal_heads": pending.get("taxonomy_proposal_heads") or {},
+                                 "shared_labels_snapshot": pending.get("shared_labels_snapshot") or [],
+                                 "recovered_from_attempt_id": recovered_attempt_id}
+        else:
+            from .review_backends import execute_review
+            output = execute_review(backend=preset["backend"], preset_revision=preset,
+                task_snapshot=task_snapshot, review_kind=claim["review_kind"], replay_source=replay,
+                trusted_artifacts=trusted_artifacts)
+            review_usage = None
+            taxonomy_snapshot = {"taxonomy_proposal_heads": copy.deepcopy(claim["taxonomy_proposal_heads"]),
+                                 "shared_labels_snapshot": copy.deepcopy(claim["shared_labels_snapshot"])}
         review = output["review"]
         usage = output.get("usage") if isinstance(output.get("usage"), dict) else {"kind": "unknown", "estimated_usd": None}
+        review_usage = review_usage or usage
         provenance = output.get("provenance") if isinstance(output.get("provenance"), dict) else {}
         data = yaml.safe_dump(review, sort_keys=False, allow_unicode=True).encode("utf-8")
         sha = hashlib.sha256(data).hexdigest()
         key = (f"workspaces/{claim['workspace_id']}/jobs/{job_id}/generation-{generation}/"
                f"attempt-{claim['attempt_id']}/{sha}.yaml")
-        object_key = create_artifact_store(settings).put(key, data, "application/yaml")
+        try:
+            object_key = _put_artifact(key, data, "application/yaml")
+        except Exception as exc:
+            if isinstance(exc, ValueError):
+                raise
+            raise ArtifactStoreUnavailable(
+                f"Review artifact storage failed after {ARTIFACT_PUT_ATTEMPTS} writes ({type(exc).__name__}). "
+                "The validated review is kept on this attempt for a store-only retry.",
+                usage={**usage, "review_error_category": "storage_unavailable"},
+                unsaved_review={"review": copy.deepcopy(review), "usage": copy.deepcopy(review_usage),
+                                "provenance": copy.deepcopy(provenance),
+                                "proposals": copy.deepcopy(output.get("proposals") or []),
+                                "task_revision_id": revision.id, "preset_revision_id": preset_model.id,
+                                "taxonomy_proposal_heads": taxonomy_snapshot["taxonomy_proposal_heads"],
+                                "shared_labels_snapshot": taxonomy_snapshot["shared_labels_snapshot"]},
+            ) from exc
 
         session = SessionLocal()
         try:
@@ -391,10 +522,9 @@ def run_review(self, job_id: str, generation: int):
                 source_kind="saved_replay" if preset["backend"] == "saved_replay" else "generated",
                 backend=preset["backend"], model=preset["model"], review=review,
                 artifact_key=object_key, artifact_sha256=sha,
-                provenance={**provenance, "usage": usage, "preset_revision_id": preset_model.id,
+                provenance={**provenance, "usage": review_usage, "preset_revision_id": preset_model.id,
                             "taxonomy_release_id": claim["taxonomy_release_id"],
-                            "taxonomy_proposal_heads": copy.deepcopy(claim["taxonomy_proposal_heads"]),
-                            "shared_labels_snapshot": copy.deepcopy(claim["shared_labels_snapshot"]),
+                            **taxonomy_snapshot,
                             **snapshot_ids, "new_inference": preset["backend"] != "saved_replay"})
             session.add(review_result)
             session.add(StoredArtifact(workspace_id=claim["workspace_id"],
@@ -417,6 +547,11 @@ def run_review(self, job_id: str, generation: int):
                 attempt.usage = copy.deepcopy(usage)
                 attempt.cost_usd = current.cost_usd
                 attempt.finished_at = utcnow()
+            # A stored result supersedes any unsaved payload, so later retries run fresh.
+            for previous in session.scalars(select(JobAttempt).where(JobAttempt.job_id == job_id)).all():
+                if isinstance(previous.usage, dict) and "unsaved_review" in previous.usage:
+                    previous.usage = {**{k: v for k, v in previous.usage.items() if k != "unsaved_review"},
+                                      "unsaved_review_stored_by_attempt_id": claim["attempt_id"]}
             # Keep the original cost/usage explicit. Missing provider usage is unknown, never zero.
             current_member_status = current_member.status
             _settle_batch_if_terminal(session, live_batch)
@@ -453,6 +588,9 @@ def run_review(self, job_id: str, generation: int):
                     attempt.status = "failed"
                     attempt.error = current.error
                     attempt.usage = copy.deepcopy(current.usage)
+                    unsaved = getattr(exc, "unsaved_review", None)
+                    if isinstance(unsaved, dict):
+                        attempt.usage = {**attempt.usage, "unsaved_review": copy.deepcopy(unsaved)}
                     attempt.cost_usd = current.cost_usd
                     attempt.finished_at = utcnow()
                 batch = failure.get(Batch, current.batch_id)

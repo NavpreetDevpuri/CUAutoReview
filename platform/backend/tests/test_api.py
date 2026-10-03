@@ -533,13 +533,18 @@ def test_worker_keeps_known_usage_when_artifact_publication_fails(app_clients, m
             raise OSError("fixture storage failure")
 
     monkeypatch.setattr(queue, "create_artifact_store", lambda _settings: FailingStore())
+    monkeypatch.setattr(queue.time, "sleep", lambda _seconds: None)
     result = queue.run_review.run(job_id, generation)
-    assert result["status"] == "failed"
+    # Storage outages are retryable; the paid, validated review stays on the attempt.
+    assert result["status"] == "retrying"
     with app_clients["factory"]() as db:
         job = db.get(Job, job_id)
         attempt = db.scalar(select(queue.JobAttempt).where(queue.JobAttempt.job_id == job_id))
         assert job.usage["estimated_usd"] == 0.0123 and job.cost_usd == 0.0123
         assert attempt.usage["estimated_usd"] == 0.0123 and attempt.cost_usd == 0.0123
+        assert attempt.usage["review_error_category"] == "storage_unavailable"
+        assert attempt.usage["unsaved_review"]["review"]["review_kind"] == "pass_recovery"
+        assert "unsaved_review" not in job.usage
 
 
 def test_cookie_mutations_reject_cross_origin(app_clients):
