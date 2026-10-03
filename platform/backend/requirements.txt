@@ -1,3 +1,4 @@
+# Runtime dependencies installed into the platform image.
 fastapi==0.115.12
 uvicorn[standard]==0.34.2
 SQLAlchemy==2.0.41
@@ -9,5 +10,5 @@ jsonschema==4.24.0
 PyYAML==6.0.2
 Pillow==11.3.0
 pydantic==2.11.5
+# httpx is pinned for litellm's HTTP client.
 httpx==0.28.1
-pytest==8.3.5

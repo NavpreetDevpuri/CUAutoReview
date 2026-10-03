@@ -1,0 +1,37 @@
+[project]
+name = "cuautoreview-platform"
+version = "1.0.0"
+description = "CU AutoReview platform backend: FastAPI API and Celery review worker."
+requires-python = ">=3.12"
+# Pinned runtime dependencies live in requirements.txt (installed by the Dockerfile);
+# development tools live in requirements-dev.txt.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # import sorting
+    "B",    # bugbear: likely bugs
+    "UP",   # pyupgrade: modern syntax for the target version
+    "SIM",  # simplifications
+    "TID",  # tidy imports (no relative imports)
+]
+ignore = [
+    "B008",    # FastAPI declares dependencies as Depends(...) defaults by design
+    "SIM105",  # contextlib.suppress is not clearer than an explicit try/except/pass
+    "SIM108",  # ternaries are not always clearer than an if/else block
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
