@@ -2,6 +2,44 @@
 
 Verified on 27 September 2026 using the local Docker Compose stack. Regression and service checks use saved replay or isolated fixtures and make no provider calls. Live CLI attempts are reported separately; replay retains the original uncertainty and provenance.
 
+## Structure and production readiness: 3 October 2026
+
+The codebase was reorganized and hardened for production without changing API behaviour. No provider calls were made.
+
+| Check | Result |
+|---|---|
+| Backend suite | **158 passed**; `test_migrations_match_the_models_on_postgresql` also runs in CI against PostgreSQL 17 |
+| POC suite | **27 passed** |
+| Frontend | **15 passed**; `typecheck`, ESLint (0 problems), Prettier and the production build are clean, with no chunk-size warning |
+| Python lint | `ruff check` and `ruff format --check` clean for `platform/backend`, `poc` and `platform/scripts` |
+| Dependency audit | `pip-audit` went from 79 advisories in Pillow, litellm and Starlette to none after upgrades; `npm audit --omit=dev` reports none |
+| Browser pass | 14 routes as reviewer and as admin with the Content-Security-Policy enforced: no failed requests, console errors or policy violations |
+| `make check` | Passes: the lint, test and build gates CI runs |
+
+**Backend restructure.** `app/main.py` went from 3,746 lines to 108, with code split into `api/` (routers, dependencies, middleware), `services/`, `core/` and `worker/`.
+
+- The OpenAPI schema is identical to the pre-refactor app, and all 93 routes are unchanged.
+- The old and new apps were compared on copies of the same seeded workspace across nine access profiles: 4,149 GET and analytics responses plus 54 write-flow steps, with no differences.
+- `test_route_inventory.py` now guards the route set.
+
+**Production features:**
+
+- Alembic migrations, run by a one-shot `migrate` service. A legacy database is adopted rather than recreated.
+- A fail-fast production settings check, which lists every unsafe value at once.
+- Closed sign-up by default in production; `POST /api/users` lets admins create accounts.
+- Database-backed login throttling and session cleanup.
+- Security and cache headers, request IDs with JSON logs, `/api/ready`, and `compose.prod.yaml`.
+- See the [deployment guide](DEPLOYMENT.md).
+
+**Verified locally:**
+
+- `python -m app.core.migrate` upgrades a fresh database, then is a no-op.
+- Six failed logins return 429 with `Retry-After`.
+- With insecure defaults in production mode, the app exits and lists six problems.
+- The production Compose file renders only when every required secret is set.
+
+**Not yet exercised outside CI:** the Docker stack with the `migrate` job, and migrations on PostgreSQL. Both run in the CI workflow.
+
 ## Code review hardening: 3 October 2026
 
 A full review of the backend, worker, frontend and POC code; each fix below has a regression test that fails on the previous code. No provider calls were made.

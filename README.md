@@ -27,13 +27,18 @@ docs/                  Design and supporting material
   reviews/             Independent reviews, human-validation worksheet, audit tool
   notes/               Dated decision log
 platform/              Working local platform
-  backend/             FastAPI API, Celery worker, review adapters, tests
-  web/                 React-admin/MUI interface, in-app guides, tests
+  backend/app/         FastAPI service: api/ (routers, dependencies, middleware), services/ (access,
+                       read models, runs, taxonomy), core/ (config, database, migrations, logging,
+                       storage), worker/ (Celery queue and model adapters), models.py, schemas.py
+  backend/tests/       Backend test suite; requirements.txt (runtime) and requirements-dev.txt (CI)
+  web/src/             React-admin/MUI interface: app/, api/, hooks/, components/, lib/, pages/, docs/
   scripts/             Seeding and real-service verification scripts
   demo-data/           Bundled demo ZIPs and their regeneration inputs
   deploy/              Local service configuration (SeaweedFS S3 identities)
   docs/                API contract, acceptance, test and live results, evidence, screenshots
-  Dockerfile, compose.yaml, .env.example
+  Dockerfile, compose.yaml, compose.prod.yaml, .env.example
+Makefile               install, lint, format, test, build, up, seed, verify, migrate
+.github/workflows/     CI: lint, tests, PostgreSQL migrations, dependency audit, Docker quickstart
 poc/                   Preserved five-task proof of concept
   run.py, serve.py     Parallel reviewer runner and loopback viewer server
   prompts/, viewer/    Review prompts and static trajectory viewer
@@ -65,7 +70,13 @@ docker compose -f platform/compose.yaml run --rm --no-deps seed --show-logins
 - Seeding imports bundled example tasks and saved POC evidence without model calls. Repeating it preserves account identities and passwords; new model reviews are opt-in.
 - Database, evidence and Docker seed credentials stay in local named volumes. Stop with `docker compose -f platform/compose.yaml down`; omit `-v` to retain them.
 - [Dockerfile](platform/Dockerfile) · [Compose services](platform/compose.yaml) · [setup, roles and provider configuration](platform/README.md).
-- [Fresh Docker verification](platform/docs/evidence/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls.
+- [Fresh Docker verification](platform/docs/evidence/docker-quickstart-verification.json): startup, all five logins, team/task access, screenshots and repeat-seed stability passed with zero model calls. CI repeats it on every push.
+- The same commands are available as `make up`, `make seed`, `make logins` and `make verify`. A one-shot `migrate` service applies database migrations before the API starts.
+
+## Develop and deploy
+
+- **Develop:** with Python 3.12 and Node.js 22, run `make install`, then `make check` for the same lint, type, test and build gates CI runs. `make format` applies the formatters.
+- **Deploy:** [production deployment guide](platform/docs/DEPLOYMENT.md). `platform/compose.prod.yaml` switches to production settings: required secrets with no local defaults, migrations as a separate job, secure cookies, closed sign-up, JSON logs, readiness checks and security headers. The app refuses to start with unsafe production settings.
 
 ![CUAutoReview platform overview with workspace totals and recent runs.](platform/docs/screenshots/audit-overview-20260927.jpg)
 

@@ -515,10 +515,10 @@ More alternatives and when to revisit them: [decisions and trade-offs](specs/03-
 
 | Area | Status |
 |---|---|
-| Local platform | Workspaces, teams, roles and sharing; JSON/ZIP import with immutable task revisions; multi-dataset runs; outbox + RabbitMQ/Celery workers with fenced completion and bounded retries; trajectory viewer; analytics; same-revision comparison; taxonomy proposals with human approval. [Status](../platform/README.md) · [tests](../platform/docs/TEST-RESULTS.md) |
+| Local platform | Workspaces, teams, roles and sharing; JSON/ZIP import with immutable task revisions; multi-dataset runs; outbox + RabbitMQ/Celery workers with fenced completion and bounded retries; trajectory viewer; analytics; same-revision comparison; taxonomy proposals with human approval; versioned migrations and a production configuration with fail-fast checks, login throttling, security headers and readiness probes. [Status](../platform/README.md) · [tests](../platform/docs/TEST-RESULTS.md) |
 | POC | Five OSWorld trajectories, 69 annotated steps, separate failure and recovery prompts, three parallel reviewers sharing draft labels, final consolidation. [Results](../poc/README.md) |
 | Live model evidence | 8 distinct tasks reviewed with screenshots by Gemini 3.8 Flash, plus one matched GPT-6 Sol review. [Results](../platform/docs/LIVE-RESULTS.md) |
-| Not built | Continuous S3 discovery, embeddings and density clustering, automatic assignment, cross-release crosswalk charts, parent-task grouping of K rollouts, multi-call checkpointed reviewer, load testing, production HA |
+| Not built | Continuous S3 discovery, embeddings and density clustering, automatic assignment, cross-release crosswalk charts, parent-task grouping of K rollouts, multi-call checkpointed reviewer, load testing, production HA, SSO/OIDC |
 | Not yet measured | Diagnosis accuracy against human adjudication (about 300 double-reviewed rollouts planned: [worksheet](reviews/HUMAN-VALIDATION.md)), throughput, cost at scale |
 
 ## 12. Glossary

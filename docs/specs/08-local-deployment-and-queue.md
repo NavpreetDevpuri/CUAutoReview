@@ -13,7 +13,7 @@
 | `rabbitmq` | Persistent local broker/quorum queues; production three nodes/queue replicas across failure domains, requiring a majority. |
 | `storage` | Single-process SeaweedFS with persistent volume; production Amazon S3. |
 
-- App/worker share one image, different commands. Locally, app startup creates missing tables (`create_all`) and Compose creates the bucket; versioned schema migrations are a production prerequisite that is not implemented yet. Named volumes preserve database/broker/objects; localhost app only, infrastructure internal unless explicitly enabled.
+- App/worker share one image, different commands. Alembic migrations run as a one-shot `migrate` service before the API starts, and Compose creates the bucket. Development may auto-migrate; in production the API verifies the schema is at head and refuses to start otherwise ([deployment guide](../../platform/docs/DEPLOYMENT.md#migrations)). Named volumes preserve database/broker/objects; localhost app only, infrastructure internal unless explicitly enabled.
 - Health checks, bounded reconnects and graceful shutdown cover startup/recovery. One local broker demonstrates persistence, not HA. No required Redis, Beat, Flower or Celery result backend; PostgreSQL holds progress/results.
 - Share stage/live/backfill queues across batches; Celery may add internal topology. Both `failure_analysis` and `pass_recovery` are enabled; unknown/error grades defer. Separate reviewer pools can protect capacity, never starve a route or silently omit passes. Pin each route's prompt/recipe/session/budget.
 
